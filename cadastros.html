@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastro de OS - OS System</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+    <header>
+
+        <h2>OS System</h2>
+
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="cadastros.html">Nova OS</a>
+            <a href="lista.html">Ordens</a>
+            <a href="tecnicos.html">Técnicos</a>
+            <a href="clientes.html">Cliente</a>
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <h1>Nova Ordem de Serviço</h1>
+
+        <p>Cadastre uma nova ordem de serviço.</p>
+
+
+        <section class="box">
+
+            <form id="form-os">
+
+                <label for="cliente">
+                    Cliente
+                </label>
+
+                <input
+                    type="text"
+                    id="cliente"
+                    name="cliente"
+                    placeholder="Nome do cliente"
+                    required
+                >
+
+
+                <label for="equipamento">
+                    Equipamento
+                </label>
+
+                <input
+                    type="text"
+                    id="equipamento"
+                    name="equipamento"
+                    placeholder="Ex: Notebook Dell"
+                    required
+                >
+
+
+                <label for="tecnico">
+                    Técnico responsável
+                </label>
+
+                <select id="tecnico" name="tecnico" required>
+
+                    <option value="">
+                        Selecione um técnico
+                    </option>
+
+                    <option value="João Silva">
+                        João Silva
+                    </option>
+
+                    <option value="Pedro Santos">
+                        Pedro Santos
+                    </option>
+
+                    <option value="Lucas Oliveira">
+                        Lucas Oliveira
+                    </option>
+
+                </select>
+
+
+                <label for="prioridade">
+                    Prioridade
+                </label>
+
+                <select id="prioridade" name="prioridade" required>
+
+                    <option value="Baixa">
+                        Baixa
+                    </option>
+
+                    <option value="Média" selected>
+                        Média
+                    </option>
+
+                    <option value="Alta">
+                        Alta
+                    </option>
+
+                </select>
+
+
+                <label for="descricao">
+                    Descrição do problema
+                </label>
+
+                <textarea
+                    id="descricao"
+                    name="descricao"
+                    placeholder="Descreva o problema..."
+                    required
+                ></textarea>
+
+                <button type="button" id="buscar-solucao" class="botao-secundario">
+                    Buscar solução na web
+                </button>
+
+                <button type="submit">
+                    Criar Ordem de Serviço
+                </button>
+
+                <div id="mensagem-os" class="mensagem" aria-live="polite"></div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <script>
+        const formOS = document.getElementById('form-os');
+        const mensagemOS = document.getElementById('mensagem-os');
+        const selectTecnico = document.getElementById('tecnico');
+        const botaoBusca = document.getElementById('buscar-solucao');
+
+        function mostrarMensagemOS(tipo, texto) {
+            mensagemOS.className = `mensagem ${tipo}`;
+            mensagemOS.textContent = texto;
+        }
+
+        botaoBusca.addEventListener('click', function () {
+            const descricao = document.getElementById('descricao').value.trim();
+
+            if (!descricao) {
+                mostrarMensagemOS('erro', 'Digite a descrição do problema antes de buscar uma solução.');
+                return;
+            }
+
+            const busca = encodeURIComponent(descricao);
+            window.open(`https://www.google.com/search?q=${busca}`, '_blank');
+            mostrarMensagemOS('sucesso', 'Busca aberta no Google com a descrição do problema.');
+        });
+
+        function carregarTecnicos() {
+            const tecnicos = JSON.parse(localStorage.getItem('tecnicos') || '[]');
+            const tecAtual = selectTecnico.value;
+
+            selectTecnico.innerHTML = '<option value="">Selecione um técnico</option>' + tecnicos.map((tecnico) => `
+                <option value="${tecnico.nome}">${tecnico.nome}</option>
+            `).join('');
+
+            if (tecAtual) {
+                selectTecnico.value = tecAtual;
+            }
+        }
+
+        function validarOS(dados) {
+            const erros = [];
+
+            if (dados.cliente.trim().length < 2) {
+                erros.push('Informe o nome do cliente corretamente.');
+            }
+
+            if (dados.equipamento.trim().length < 3) {
+                erros.push('Informe o nome do equipamento.');
+            }
+
+            if (!dados.tecnico) {
+                erros.push('Selecione um técnico responsável.');
+            }
+
+            if (!dados.descricao.trim() || dados.descricao.trim().length < 10) {
+                erros.push('Descreva o problema com pelo menos 10 caracteres.');
+            }
+
+            return erros;
+        }
+
+        formOS.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const dados = {
+                cliente: document.getElementById('cliente').value,
+                equipamento: document.getElementById('equipamento').value,
+                tecnico: document.getElementById('tecnico').value,
+                prioridade: document.getElementById('prioridade').value,
+                descricao: document.getElementById('descricao').value
+            };
+
+            const erros = validarOS(dados);
+
+            if (erros.length > 0) {
+                mostrarMensagemOS('erro', erros.join(' '));
+                return;
+            }
+
+            const listaExistente = JSON.parse(localStorage.getItem('ordens') || '[]');
+            const novaOrdem = {
+                id: listaExistente.length + 1,
+                cliente: dados.cliente.trim(),
+                equipamento: dados.equipamento.trim(),
+                tecnico: dados.tecnico,
+                prioridade: dados.prioridade,
+                descricao: dados.descricao.trim(),
+                status: 'Aberta'
+            };
+
+            listaExistente.push(novaOrdem);
+            localStorage.setItem('ordens', JSON.stringify(listaExistente));
+
+            mostrarMensagemOS('sucesso', 'Cadastro realizado com sucesso! Redirecionando para a lista...');
+
+            setTimeout(() => {
+                window.location.href = 'lista.html';
+            }, 800);
+        });
+
+        carregarTecnicos();
+    </script>
+
+</body>
+
+</html>

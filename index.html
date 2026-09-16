@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - Sistema OS</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body class="login">
+
+    <div class="login-box">
+
+        <h1>OS System</h1>
+
+        <p>Sistema de Ordem de Serviço</p>
+
+        <form id="form-login">
+
+            <label for="email">E-mail</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Digite seu e-mail"
+                required
+            >
+
+            <label for="senha">Senha</label>
+            <input
+                type="password"
+                id="senha"
+                name="senha"
+                placeholder="Digite sua senha"
+                required
+            >
+
+            <button type="submit" class="botao">
+                Entrar
+            </button>
+
+            <div id="mensagem-login" class="mensagem" aria-live="polite"></div>
+
+        </form>
+
+    </div>
+
+    <script>
+        const formLogin = document.getElementById('form-login');
+        const mensagemLogin = document.getElementById('mensagem-login');
+
+        function mostrarMensagemLogin(tipo, texto) {
+            mensagemLogin.className = `mensagem ${tipo}`;
+            mensagemLogin.textContent = texto;
+        }
+
+        function validarEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+        }
+
+        formLogin.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+
+            if (!validarEmail(email)) {
+                mostrarMensagemLogin('erro', 'Digite um e-mail válido, por exemplo: seunome@gmail.com');
+                return;
+            }
+
+            if (senha.trim().length < 4) {
+                mostrarMensagemLogin('erro', 'Digite uma senha com pelo menos 4 caracteres.');
+                return;
+            }
+
+            mostrarMensagemLogin('sucesso', 'Login válido! Redirecionando...');
+
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 600);
+        });
+    </script>
+
+</body>
+
+</html>

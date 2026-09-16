@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ordens de Serviço - OS System</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+    <header>
+
+        <h2>OS System</h2>
+
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="cadastro.html">Nova OS</a>
+            <a href="lista.html">Ordens</a>
+            <a href="tecnicos.html">Técnicos</a>
+            <a href="clientes.html">Cliente</a>
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <div class="topo">
+
+            <div>
+
+                <h1>Ordens de Serviço</h1>
+
+                <p>
+                    Consulte as ordens cadastradas.
+                </p>
+
+            </div>
+
+            <a href="cadastros.html" class="botao">
+                + Nova OS
+            </a>
+
+        </div>
+
+
+        <input
+            id="pesquisa-ordens"
+            class="pesquisa"
+            type="text"
+            placeholder="Pesquisar ordem de serviço..."
+        >
+
+
+        <section class="box tabela">
+
+            <table>
+
+                <thead>
+                    <tr>
+
+                        <th>OS</th>
+                        <th>Cliente</th>
+                        <th>Técnico</th>
+                        <th>Prioridade</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+
+                    </tr>
+                </thead>
+
+                <tbody id="lista-ordens"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+    <script>
+        const listaOrdens = document.getElementById('lista-ordens');
+        const pesquisa = document.getElementById('pesquisa-ordens');
+
+        function statusClass(status) {
+            if (status === 'Em execução') return 'andamento';
+            if (status === 'Concluída') return 'concluida';
+            return 'aberta';
+        }
+
+        function renderOrdens() {
+            const ordens = JSON.parse(localStorage.getItem('ordens') || '[]');
+            const termo = (pesquisa ? pesquisa.value : '').trim().toLowerCase();
+
+            const ordensFiltradas = !termo
+                ? ordens
+                : ordens.filter((ordem) => {
+                    const texto = `${ordem.cliente} ${ordem.tecnico} ${ordem.equipamento} ${ordem.prioridade} ${ordem.status}`.toLowerCase();
+                    return texto.includes(termo);
+                });
+
+            if (!ordensFiltradas.length) {
+                listaOrdens.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="lista-vazia">Nenhuma ordem cadastrada ou encontrada.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            listaOrdens.innerHTML = ordensFiltradas.map((ordem) => `
+                <tr>
+                    <td>#${String(ordem.id).padStart(3, '0')}</td>
+                    <td>${ordem.cliente}</td>
+                    <td>${ordem.tecnico}</td>
+                    <td>${ordem.prioridade}</td>
+                    <td>
+                        <span class="status ${statusClass(ordem.status)}">
+                            ${ordem.status}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="detalhes.html?id=${ordem.id}">Visualizar</a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        if (pesquisa) {
+            pesquisa.addEventListener('input', renderOrdens);
+        }
+
+        renderOrdens();
+    </script>
+
+</body>
+
+</html>

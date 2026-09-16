@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Técnicos - OS System</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+    <header>
+
+        <h2>OS System</h2>
+
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="cadastros.html">Nova OS</a>
+            <a href="lista.html">Ordens</a>
+            <a href="tecnicos.html">Técnicos</a>
+            <a href="clientes.html">Cliente</a>
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <h1>Cadastro de Técnicos</h1>
+
+        <p>
+            Cadastre e consulte os técnicos do sistema.
+        </p>
+
+
+        <section class="box">
+
+            <form id="form-tecnico">
+
+                <label for="nome">
+                    Nome completo
+                </label>
+
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Digite o nome"
+                    required
+                >
+
+
+                <label for="email">
+                    E-mail
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="seunome@gmail.com"
+                    required
+                >
+
+
+                <label for="telefone">
+                    Telefone
+                </label>
+
+                <input
+                    type="text"
+                    id="telefone"
+                    name="telefone"
+                    placeholder="(11) 99999-9999"
+                    required
+                >
+
+
+                <label for="especialidade">
+                    Especialidade
+                </label>
+
+                <input
+                    type="text"
+                    id="especialidade"
+                    name="especialidade"
+                    placeholder="Ex: Informática"
+                    required
+                >
+
+
+                <button type="submit">
+                    Cadastrar Técnico
+                </button>
+
+                <div id="mensagem-tecnico" class="mensagem" aria-live="polite"></div>
+
+            </form>
+
+        </section>
+
+
+        <section class="box">
+
+            <h2>Técnicos cadastrados</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Especialidade</th>
+                        <th>Telefone</th>
+
+                    </tr>
+                </thead>
+
+                <tbody id="lista-tecnicos"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+    <script>
+        const formTecnico = document.getElementById('form-tecnico');
+        const mensagemTecnico = document.getElementById('mensagem-tecnico');
+        const listaTecnicos = document.getElementById('lista-tecnicos');
+
+        function mostrarMensagemTecnico(tipo, texto) {
+            mensagemTecnico.className = `mensagem ${tipo}`;
+            mensagemTecnico.textContent = texto;
+        }
+
+        function emailValido(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+        }
+
+        function telefoneValido(telefone) {
+            const numeros = telefone.replace(/\D/g, '');
+            return numeros.length >= 10 && numeros.length <= 11;
+        }
+
+        function validarTecnico(dados) {
+            const erros = [];
+
+            if (dados.nome.trim().length < 2) {
+                erros.push('Digite um nome válido.');
+            }
+
+            if (!emailValido(dados.email)) {
+                erros.push('Digite um e-mail válido, por exemplo: seunome@gmail.com');
+            }
+
+            if (!telefoneValido(dados.telefone)) {
+                erros.push('Digite um telefone com 10 a 11 números, por exemplo: (11) 99999-9999');
+            }
+
+            if (dados.especialidade.trim().length < 2) {
+                erros.push('Informe a especialidade do técnico.');
+            }
+
+            return erros;
+        }
+
+        function renderTecnicos() {
+            const tecnicos = JSON.parse(localStorage.getItem('tecnicos') || '[]');
+
+            if (!tecnicos.length) {
+                listaTecnicos.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="lista-vazia">Nenhum técnico cadastrado.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            listaTecnicos.innerHTML = tecnicos.map((tecnico) => `
+                <tr>
+                    <td>${tecnico.nome}</td>
+                    <td>${tecnico.email}</td>
+                    <td>${tecnico.especialidade}</td>
+                    <td>${tecnico.telefone}</td>
+                </tr>
+            `).join('');
+        }
+
+        formTecnico.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const dados = {
+                nome: document.getElementById('nome').value,
+                email: document.getElementById('email').value,
+                telefone: document.getElementById('telefone').value,
+                especialidade: document.getElementById('especialidade').value
+            };
+
+            const erros = validarTecnico(dados);
+
+            if (erros.length > 0) {
+                mostrarMensagemTecnico('erro', erros.join(' '));
+                return;
+            }
+
+            const tecnicos = JSON.parse(localStorage.getItem('tecnicos') || '[]');
+            tecnicos.push(dados);
+            localStorage.setItem('tecnicos', JSON.stringify(tecnicos));
+
+            formTecnico.reset();
+            renderTecnicos();
+            mostrarMensagemTecnico('sucesso', 'Técnico cadastrado com sucesso!');
+        });
+
+        renderTecnicos();
+    </script>
+
+</body>
+
+</html>

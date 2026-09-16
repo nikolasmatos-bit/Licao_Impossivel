@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Detalhes da OS - OS System</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+    <header>
+
+        <h2>OS System</h2>
+
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="cadastros.html">Nova OS</a>
+            <a href="lista.html">Ordens</a>
+            <a href="tecnicos.html">Técnicos</a>
+            <a href="clientes.html">Cliente</a>
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <div class="topo">
+
+            <div>
+
+                <h1 id="titulo-os">OS #000</h1>
+
+                <p>
+                    Detalhes da ordem de serviço
+                </p>
+
+            </div>
+
+            <span id="status-os" class="status aberta">
+                Aberta
+            </span>
+
+        </div>
+
+
+        <section class="box">
+
+            <h2>Informações da OS</h2>
+
+            <div class="informacoes">
+
+                <div>
+                    <strong>Cliente</strong>
+                    <p id="cliente-os">-</p>
+                </div>
+
+                <div>
+                    <strong>Técnico</strong>
+                    <p id="tecnico-os">-</p>
+                </div>
+
+                <div>
+                    <strong>Equipamento</strong>
+                    <p id="equipamento-os">-</p>
+                </div>
+
+                <div>
+                    <strong>Prioridade</strong>
+                    <p id="prioridade-os">-</p>
+                </div>
+
+                <div>
+                    <strong>Data de abertura</strong>
+                    <p id="data-os">-</p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="box">
+
+            <h2>Descrição do problema</h2>
+
+            <p id="descricao-os">
+                -
+            </p>
+
+        </section>
+
+        <section class="box">
+
+            <h2>Responder atendimento</h2>
+
+            <form id="form-resposta">
+                <label for="status">Status da OS</label>
+                <select id="status" required>
+                    <option value="Aberta">Aberta</option>
+                    <option value="Em execução">Em execução</option>
+                    <option value="Concluída">Concluída</option>
+                    <option value="Cancelada">Cancelada</option>
+                </select>
+
+                <label for="diagnostico">Diagnóstico / Resposta</label>
+                <textarea id="diagnostico" placeholder="Descreva o diagnóstico, solução ou resposta do atendimento..." required></textarea>
+
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button type="submit">Salvar resposta</button>
+                    <button type="button" id="concluir-atendimento" class="botao-secundario">Concluir atendimento</button>
+                    <button type="button" id="cancelar-servico" class="botao-cancelar">Cancelar serviço</button>
+                </div>
+
+                <div id="mensagem-resposta" class="mensagem" aria-live="polite"></div>
+            </form>
+
+        </section>
+
+    </main>
+
+    <script>
+        function statusClass(status) {
+            if (status === 'Em execução') return 'andamento';
+            if (status === 'Concluída') return 'concluida';
+            return 'aberta';
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const id = Number(params.get('id'));
+        const ordens = JSON.parse(localStorage.getItem('ordens') || '[]');
+        const ordem = ordens.find((item) => Number(item.id) === id);
+
+        function preencherDados() {
+            if (!ordem) {
+                document.getElementById('titulo-os').textContent = 'OS não encontrada';
+                document.getElementById('cliente-os').textContent = 'Nenhuma ordem foi selecionada';
+                document.getElementById('tecnico-os').textContent = '-';
+                document.getElementById('equipamento-os').textContent = '-';
+                document.getElementById('prioridade-os').textContent = '-';
+                document.getElementById('data-os').textContent = '-';
+                document.getElementById('descricao-os').textContent = 'Volte para a lista e escolha uma ordem válida.';
+                document.getElementById('status-os').textContent = 'Indefinida';
+                document.getElementById('status-os').className = 'status aberta';
+                return;
+            }
+
+            document.getElementById('titulo-os').textContent = `OS #${String(ordem.id).padStart(3, '0')}`;
+            document.getElementById('cliente-os').textContent = ordem.cliente;
+            document.getElementById('tecnico-os').textContent = ordem.tecnico;
+            document.getElementById('equipamento-os').textContent = ordem.equipamento;
+            document.getElementById('prioridade-os').textContent = ordem.prioridade;
+            document.getElementById('data-os').textContent = new Date().toLocaleDateString('pt-BR');
+            document.getElementById('descricao-os').textContent = ordem.descricao;
+
+            const statusTag = document.getElementById('status-os');
+            statusTag.textContent = ordem.status;
+            statusTag.className = `status ${statusClass(ordem.status)}`;
+
+            const selectStatus = document.getElementById('status');
+            selectStatus.value = ordem.status || 'Aberta';
+
+            const diagnosticoAtual = ordem.diagnostico || '';
+            document.getElementById('diagnostico').value = diagnosticoAtual;
+        }
+
+        function salvarResposta(statusFinal, textoFinal) {
+            if (!ordem) {
+                return;
+            }
+
+            ordem.status = statusFinal;
+            ordem.diagnostico = textoFinal;
+
+            const index = ordens.findIndex((item) => Number(item.id) === id);
+            if (index !== -1) {
+                ordens[index] = ordem;
+                localStorage.setItem('ordens', JSON.stringify(ordens));
+            }
+
+            const statusTag = document.getElementById('status-os');
+            statusTag.textContent = ordem.status;
+            statusTag.className = `status ${statusClass(ordem.status)}`;
+
+            document.getElementById('status').value = ordem.status;
+
+            const mensagem = document.getElementById('mensagem-resposta');
+            mensagem.className = 'mensagem sucesso';
+            mensagem.textContent = 'Resposta salva com sucesso!';
+        }
+
+        document.getElementById('form-resposta').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            if (!ordem) {
+                return;
+            }
+
+            const novoStatus = document.getElementById('status').value;
+            const diagnostico = document.getElementById('diagnostico').value.trim();
+
+            if (!diagnostico) {
+                const mensagem = document.getElementById('mensagem-resposta');
+                mensagem.className = 'mensagem erro';
+                mensagem.textContent = 'Digite o diagnóstico ou a resposta do atendimento.';
+                return;
+            }
+
+            salvarResposta(novoStatus, diagnostico);
+        });
+
+        document.getElementById('concluir-atendimento').addEventListener('click', function () {
+            if (!ordem) return;
+
+            const resposta = document.getElementById('diagnostico').value.trim() || 'Atendimento concluído com sucesso.';
+            salvarResposta('Concluída', resposta);
+        });
+
+        document.getElementById('cancelar-servico').addEventListener('click', function () {
+            if (!ordem) return;
+
+            const resposta = document.getElementById('diagnostico').value.trim() || 'Serviço cancelado pelo cliente ou pela equipe.';
+            salvarResposta('Cancelada', resposta);
+        });
+
+        preencherDados();
+    </script>
+
+</body>
+
+</html>
