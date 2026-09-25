@@ -7,6 +7,7 @@
 
     <title>Técnicos - OS System</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
@@ -17,11 +18,11 @@
         <h2>OS System</h2>
 
         <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="cadastros.html">Nova OS</a>
-            <a href="lista.html">Ordens</a>
-            <a href="tecnicos.html">Técnicos</a>
-            <a href="clientes.html">Cliente</a>
+            <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
+            <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
+            <a href="lista.html"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Ordens</span></a>
+            <a href="tecnicos.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span><span>Técnicos</span></a>
+            <a href="clientes.html"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Cliente</span></a>
         </nav>
 
     </header>
@@ -93,7 +94,7 @@
 
 
                 <button type="submit">
-                    Cadastrar Técnico
+                    Salvar técnico
                 </button>
 
                 <div id="mensagem-tecnico" class="mensagem" aria-live="polite"></div>
@@ -129,9 +130,36 @@
     </main>
 
     <script>
+        const authStatus = sessionStorage.getItem('osSystemAuth');
+        if (authStatus !== 'true') {
+            window.location.href = 'index.html';
+        }
+
         const formTecnico = document.getElementById('form-tecnico');
         const mensagemTecnico = document.getElementById('mensagem-tecnico');
         const listaTecnicos = document.getElementById('lista-tecnicos');
+
+        function escapeHtml(value = '') {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function safeParse(key, fallback) {
+            try {
+                const valor = JSON.parse(localStorage.getItem(key) || 'null');
+                return valor ?? fallback;
+            } catch (erro) {
+                return fallback;
+            }
+        }
+
+        function limparTexto(value) {
+            return String(value || '').replace(/\s+/g, ' ').trim();
+        }
 
         function mostrarMensagemTecnico(tipo, texto) {
             mensagemTecnico.className = `mensagem ${tipo}`;
@@ -150,7 +178,7 @@
         function validarTecnico(dados) {
             const erros = [];
 
-            if (dados.nome.trim().length < 2) {
+            if (dados.nome.length < 2) {
                 erros.push('Digite um nome válido.');
             }
 
@@ -162,7 +190,7 @@
                 erros.push('Digite um telefone com 10 a 11 números, por exemplo: (11) 99999-9999');
             }
 
-            if (dados.especialidade.trim().length < 2) {
+            if (dados.especialidade.length < 2) {
                 erros.push('Informe a especialidade do técnico.');
             }
 
@@ -170,7 +198,7 @@
         }
 
         function renderTecnicos() {
-            const tecnicos = JSON.parse(localStorage.getItem('tecnicos') || '[]');
+            const tecnicos = safeParse('tecnicos', []);
 
             if (!tecnicos.length) {
                 listaTecnicos.innerHTML = `
@@ -183,10 +211,10 @@
 
             listaTecnicos.innerHTML = tecnicos.map((tecnico) => `
                 <tr>
-                    <td>${tecnico.nome}</td>
-                    <td>${tecnico.email}</td>
-                    <td>${tecnico.especialidade}</td>
-                    <td>${tecnico.telefone}</td>
+                    <td>${escapeHtml(tecnico.nome)}</td>
+                    <td>${escapeHtml(tecnico.email)}</td>
+                    <td>${escapeHtml(tecnico.especialidade)}</td>
+                    <td>${escapeHtml(tecnico.telefone)}</td>
                 </tr>
             `).join('');
         }
@@ -195,10 +223,10 @@
             event.preventDefault();
 
             const dados = {
-                nome: document.getElementById('nome').value,
-                email: document.getElementById('email').value,
-                telefone: document.getElementById('telefone').value,
-                especialidade: document.getElementById('especialidade').value
+                nome: limparTexto(document.getElementById('nome').value),
+                email: document.getElementById('email').value.trim().toLowerCase(),
+                telefone: limparTexto(document.getElementById('telefone').value),
+                especialidade: limparTexto(document.getElementById('especialidade').value)
             };
 
             const erros = validarTecnico(dados);
@@ -208,7 +236,14 @@
                 return;
             }
 
-            const tecnicos = JSON.parse(localStorage.getItem('tecnicos') || '[]');
+            const tecnicos = safeParse('tecnicos', []);
+            const jaExiste = tecnicos.some((tecnico) => tecnico.email && tecnico.email.toLowerCase() === dados.email.toLowerCase());
+
+            if (jaExiste) {
+                mostrarMensagemTecnico('erro', 'Este e-mail já está cadastrado para outro técnico.');
+                return;
+            }
+
             tecnicos.push(dados);
             localStorage.setItem('tecnicos', JSON.stringify(tecnicos));
 

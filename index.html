@@ -7,6 +7,7 @@
 
     <title>Login - Sistema OS</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
@@ -39,7 +40,7 @@
             >
 
             <button type="submit" class="botao">
-                Entrar
+                Continuar
             </button>
 
             <div id="mensagem-login" class="mensagem" aria-live="polite"></div>
@@ -64,19 +65,21 @@
         formLogin.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            const email = document.getElementById('email').value;
-            const senha = document.getElementById('senha').value;
+            const email = document.getElementById('email').value.trim();
+            const senha = document.getElementById('senha').value.trim();
 
             if (!validarEmail(email)) {
                 mostrarMensagemLogin('erro', 'Digite um e-mail válido, por exemplo: seunome@gmail.com');
                 return;
             }
 
-            if (senha.trim().length < 4) {
+            if (senha.length < 4) {
                 mostrarMensagemLogin('erro', 'Digite uma senha com pelo menos 4 caracteres.');
                 return;
             }
 
+            sessionStorage.setItem('osSystemAuth', 'true');
+            sessionStorage.setItem('osSystemUser', email.toLowerCase());
             mostrarMensagemLogin('sucesso', 'Login válido! Redirecionando...');
 
             setTimeout(() => {

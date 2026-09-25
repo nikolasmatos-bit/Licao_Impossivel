@@ -7,6 +7,7 @@
 
     <title>Ordens de Serviço - OS System</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
@@ -17,11 +18,11 @@
         <h2>OS System</h2>
 
         <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="cadastro.html">Nova OS</a>
-            <a href="lista.html">Ordens</a>
-            <a href="tecnicos.html">Técnicos</a>
-            <a href="clientes.html">Cliente</a>
+            <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
+            <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
+            <a href="lista.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Ordens</span></a>
+            <a href="tecnicos.html"><span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span><span>Técnicos</span></a>
+            <a href="clientes.html"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Cliente</span></a>
         </nav>
 
     </header>
@@ -82,17 +83,41 @@
     </main>
 
     <script>
+        const authStatus = sessionStorage.getItem('osSystemAuth');
+        if (authStatus !== 'true') {
+            window.location.href = 'index.html';
+        }
+
         const listaOrdens = document.getElementById('lista-ordens');
         const pesquisa = document.getElementById('pesquisa-ordens');
+
+        function escapeHtml(value = '') {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function safeParse(key, fallback) {
+            try {
+                const valor = JSON.parse(localStorage.getItem(key) || 'null');
+                return valor ?? fallback;
+            } catch (erro) {
+                return fallback;
+            }
+        }
 
         function statusClass(status) {
             if (status === 'Em execução') return 'andamento';
             if (status === 'Concluída') return 'concluida';
+            if (status === 'Cancelada') return 'cancelada';
             return 'aberta';
         }
 
         function renderOrdens() {
-            const ordens = JSON.parse(localStorage.getItem('ordens') || '[]');
+            const ordens = safeParse('ordens', []);
             const termo = (pesquisa ? pesquisa.value : '').trim().toLowerCase();
 
             const ordensFiltradas = !termo
@@ -111,22 +136,29 @@
                 return;
             }
 
-            listaOrdens.innerHTML = ordensFiltradas.map((ordem) => `
-                <tr>
-                    <td>#${String(ordem.id).padStart(3, '0')}</td>
-                    <td>${ordem.cliente}</td>
-                    <td>${ordem.tecnico}</td>
-                    <td>${ordem.prioridade}</td>
-                    <td>
-                        <span class="status ${statusClass(ordem.status)}">
-                            ${ordem.status}
-                        </span>
-                    </td>
-                    <td>
-                        <a href="detalhes.html?id=${ordem.id}">Visualizar</a>
-                    </td>
-                </tr>
-            `).join('');
+            listaOrdens.innerHTML = ordensFiltradas.map((ordem) => {
+                const statusFinal = ['Concluída', 'Cancelada'].includes(ordem.status);
+                const linkVisualizacao = statusFinal
+                    ? '<span class="acao-fechada">Encerrada</span>'
+                    : `<a href="detalhes.html?id=${ordem.id}">Visualizar</a>`;
+
+                return `
+                    <tr>
+                        <td>#${String(ordem.id).padStart(3, '0')}</td>
+                        <td>${escapeHtml(ordem.cliente)}</td>
+                        <td>${escapeHtml(ordem.tecnico)}</td>
+                        <td>${escapeHtml(ordem.prioridade)}</td>
+                        <td>
+                            <span class="status ${statusClass(ordem.status)}">
+                                ${escapeHtml(ordem.status)}
+                            </span>
+                        </td>
+                        <td>
+                            ${linkVisualizacao}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         if (pesquisa) {

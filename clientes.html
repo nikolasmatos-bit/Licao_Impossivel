@@ -7,6 +7,7 @@
 
     <title>Área do Cliente - OS System</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
@@ -18,17 +19,11 @@
 
         <nav>
 
-            <a href="dashboard.html">
-                Dashboard
-            </a>
+            <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
 
-            <a href="lista.html">
-                Minhas OS
-            </a>
+            <a href="lista.html"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Minhas OS</span></a>
 
-            <a href="clientes.html">
-                Meu Perfil
-            </a>
+            <a href="clientes.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Meu Perfil</span></a>
 
         </nav>
 
@@ -36,6 +31,20 @@
 
 
     <main>
+
+        <script>
+            const authStatus = sessionStorage.getItem('osSystemAuth');
+            if (authStatus !== 'true') {
+                window.location.href = 'index.html';
+            }
+
+            const usuario = (sessionStorage.getItem('osSystemUser') || '').split('@')[0] || 'João';
+            const nomeFormatado = usuario.charAt(0).toUpperCase() + usuario.slice(1);
+            const tituloCliente = document.querySelector('h1');
+            if (tituloCliente) {
+                tituloCliente.textContent = `Olá, ${nomeFormatado}!`;
+            }
+        </script>
 
         <div class="topo">
 

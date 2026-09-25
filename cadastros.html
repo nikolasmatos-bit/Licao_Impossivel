@@ -7,6 +7,7 @@
 
     <title>Cadastro de OS - OS System</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
@@ -17,11 +18,11 @@
         <h2>OS System</h2>
 
         <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="cadastros.html">Nova OS</a>
-            <a href="lista.html">Ordens</a>
-            <a href="tecnicos.html">Técnicos</a>
-            <a href="clientes.html">Cliente</a>
+            <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
+            <a href="cadastros.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
+            <a href="lista.html"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Ordens</span></a>
+            <a href="tecnicos.html"><span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span><span>Técnicos</span></a>
+            <a href="clientes.html"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Cliente</span></a>
         </nav>
 
     </header>
@@ -36,7 +37,7 @@
 
         <section class="box">
 
-            <form id="form-os">
+            <form id="form-os" class="form-grid">
 
                 <label for="cliente">
                     Cliente
@@ -68,25 +69,16 @@
                     Técnico responsável
                 </label>
 
-                <select id="tecnico" name="tecnico" required>
+                <input
+                    type="text"
+                    id="tecnico"
+                    name="tecnico"
+                    list="lista-tecnicos"
+                    placeholder="Selecione ou digite um técnico"
+                    required
+                >
 
-                    <option value="">
-                        Selecione um técnico
-                    </option>
-
-                    <option value="João Silva">
-                        João Silva
-                    </option>
-
-                    <option value="Pedro Santos">
-                        Pedro Santos
-                    </option>
-
-                    <option value="Lucas Oliveira">
-                        Lucas Oliveira
-                    </option>
-
-                </select>
+                <datalist id="lista-tecnicos"></datalist>
 
 
                 <label for="prioridade">
@@ -125,8 +117,8 @@
                     Buscar solução na web
                 </button>
 
-                <button type="submit">
-                    Criar Ordem de Serviço
+                <button type="submit" class="botao-primary">
+                    Salvar
                 </button>
 
                 <div id="mensagem-os" class="mensagem" aria-live="polite"></div>
@@ -138,10 +130,38 @@
     </main>
 
     <script>
+        const authStatus = sessionStorage.getItem('osSystemAuth');
+        if (authStatus !== 'true') {
+            window.location.href = 'index.html';
+        }
+
         const formOS = document.getElementById('form-os');
         const mensagemOS = document.getElementById('mensagem-os');
-        const selectTecnico = document.getElementById('tecnico');
+        const inputTecnico = document.getElementById('tecnico');
+        const datalistTecnicos = document.getElementById('lista-tecnicos');
         const botaoBusca = document.getElementById('buscar-solucao');
+
+        function escapeHtml(value = '') {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function limparTexto(value) {
+            return String(value || '').replace(/\s+/g, ' ').trim();
+        }
+
+        function safeParse(key, fallback) {
+            try {
+                const valor = JSON.parse(localStorage.getItem(key) || 'null');
+                return valor ?? fallback;
+            } catch (erro) {
+                return fallback;
+            }
+        }
 
         function mostrarMensagemOS(tipo, texto) {
             mensagemOS.className = `mensagem ${tipo}`;
@@ -149,7 +169,7 @@
         }
 
         botaoBusca.addEventListener('click', function () {
-            const descricao = document.getElementById('descricao').value.trim();
+            const descricao = limparTexto(document.getElementById('descricao').value);
 
             if (!descricao) {
                 mostrarMensagemOS('erro', 'Digite a descrição do problema antes de buscar uma solução.');
@@ -162,26 +182,39 @@
         });
 
         function carregarTecnicos() {
-            const tecnicos = JSON.parse(localStorage.getItem('tecnicos') || '[]');
-            const tecAtual = selectTecnico.value;
+            const tecnicosPadrao = [
+                { nome: 'Marcos Ribeiro', email: 'marcos.ribeiro@os.com', telefone: '(11) 95555-4444', especialidade: 'Suporte Técnico' },
+                { nome: 'Ana Souza', email: 'ana.souza@os.com', telefone: '(11) 94444-5555', especialidade: 'Manutenção' }
+            ];
 
-            selectTecnico.innerHTML = '<option value="">Selecione um técnico</option>' + tecnicos.map((tecnico) => `
-                <option value="${tecnico.nome}">${tecnico.nome}</option>
+            const tecnicosExistentes = safeParse('tecnicos', []);
+            const deveResetarPadrao = !Array.isArray(tecnicosExistentes)
+                || tecnicosExistentes.length === 0
+                || !tecnicosExistentes.some((tecnico) => tecnico && tecnico.nome === 'Marcos Ribeiro')
+                || !tecnicosExistentes.some((tecnico) => tecnico && tecnico.nome === 'Ana Souza');
+
+            const tecnicos = deveResetarPadrao ? tecnicosPadrao : tecnicosExistentes;
+
+            if (deveResetarPadrao) {
+                localStorage.setItem('tecnicos', JSON.stringify(tecnicosPadrao));
+            }
+
+            datalistTecnicos.innerHTML = tecnicos.map((tecnico) => `
+                <option value="${escapeHtml(tecnico.nome)}"></option>
             `).join('');
 
-            if (tecAtual) {
-                selectTecnico.value = tecAtual;
-            }
+            inputTecnico.value = '';
+            inputTecnico.placeholder = 'Selecione ou digite um técnico';
         }
 
         function validarOS(dados) {
             const erros = [];
 
-            if (dados.cliente.trim().length < 2) {
+            if (dados.cliente.length < 2) {
                 erros.push('Informe o nome do cliente corretamente.');
             }
 
-            if (dados.equipamento.trim().length < 3) {
+            if (dados.equipamento.length < 3) {
                 erros.push('Informe o nome do equipamento.');
             }
 
@@ -189,7 +222,7 @@
                 erros.push('Selecione um técnico responsável.');
             }
 
-            if (!dados.descricao.trim() || dados.descricao.trim().length < 10) {
+            if (!dados.descricao || dados.descricao.length < 10) {
                 erros.push('Descreva o problema com pelo menos 10 caracteres.');
             }
 
@@ -200,11 +233,11 @@
             event.preventDefault();
 
             const dados = {
-                cliente: document.getElementById('cliente').value,
-                equipamento: document.getElementById('equipamento').value,
-                tecnico: document.getElementById('tecnico').value,
-                prioridade: document.getElementById('prioridade').value,
-                descricao: document.getElementById('descricao').value
+                cliente: limparTexto(document.getElementById('cliente').value),
+                equipamento: limparTexto(document.getElementById('equipamento').value),
+                tecnico: limparTexto(document.getElementById('tecnico').value),
+                prioridade: limparTexto(document.getElementById('prioridade').value),
+                descricao: limparTexto(document.getElementById('descricao').value)
             };
 
             const erros = validarOS(dados);
@@ -214,14 +247,26 @@
                 return;
             }
 
-            const listaExistente = JSON.parse(localStorage.getItem('ordens') || '[]');
+            const listaExistente = safeParse('ordens', []);
+            const duplicado = listaExistente.some((ordem) => {
+                const mesmaDescricao = limparTexto(ordem.descricao || '').toLowerCase() === dados.descricao.toLowerCase();
+                const mesmoCliente = limparTexto(ordem.cliente || '').toLowerCase() === dados.cliente.toLowerCase();
+                const mesmoEquipamento = limparTexto(ordem.equipamento || '').toLowerCase() === dados.equipamento.toLowerCase();
+                return mesmaDescricao && mesmoCliente && mesmoEquipamento;
+            });
+
+            if (duplicado) {
+                mostrarMensagemOS('erro', 'Essa ordem já foi cadastrada antes. Verifique a lista e tente novamente.');
+                return;
+            }
+
             const novaOrdem = {
                 id: listaExistente.length + 1,
-                cliente: dados.cliente.trim(),
-                equipamento: dados.equipamento.trim(),
+                cliente: dados.cliente,
+                equipamento: dados.equipamento,
                 tecnico: dados.tecnico,
                 prioridade: dados.prioridade,
-                descricao: dados.descricao.trim(),
+                descricao: dados.descricao,
                 status: 'Aberta'
             };
 

@@ -7,6 +7,7 @@
 
     <title>Detalhes da OS - OS System</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
@@ -17,17 +18,28 @@
         <h2>OS System</h2>
 
         <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="cadastros.html">Nova OS</a>
-            <a href="lista.html">Ordens</a>
-            <a href="tecnicos.html">Técnicos</a>
-            <a href="clientes.html">Cliente</a>
+            <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
+            <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
+            <a href="lista.html"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Ordens</span></a>
+            <a href="tecnicos.html"><span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span><span>Técnicos</span></a>
+            <a href="clientes.html"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Cliente</span></a>
         </nav>
 
     </header>
 
 
     <main>
+
+        <div id="modal-confirmacao" class="modal-confirmacao hidden" aria-live="assertive">
+            <div class="modal-box">
+                <h3 id="titulo-modal">Confirmar ação</h3>
+                <p id="texto-modal">Deseja realmente continuar?</p>
+                <div class="modal-actions">
+                    <button type="button" id="confirmar-acoes-modal" class="botao-primary">Confirmar</button>
+                    <button type="button" id="cancelar-acoes-modal" class="botao-cancelar">Cancelar</button>
+                </div>
+            </div>
+        </div>
 
         <div class="topo">
 
@@ -124,16 +136,86 @@
     </main>
 
     <script>
+        const authStatus = sessionStorage.getItem('osSystemAuth');
+        if (authStatus !== 'true') {
+            window.location.href = 'index.html';
+        }
+
+        function escapeHtml(value = '') {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function safeParse(key, fallback) {
+            try {
+                const valor = JSON.parse(localStorage.getItem(key) || 'null');
+                return valor ?? fallback;
+            } catch (erro) {
+                return fallback;
+            }
+        }
+
         function statusClass(status) {
             if (status === 'Em execução') return 'andamento';
             if (status === 'Concluída') return 'concluida';
+            if (status === 'Cancelada') return 'cancelada';
             return 'aberta';
+        }
+
+        function atualizarEstadoDiagnostico() {
+            const diagnosticoInput = document.getElementById('diagnostico');
+            const selectStatus = document.getElementById('status');
+            const concluirBtn = document.getElementById('concluir-atendimento');
+            const cancelarBtn = document.getElementById('cancelar-servico');
+            const fechada = ['Concluída', 'Cancelada'].includes(ordem?.status || '');
+
+            diagnosticoInput.disabled = fechada;
+            selectStatus.disabled = fechada;
+            concluirBtn.disabled = fechada;
+            cancelarBtn.disabled = fechada;
+
+            if (fechada) {
+                diagnosticoInput.style.opacity = '0.75';
+                diagnosticoInput.style.cursor = 'not-allowed';
+                selectStatus.style.opacity = '0.75';
+                selectStatus.style.cursor = 'not-allowed';
+            } else {
+                diagnosticoInput.style.opacity = '1';
+                diagnosticoInput.style.cursor = 'text';
+                selectStatus.style.opacity = '1';
+                selectStatus.style.cursor = 'default';
+            }
         }
 
         const params = new URLSearchParams(window.location.search);
         const id = Number(params.get('id'));
-        const ordens = JSON.parse(localStorage.getItem('ordens') || '[]');
+        const ordens = safeParse('ordens', []);
         const ordem = ordens.find((item) => Number(item.id) === id);
+        let acaoConfirmada = null;
+
+        function abrirModalConfirmacao(acao) {
+            const modal = document.getElementById('modal-confirmacao');
+            const titulo = document.getElementById('titulo-modal');
+            const texto = document.getElementById('texto-modal');
+
+            acaoConfirmada = acao;
+            titulo.textContent = acao === 'concluir' ? 'Concluir atendimento' : 'Cancelar serviço';
+            texto.textContent = acao === 'concluir'
+                ? 'Ao concluir esta ordem, o diagnóstico será fechado e não poderá ser alterado. Deseja confirmar?'
+                : 'Ao cancelar esta ordem, o diagnóstico será fechado e não poderá ser alterado. Deseja confirmar?';
+
+            modal.classList.remove('hidden');
+        }
+
+        function fecharModalConfirmacao() {
+            const modal = document.getElementById('modal-confirmacao');
+            acaoConfirmada = null;
+            modal.classList.add('hidden');
+        }
 
         function preencherDados() {
             if (!ordem) {
@@ -166,6 +248,7 @@
 
             const diagnosticoAtual = ordem.diagnostico || '';
             document.getElementById('diagnostico').value = diagnosticoAtual;
+            atualizarEstadoDiagnostico();
         }
 
         function salvarResposta(statusFinal, textoFinal) {
@@ -187,6 +270,7 @@
             statusTag.className = `status ${statusClass(ordem.status)}`;
 
             document.getElementById('status').value = ordem.status;
+            atualizarEstadoDiagnostico();
 
             const mensagem = document.getElementById('mensagem-resposta');
             mensagem.className = 'mensagem sucesso';
@@ -215,16 +299,29 @@
 
         document.getElementById('concluir-atendimento').addEventListener('click', function () {
             if (!ordem) return;
-
-            const resposta = document.getElementById('diagnostico').value.trim() || 'Atendimento concluído com sucesso.';
-            salvarResposta('Concluída', resposta);
+            abrirModalConfirmacao('concluir');
         });
 
         document.getElementById('cancelar-servico').addEventListener('click', function () {
             if (!ordem) return;
+            abrirModalConfirmacao('cancelar');
+        });
 
-            const resposta = document.getElementById('diagnostico').value.trim() || 'Serviço cancelado pelo cliente ou pela equipe.';
-            salvarResposta('Cancelada', resposta);
+        document.getElementById('confirmar-acoes-modal').addEventListener('click', function () {
+            if (!ordem || !acaoConfirmada) return;
+
+            const resposta = document.getElementById('diagnostico').value.trim() || (
+                acaoConfirmada === 'concluir'
+                    ? 'Atendimento concluído com sucesso.'
+                    : 'Serviço cancelado pelo cliente ou pela equipe.'
+            );
+
+            salvarResposta(acaoConfirmada === 'concluir' ? 'Concluída' : 'Cancelada', resposta);
+            fecharModalConfirmacao();
+        });
+
+        document.getElementById('cancelar-acoes-modal').addEventListener('click', function () {
+            fecharModalConfirmacao();
         });
 
         preencherDados();

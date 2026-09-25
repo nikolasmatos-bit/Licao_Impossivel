@@ -7,6 +7,7 @@
 
     <title>Dashboard - OS System</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
@@ -17,11 +18,11 @@
         <h2>OS System</h2>
 
         <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="cadastros.html">Nova OS</a>
-            <a href="lista.html">Ordens</a>
-            <a href="tecnicos.html">Técnicos</a>
-            <a href="clientes.html">Cliente</a>
+            <a href="dashboard.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
+            <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
+            <a href="lista.html"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Ordens</span></a>
+            <a href="tecnicos.html"><span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span><span>Técnicos</span></a>
+            <a href="clientes.html"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Cliente</span></a>
         </nav>
 
     </header>
@@ -33,27 +34,90 @@
 
         <p>Visão geral do sistema</p>
 
+        <script>
+            const authStatus = sessionStorage.getItem('osSystemAuth');
+            if (authStatus !== 'true') {
+                window.location.href = 'index.html';
+            }
+
+            function safeParse(key, fallback) {
+                try {
+                    const valor = JSON.parse(localStorage.getItem(key) || 'null');
+                    return valor ?? fallback;
+                } catch (erro) {
+                    return fallback;
+                }
+            }
+
+            function statusClass(status) {
+                if (status === 'Em execução') return 'andamento';
+                if (status === 'Concluída') return 'concluida';
+                if (status === 'Cancelada') return 'cancelada';
+                return 'aberta';
+            }
+
+            function renderDashboard() {
+                const ordens = safeParse('ordens', []);
+                const totalOs = ordens.length;
+                const abertas = ordens.filter((ordem) => ordem.status === 'Aberta').length;
+                const andamento = ordens.filter((ordem) => ordem.status === 'Em execução').length;
+                const concluidas = ordens.filter((ordem) => ordem.status === 'Concluída').length;
+
+                document.getElementById('total-os').textContent = totalOs;
+                document.getElementById('os-abertas').textContent = String(abertas).padStart(2, '0');
+                document.getElementById('em-execucao').textContent = String(andamento).padStart(2, '0');
+                document.getElementById('concluidas').textContent = String(concluidas).padStart(2, '0');
+
+                const tabela = document.getElementById('ordens-recentes');
+                const recentes = [...ordens].slice(-3).reverse();
+
+                if (!recentes.length) {
+                    tabela.innerHTML = `
+                        <tr>
+                            <td colspan="3" class="lista-vazia">Nenhuma ordem cadastrada ainda.</td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tabela.innerHTML = recentes.map((ordem) => `
+                    <tr>
+                        <td>#${String(ordem.id).padStart(3, '0')}</td>
+                        <td>${ordem.cliente}</td>
+                        <td>
+                            <span class="status ${statusClass(ordem.status)}">
+                                ${ordem.status}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            document.addEventListener('DOMContentLoaded', renderDashboard);
+            window.addEventListener('storage', renderDashboard);
+        </script>
+
 
         <section class="cards">
 
             <div class="card">
                 <h3>Total de OS</h3>
-                <strong>25</strong>
+                <strong id="total-os">0</strong>
             </div>
 
             <div class="card">
                 <h3>OS Abertas</h3>
-                <strong>08</strong>
+                <strong id="os-abertas">00</strong>
             </div>
 
             <div class="card">
                 <h3>Em execução</h3>
-                <strong>10</strong>
+                <strong id="em-execucao">00</strong>
             </div>
 
             <div class="card">
                 <h3>Concluídas</h3>
-                <strong>07</strong>
+                <strong id="concluidas">00</strong>
             </div>
 
         </section>
@@ -71,35 +135,7 @@
                     <th>Status</th>
                 </tr>
 
-                <tr>
-                    <td>#001</td>
-                    <td>João Silva</td>
-                    <td>
-                        <span class="status andamento">
-                            Em execução
-                        </span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>#002</td>
-                    <td>Maria Souza</td>
-                    <td>
-                        <span class="status aberta">
-                            Aberta
-                        </span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>#003</td>
-                    <td>Pedro Santos</td>
-                    <td>
-                        <span class="status concluida">
-                            Concluída
-                        </span>
-                    </td>
-                </tr>
+                <tbody id="ordens-recentes"></tbody>
 
             </table>
 
