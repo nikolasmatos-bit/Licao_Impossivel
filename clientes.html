@@ -1,168 +1,88 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Área do Cliente - OS System</title>
-
+    <title>Meus serviços - OS System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
-
 <body>
 
     <header>
-
         <h2>OS System</h2>
-
         <nav>
-
-            <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
-
-            <a href="lista.html"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Minhas OS</span></a>
-
-            <a href="clientes.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Meu Perfil</span></a>
-
+            <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Painel</span></a>
+            <a href="lista.html"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Meus serviços</span></a>
+            <a href="clientes.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Meu perfil</span></a>
         </nav>
-
     </header>
 
-
     <main>
-
-        <script>
-            const authStatus = sessionStorage.getItem('osSystemAuth');
-            if (authStatus !== 'true') {
-                window.location.href = 'index.html';
-            }
-
-            const usuario = (sessionStorage.getItem('osSystemUser') || '').split('@')[0] || 'João';
-            const nomeFormatado = usuario.charAt(0).toUpperCase() + usuario.slice(1);
-            const tituloCliente = document.querySelector('h1');
-            if (tituloCliente) {
-                tituloCliente.textContent = `Olá, ${nomeFormatado}!`;
-            }
-        </script>
-
         <div class="topo">
-
             <div>
-
-                <h1>Olá, João!</h1>
-
-                <p>
-                    Acompanhe suas ordens de serviço.
-                </p>
-
+                <h1 id="titulo-cliente">Olá, João!</h1>
+                <p>Veja como estão seus serviços.</p>
             </div>
-
         </div>
 
-
         <section class="cards">
-
             <div class="card">
-
-                <h3>Minhas OS</h3>
-
+                <h3>Total de serviços</h3>
                 <strong>04</strong>
-
             </div>
-
-
             <div class="card">
-
                 <h3>Em andamento</h3>
-
                 <strong>02</strong>
-
             </div>
-
-
             <div class="card">
-
-                <h3>Concluídas</h3>
-
+                <h3>Prontos</h3>
                 <strong>02</strong>
-
             </div>
-
         </section>
-
 
         <section class="box">
-
-            <h2>Minhas Ordens</h2>
-
+            <h2>Meus serviços</h2>
             <table>
-
-                <tr>
-
-                    <th>OS</th>
-                    <th>Equipamento</th>
-                    <th>Status</th>
-                    <th>Detalhes</th>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>#001</td>
-
-                    <td>Notebook Dell</td>
-
-                    <td>
-
-                        <span class="status andamento">
-                            Em execução
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        <a href="detalhes.html">
-                            Consultar
-                        </a>
-
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>#003</td>
-
-                    <td>Computador</td>
-
-                    <td>
-
-                        <span class="status concluida">
-                            Concluída
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        <a href="detalhes.html">
-                            Consultar
-                        </a>
-
-                    </td>
-
-                </tr>
-
+                <thead>
+                    <tr>
+                        <th>Nº</th>
+                        <th>Aparelho</th>
+                        <th>Situação</th>
+                        <th>Ver</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#001</td>
+                        <td>Notebook Dell</td>
+                        <td><span class="status andamento">Em execução</span></td>
+                        <td><a href="detalhes.html">Abrir</a></td>
+                    </tr>
+                    <tr>
+                        <td>#003</td>
+                        <td>Computador</td>
+                        <td><span class="status concluida">Concluída</span></td>
+                        <td><a href="detalhes.html">Abrir</a></td>
+                    </tr>
+                </tbody>
             </table>
-
         </section>
-
     </main>
 
-</body>
+    <script>
+        // se não estiver logado volta pro login
+        if (sessionStorage.getItem('osSystemAuth') !== 'true') {
+            window.location.href = 'index.html';
+        }
 
+        // pega o nome do usuário pelo e-mail (parte antes do @)
+        const email = sessionStorage.getItem('osSystemUser') || 'joão';
+        const nome = email.split('@')[0];
+        const nomeFormatado = nome.charAt(0).toUpperCase() + nome.slice(1);
+
+        document.getElementById('titulo-cliente').textContent = 'Olá, ' + nomeFormatado + '!';
+    </script>
+
+</body>
 </html>

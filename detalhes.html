@@ -1,22 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Detalhes da OS - OS System</title>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
-
 <body>
 
     <header>
-
         <h2>OS System</h2>
-
         <nav>
             <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
             <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
@@ -24,13 +18,12 @@
             <a href="tecnicos.html"><span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span><span>Técnicos</span></a>
             <a href="clientes.html"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Cliente</span></a>
         </nav>
-
     </header>
-
 
     <main>
 
-        <div id="modal-confirmacao" class="modal-confirmacao hidden" aria-live="assertive">
+        <!-- janela de confirmação -->
+        <div id="modal-confirmacao" class="modal-confirmacao hidden">
             <div class="modal-box">
                 <h3 id="titulo-modal">Confirmar ação</h3>
                 <p id="texto-modal">Deseja realmente continuar?</p>
@@ -42,77 +35,50 @@
         </div>
 
         <div class="topo">
-
             <div>
-
                 <h1 id="titulo-os">OS #000</h1>
-
-                <p>
-                    Detalhes da ordem de serviço
-                </p>
-
+                <p>Detalhes da ordem de serviço</p>
             </div>
-
-            <span id="status-os" class="status aberta">
-                Aberta
-            </span>
-
+            <span id="status-os" class="status aberta">Aberta</span>
         </div>
 
-
         <section class="box">
-
             <h2>Informações da OS</h2>
-
             <div class="informacoes">
-
                 <div>
                     <strong>Cliente</strong>
                     <p id="cliente-os">-</p>
                 </div>
-
                 <div>
                     <strong>Técnico</strong>
                     <p id="tecnico-os">-</p>
                 </div>
-
                 <div>
                     <strong>Equipamento</strong>
                     <p id="equipamento-os">-</p>
                 </div>
-
                 <div>
                     <strong>Prioridade</strong>
                     <p id="prioridade-os">-</p>
                 </div>
-
                 <div>
                     <strong>Data de abertura</strong>
                     <p id="data-os">-</p>
                 </div>
-
             </div>
-
         </section>
 
-
         <section class="box">
-
             <h2>Descrição do problema</h2>
-
-            <p id="descricao-os">
-                -
-            </p>
-
+            <p id="descricao-os">-</p>
         </section>
 
         <section class="box">
-
             <h2>Responder atendimento</h2>
 
             <form id="form-resposta">
                 <label for="status">Status da OS</label>
-                <select id="status" required>
+                <select id="status">
                     <option value="Aberta">Aberta</option>
                     <option value="Em execução">Em execução</option>
                     <option value="Concluída">Concluída</option>
@@ -128,205 +94,130 @@
                     <button type="button" id="cancelar-servico" class="botao-cancelar">Cancelar serviço</button>
                 </div>
 
-                <div id="mensagem-resposta" class="mensagem" aria-live="polite"></div>
+                <div id="mensagem-resposta" class="mensagem"></div>
             </form>
-
         </section>
 
     </main>
 
     <script>
-        const authStatus = sessionStorage.getItem('osSystemAuth');
-        if (authStatus !== 'true') {
+        // se não estiver logado volta pro login
+        if (sessionStorage.getItem('osSystemAuth') !== 'true') {
             window.location.href = 'index.html';
         }
 
-        function escapeHtml(value = '') {
-            return String(value)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/\"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
+        // pega o id que veio na url (detalhes.html?id=1)
+        const id = Number(new URLSearchParams(window.location.search).get('id'));
+        const ordens = JSON.parse(localStorage.getItem('ordens')) || [];
+        const ordem = ordens.find(function (item) {
+            return item.id === id;
+        });
 
-        function safeParse(key, fallback) {
-            try {
-                const valor = JSON.parse(localStorage.getItem(key) || 'null');
-                return valor ?? fallback;
-            } catch (erro) {
-                return fallback;
-            }
-        }
+        let acao = ''; // 'concluir' ou 'cancelar'
 
-        function statusClass(status) {
+        function classeStatus(status) {
             if (status === 'Em execução') return 'andamento';
             if (status === 'Concluída') return 'concluida';
             if (status === 'Cancelada') return 'cancelada';
             return 'aberta';
         }
 
-        function atualizarEstadoDiagnostico() {
-            const diagnosticoInput = document.getElementById('diagnostico');
-            const selectStatus = document.getElementById('status');
-            const concluirBtn = document.getElementById('concluir-atendimento');
-            const cancelarBtn = document.getElementById('cancelar-servico');
-            const fechada = ['Concluída', 'Cancelada'].includes(ordem?.status || '');
+        // trava os campos quando a ordem já foi encerrada
+        function travarSeEncerrada() {
+            const encerrada = ordem.status === 'Concluída' || ordem.status === 'Cancelada';
 
-            diagnosticoInput.disabled = fechada;
-            selectStatus.disabled = fechada;
-            concluirBtn.disabled = fechada;
-            cancelarBtn.disabled = fechada;
-
-            if (fechada) {
-                diagnosticoInput.style.opacity = '0.75';
-                diagnosticoInput.style.cursor = 'not-allowed';
-                selectStatus.style.opacity = '0.75';
-                selectStatus.style.cursor = 'not-allowed';
-            } else {
-                diagnosticoInput.style.opacity = '1';
-                diagnosticoInput.style.cursor = 'text';
-                selectStatus.style.opacity = '1';
-                selectStatus.style.cursor = 'default';
-            }
+            document.getElementById('diagnostico').disabled = encerrada;
+            document.getElementById('status').disabled = encerrada;
+            document.getElementById('concluir-atendimento').disabled = encerrada;
+            document.getElementById('cancelar-servico').disabled = encerrada;
         }
 
-        const params = new URLSearchParams(window.location.search);
-        const id = Number(params.get('id'));
-        const ordens = safeParse('ordens', []);
-        const ordem = ordens.find((item) => Number(item.id) === id);
-        let acaoConfirmada = null;
-
-        function abrirModalConfirmacao(acao) {
-            const modal = document.getElementById('modal-confirmacao');
-            const titulo = document.getElementById('titulo-modal');
-            const texto = document.getElementById('texto-modal');
-
-            acaoConfirmada = acao;
-            titulo.textContent = acao === 'concluir' ? 'Concluir atendimento' : 'Cancelar serviço';
-            texto.textContent = acao === 'concluir'
-                ? 'Ao concluir esta ordem, o diagnóstico será fechado e não poderá ser alterado. Deseja confirmar?'
-                : 'Ao cancelar esta ordem, o diagnóstico será fechado e não poderá ser alterado. Deseja confirmar?';
-
-            modal.classList.remove('hidden');
-        }
-
-        function fecharModalConfirmacao() {
-            const modal = document.getElementById('modal-confirmacao');
-            acaoConfirmada = null;
-            modal.classList.add('hidden');
-        }
-
-        function preencherDados() {
+        function mostrarDados() {
             if (!ordem) {
                 document.getElementById('titulo-os').textContent = 'OS não encontrada';
-                document.getElementById('cliente-os').textContent = 'Nenhuma ordem foi selecionada';
-                document.getElementById('tecnico-os').textContent = '-';
-                document.getElementById('equipamento-os').textContent = '-';
-                document.getElementById('prioridade-os').textContent = '-';
-                document.getElementById('data-os').textContent = '-';
                 document.getElementById('descricao-os').textContent = 'Volte para a lista e escolha uma ordem válida.';
-                document.getElementById('status-os').textContent = 'Indefinida';
-                document.getElementById('status-os').className = 'status aberta';
                 return;
             }
 
-            document.getElementById('titulo-os').textContent = `OS #${String(ordem.id).padStart(3, '0')}`;
+            document.getElementById('titulo-os').textContent = 'OS #' + String(ordem.id).padStart(3, '0');
             document.getElementById('cliente-os').textContent = ordem.cliente;
             document.getElementById('tecnico-os').textContent = ordem.tecnico;
             document.getElementById('equipamento-os').textContent = ordem.equipamento;
             document.getElementById('prioridade-os').textContent = ordem.prioridade;
-            document.getElementById('data-os').textContent = new Date().toLocaleDateString('pt-BR');
+            document.getElementById('data-os').textContent = ordem.data || '-';
             document.getElementById('descricao-os').textContent = ordem.descricao;
 
-            const statusTag = document.getElementById('status-os');
-            statusTag.textContent = ordem.status;
-            statusTag.className = `status ${statusClass(ordem.status)}`;
-
-            const selectStatus = document.getElementById('status');
-            selectStatus.value = ordem.status || 'Aberta';
-
-            const diagnosticoAtual = ordem.diagnostico || '';
-            document.getElementById('diagnostico').value = diagnosticoAtual;
-            atualizarEstadoDiagnostico();
-        }
-
-        function salvarResposta(statusFinal, textoFinal) {
-            if (!ordem) {
-                return;
-            }
-
-            ordem.status = statusFinal;
-            ordem.diagnostico = textoFinal;
-
-            const index = ordens.findIndex((item) => Number(item.id) === id);
-            if (index !== -1) {
-                ordens[index] = ordem;
-                localStorage.setItem('ordens', JSON.stringify(ordens));
-            }
-
-            const statusTag = document.getElementById('status-os');
-            statusTag.textContent = ordem.status;
-            statusTag.className = `status ${statusClass(ordem.status)}`;
+            document.getElementById('status-os').textContent = ordem.status;
+            document.getElementById('status-os').className = 'status ' + classeStatus(ordem.status);
 
             document.getElementById('status').value = ordem.status;
-            atualizarEstadoDiagnostico();
+            document.getElementById('diagnostico').value = ordem.diagnostico || '';
+
+            travarSeEncerrada();
+        }
+
+        function salvar(status, diagnostico) {
+            ordem.status = status;
+            ordem.diagnostico = diagnostico;
+            localStorage.setItem('ordens', JSON.stringify(ordens));
+
+            mostrarDados();
 
             const mensagem = document.getElementById('mensagem-resposta');
             mensagem.className = 'mensagem sucesso';
             mensagem.textContent = 'Resposta salva com sucesso!';
         }
 
+        function abrirModal(tipo) {
+            acao = tipo;
+
+            if (tipo === 'concluir') {
+                document.getElementById('titulo-modal').textContent = 'Concluir atendimento';
+            } else {
+                document.getElementById('titulo-modal').textContent = 'Cancelar serviço';
+            }
+
+            document.getElementById('texto-modal').textContent = 'Depois disso a ordem será encerrada e não poderá mais ser alterada. Deseja confirmar?';
+            document.getElementById('modal-confirmacao').classList.remove('hidden');
+        }
+
+        function fecharModal() {
+            acao = '';
+            document.getElementById('modal-confirmacao').classList.add('hidden');
+        }
+
         document.getElementById('form-resposta').addEventListener('submit', function (event) {
             event.preventDefault();
 
-            if (!ordem) {
-                return;
-            }
+            if (!ordem) return;
 
-            const novoStatus = document.getElementById('status').value;
-            const diagnostico = document.getElementById('diagnostico').value.trim();
-
-            if (!diagnostico) {
-                const mensagem = document.getElementById('mensagem-resposta');
-                mensagem.className = 'mensagem erro';
-                mensagem.textContent = 'Digite o diagnóstico ou a resposta do atendimento.';
-                return;
-            }
-
-            salvarResposta(novoStatus, diagnostico);
+            salvar(document.getElementById('status').value, document.getElementById('diagnostico').value.trim());
         });
 
         document.getElementById('concluir-atendimento').addEventListener('click', function () {
-            if (!ordem) return;
-            abrirModalConfirmacao('concluir');
+            if (ordem) abrirModal('concluir');
         });
 
         document.getElementById('cancelar-servico').addEventListener('click', function () {
-            if (!ordem) return;
-            abrirModalConfirmacao('cancelar');
+            if (ordem) abrirModal('cancelar');
         });
 
         document.getElementById('confirmar-acoes-modal').addEventListener('click', function () {
-            if (!ordem || !acaoConfirmada) return;
+            let diagnostico = document.getElementById('diagnostico').value.trim();
 
-            const resposta = document.getElementById('diagnostico').value.trim() || (
-                acaoConfirmada === 'concluir'
-                    ? 'Atendimento concluído com sucesso.'
-                    : 'Serviço cancelado pelo cliente ou pela equipe.'
-            );
+            if (acao === 'concluir') {
+                salvar('Concluída', diagnostico || 'Atendimento concluído com sucesso.');
+            } else {
+                salvar('Cancelada', diagnostico || 'Serviço cancelado.');
+            }
 
-            salvarResposta(acaoConfirmada === 'concluir' ? 'Concluída' : 'Cancelada', resposta);
-            fecharModalConfirmacao();
+            fecharModal();
         });
 
-        document.getElementById('cancelar-acoes-modal').addEventListener('click', function () {
-            fecharModalConfirmacao();
-        });
+        document.getElementById('cancelar-acoes-modal').addEventListener('click', fecharModal);
 
-        preencherDados();
+        mostrarDados();
     </script>
 
 </body>
-
 </html>

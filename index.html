@@ -1,93 +1,53 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Login - Sistema OS</title>
-
+    <title>Entrar - OS System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
-
 <body class="login">
 
     <div class="login-box">
-
         <h1>OS System</h1>
-
-        <p>Sistema de Ordem de Serviço</p>
+        <p>Controle de serviços</p>
 
         <form id="form-login">
-
             <label for="email">E-mail</label>
-            <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Digite seu e-mail"
-                required
-            >
+            <input type="email" id="email" placeholder="Seu e-mail" required>
 
             <label for="senha">Senha</label>
-            <input
-                type="password"
-                id="senha"
-                name="senha"
-                placeholder="Digite sua senha"
-                required
-            >
+            <input type="password" id="senha" placeholder="Sua senha" required>
 
-            <button type="submit" class="botao">
-                Continuar
-            </button>
+            <button type="submit" class="botao">Entrar</button>
 
-            <div id="mensagem-login" class="mensagem" aria-live="polite"></div>
-
+            <div id="mensagem-login" class="mensagem"></div>
         </form>
-
     </div>
 
     <script>
-        const formLogin = document.getElementById('form-login');
-        const mensagemLogin = document.getElementById('mensagem-login');
+        const form = document.getElementById('form-login');
+        const mensagem = document.getElementById('mensagem-login');
 
-        function mostrarMensagemLogin(tipo, texto) {
-            mensagemLogin.className = `mensagem ${tipo}`;
-            mensagemLogin.textContent = texto;
-        }
-
-        function validarEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-        }
-
-        formLogin.addEventListener('submit', function (event) {
+        form.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            const email = document.getElementById('email').value.trim();
-            const senha = document.getElementById('senha').value.trim();
-
-            if (!validarEmail(email)) {
-                mostrarMensagemLogin('erro', 'Digite um e-mail válido, por exemplo: seunome@gmail.com');
-                return;
-            }
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
 
             if (senha.length < 4) {
-                mostrarMensagemLogin('erro', 'Digite uma senha com pelo menos 4 caracteres.');
+                mensagem.className = 'mensagem erro';
+                mensagem.textContent = 'A senha precisa ter pelo menos 4 caracteres.';
                 return;
             }
 
+            // guarda o login na sessão
             sessionStorage.setItem('osSystemAuth', 'true');
             sessionStorage.setItem('osSystemUser', email.toLowerCase());
-            mostrarMensagemLogin('sucesso', 'Login válido! Redirecionando...');
-
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 600);
+            window.location.href = 'dashboard.html';
         });
     </script>
 
 </body>
-
 </html>

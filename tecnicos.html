@@ -1,22 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Técnicos - OS System</title>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
-
 <body>
 
     <header>
-
         <h2>OS System</h2>
-
         <nav>
             <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
             <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
@@ -24,237 +18,122 @@
             <a href="tecnicos.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span><span>Técnicos</span></a>
             <a href="clientes.html"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Cliente</span></a>
         </nav>
-
     </header>
 
-
     <main>
-
         <h1>Cadastro de Técnicos</h1>
-
-        <p>
-            Cadastre e consulte os técnicos do sistema.
-        </p>
-
+        <p>Cadastre e consulte os técnicos do sistema.</p>
 
         <section class="box">
-
             <form id="form-tecnico">
 
-                <label for="nome">
-                    Nome completo
-                </label>
+                <label for="nome">Nome completo</label>
+                <input type="text" id="nome" placeholder="Digite o nome" required>
 
-                <input
-                    type="text"
-                    id="nome"
-                    name="nome"
-                    placeholder="Digite o nome"
-                    required
-                >
+                <label for="email">E-mail</label>
+                <input type="email" id="email" placeholder="seunome@gmail.com" required>
 
+                <label for="telefone">Telefone</label>
+                <input type="text" id="telefone" placeholder="(11) 99999-9999" required>
 
-                <label for="email">
-                    E-mail
-                </label>
+                <label for="especialidade">Especialidade</label>
+                <input type="text" id="especialidade" placeholder="Ex: Informática" required>
 
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="seunome@gmail.com"
-                    required
-                >
+                <button type="submit">Salvar técnico</button>
 
-
-                <label for="telefone">
-                    Telefone
-                </label>
-
-                <input
-                    type="text"
-                    id="telefone"
-                    name="telefone"
-                    placeholder="(11) 99999-9999"
-                    required
-                >
-
-
-                <label for="especialidade">
-                    Especialidade
-                </label>
-
-                <input
-                    type="text"
-                    id="especialidade"
-                    name="especialidade"
-                    placeholder="Ex: Informática"
-                    required
-                >
-
-
-                <button type="submit">
-                    Salvar técnico
-                </button>
-
-                <div id="mensagem-tecnico" class="mensagem" aria-live="polite"></div>
-
+                <div id="mensagem-tecnico" class="mensagem"></div>
             </form>
-
         </section>
 
-
         <section class="box">
-
             <h2>Técnicos cadastrados</h2>
-
             <table>
-
                 <thead>
                     <tr>
-
                         <th>Nome</th>
                         <th>E-mail</th>
                         <th>Especialidade</th>
                         <th>Telefone</th>
-
                     </tr>
                 </thead>
-
                 <tbody id="lista-tecnicos"></tbody>
-
             </table>
-
         </section>
-
     </main>
 
     <script>
-        const authStatus = sessionStorage.getItem('osSystemAuth');
-        if (authStatus !== 'true') {
+        // se não estiver logado volta pro login
+        if (sessionStorage.getItem('osSystemAuth') !== 'true') {
             window.location.href = 'index.html';
         }
 
-        const formTecnico = document.getElementById('form-tecnico');
-        const mensagemTecnico = document.getElementById('mensagem-tecnico');
-        const listaTecnicos = document.getElementById('lista-tecnicos');
+        const form = document.getElementById('form-tecnico');
+        const mensagem = document.getElementById('mensagem-tecnico');
+        const tabela = document.getElementById('lista-tecnicos');
 
-        function escapeHtml(value = '') {
-            return String(value)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/\"/g, '&quot;')
-                .replace(/'/g, '&#039;');
+        function mostrarMensagem(tipo, texto) {
+            mensagem.className = 'mensagem ' + tipo;
+            mensagem.textContent = texto;
         }
 
-        function safeParse(key, fallback) {
-            try {
-                const valor = JSON.parse(localStorage.getItem(key) || 'null');
-                return valor ?? fallback;
-            } catch (erro) {
-                return fallback;
-            }
-        }
+        function mostrarTecnicos() {
+            const tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
+            let linhas = '';
 
-        function limparTexto(value) {
-            return String(value || '').replace(/\s+/g, ' ').trim();
-        }
-
-        function mostrarMensagemTecnico(tipo, texto) {
-            mensagemTecnico.className = `mensagem ${tipo}`;
-            mensagemTecnico.textContent = texto;
-        }
-
-        function emailValido(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-        }
-
-        function telefoneValido(telefone) {
-            const numeros = telefone.replace(/\D/g, '');
-            return numeros.length >= 10 && numeros.length <= 11;
-        }
-
-        function validarTecnico(dados) {
-            const erros = [];
-
-            if (dados.nome.length < 2) {
-                erros.push('Digite um nome válido.');
-            }
-
-            if (!emailValido(dados.email)) {
-                erros.push('Digite um e-mail válido, por exemplo: seunome@gmail.com');
-            }
-
-            if (!telefoneValido(dados.telefone)) {
-                erros.push('Digite um telefone com 10 a 11 números, por exemplo: (11) 99999-9999');
-            }
-
-            if (dados.especialidade.length < 2) {
-                erros.push('Informe a especialidade do técnico.');
-            }
-
-            return erros;
-        }
-
-        function renderTecnicos() {
-            const tecnicos = safeParse('tecnicos', []);
-
-            if (!tecnicos.length) {
-                listaTecnicos.innerHTML = `
+            for (let i = 0; i < tecnicos.length; i++) {
+                linhas += `
                     <tr>
-                        <td colspan="4" class="lista-vazia">Nenhum técnico cadastrado.</td>
-                    </tr>
-                `;
-                return;
+                        <td>${tecnicos[i].nome}</td>
+                        <td>${tecnicos[i].email}</td>
+                        <td>${tecnicos[i].especialidade}</td>
+                        <td>${tecnicos[i].telefone}</td>
+                    </tr>`;
             }
 
-            listaTecnicos.innerHTML = tecnicos.map((tecnico) => `
-                <tr>
-                    <td>${escapeHtml(tecnico.nome)}</td>
-                    <td>${escapeHtml(tecnico.email)}</td>
-                    <td>${escapeHtml(tecnico.especialidade)}</td>
-                    <td>${escapeHtml(tecnico.telefone)}</td>
-                </tr>
-            `).join('');
+            if (linhas === '') {
+                linhas = '<tr><td colspan="4" class="lista-vazia">Nenhum técnico cadastrado.</td></tr>';
+            }
+
+            tabela.innerHTML = linhas;
         }
 
-        formTecnico.addEventListener('submit', function (event) {
+        form.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            const dados = {
-                nome: limparTexto(document.getElementById('nome').value),
+            const tecnico = {
+                nome: document.getElementById('nome').value.trim(),
                 email: document.getElementById('email').value.trim().toLowerCase(),
-                telefone: limparTexto(document.getElementById('telefone').value),
-                especialidade: limparTexto(document.getElementById('especialidade').value)
+                telefone: document.getElementById('telefone').value.trim(),
+                especialidade: document.getElementById('especialidade').value.trim()
             };
 
-            const erros = validarTecnico(dados);
-
-            if (erros.length > 0) {
-                mostrarMensagemTecnico('erro', erros.join(' '));
+            // telefone precisa ter 10 ou 11 números
+            const numeros = tecnico.telefone.replace(/\D/g, '');
+            if (numeros.length < 10 || numeros.length > 11) {
+                mostrarMensagem('erro', 'Digite um telefone com 10 ou 11 números. Ex: (11) 99999-9999');
                 return;
             }
 
-            const tecnicos = safeParse('tecnicos', []);
-            const jaExiste = tecnicos.some((tecnico) => tecnico.email && tecnico.email.toLowerCase() === dados.email.toLowerCase());
+            const tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
 
-            if (jaExiste) {
-                mostrarMensagemTecnico('erro', 'Este e-mail já está cadastrado para outro técnico.');
-                return;
+            // não deixa repetir o e-mail
+            for (let i = 0; i < tecnicos.length; i++) {
+                if (tecnicos[i].email === tecnico.email) {
+                    mostrarMensagem('erro', 'Este e-mail já está cadastrado.');
+                    return;
+                }
             }
 
-            tecnicos.push(dados);
+            tecnicos.push(tecnico);
             localStorage.setItem('tecnicos', JSON.stringify(tecnicos));
 
-            formTecnico.reset();
-            renderTecnicos();
-            mostrarMensagemTecnico('sucesso', 'Técnico cadastrado com sucesso!');
+            form.reset();
+            mostrarTecnicos();
+            mostrarMensagem('sucesso', 'Técnico cadastrado com sucesso!');
         });
 
-        renderTecnicos();
+        mostrarTecnicos();
     </script>
 
 </body>
-
 </html>

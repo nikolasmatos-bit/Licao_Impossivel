@@ -1,173 +1,110 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Ordens de Serviço - OS System</title>
-
+    <title>Serviços - OS System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
 </head>
-
 <body>
 
     <header>
-
         <h2>OS System</h2>
-
         <nav>
-            <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
-            <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
-            <a href="lista.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Ordens</span></a>
+            <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Painel</span></a>
+            <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Novo serviço</span></a>
+            <a href="lista.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Serviços</span></a>
             <a href="tecnicos.html"><span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span><span>Técnicos</span></a>
-            <a href="clientes.html"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Cliente</span></a>
+            <a href="clientes.html"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Clientes</span></a>
         </nav>
-
     </header>
 
-
     <main>
-
         <div class="topo">
-
             <div>
-
-                <h1>Ordens de Serviço</h1>
-
-                <p>
-                    Consulte as ordens cadastradas.
-                </p>
-
+                <h1>Serviços</h1>
+                <p>Veja os serviços cadastrados.</p>
             </div>
-
-            <a href="cadastros.html" class="botao">
-                + Nova OS
-            </a>
-
+            <a href="cadastros.html" class="botao">+ Novo serviço</a>
         </div>
 
-
-        <input
-            id="pesquisa-ordens"
-            class="pesquisa"
-            type="text"
-            placeholder="Pesquisar ordem de serviço..."
-        >
-
+        <input id="pesquisa-ordens" class="pesquisa" type="text" placeholder="Buscar serviço...">
 
         <section class="box tabela">
-
             <table>
-
                 <thead>
                     <tr>
-
-                        <th>OS</th>
+                        <th>Nº</th>
                         <th>Cliente</th>
                         <th>Técnico</th>
-                        <th>Prioridade</th>
-                        <th>Status</th>
-                        <th>Ação</th>
-
+                        <th>Urgência</th>
+                        <th>Situação</th>
+                        <th>Ver</th>
                     </tr>
                 </thead>
-
                 <tbody id="lista-ordens"></tbody>
-
             </table>
-
         </section>
-
     </main>
 
     <script>
-        const authStatus = sessionStorage.getItem('osSystemAuth');
-        if (authStatus !== 'true') {
+        // se não estiver logado volta pro login
+        if (sessionStorage.getItem('osSystemAuth') !== 'true') {
             window.location.href = 'index.html';
         }
 
-        const listaOrdens = document.getElementById('lista-ordens');
+        const tabela = document.getElementById('lista-ordens');
         const pesquisa = document.getElementById('pesquisa-ordens');
 
-        function escapeHtml(value = '') {
-            return String(value)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/\"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        function safeParse(key, fallback) {
-            try {
-                const valor = JSON.parse(localStorage.getItem(key) || 'null');
-                return valor ?? fallback;
-            } catch (erro) {
-                return fallback;
-            }
-        }
-
-        function statusClass(status) {
+        function classeStatus(status) {
             if (status === 'Em execução') return 'andamento';
             if (status === 'Concluída') return 'concluida';
             if (status === 'Cancelada') return 'cancelada';
             return 'aberta';
         }
 
-        function renderOrdens() {
-            const ordens = safeParse('ordens', []);
-            const termo = (pesquisa ? pesquisa.value : '').trim().toLowerCase();
+        function mostrarOrdens() {
+            const ordens = JSON.parse(localStorage.getItem('ordens')) || [];
+            const termo = pesquisa.value.toLowerCase();
+            let linhas = '';
 
-            const ordensFiltradas = !termo
-                ? ordens
-                : ordens.filter((ordem) => {
-                    const texto = `${ordem.cliente} ${ordem.tecnico} ${ordem.equipamento} ${ordem.prioridade} ${ordem.status}`.toLowerCase();
-                    return texto.includes(termo);
-                });
+            for (let i = 0; i < ordens.length; i++) {
+                const o = ordens[i];
 
-            if (!ordensFiltradas.length) {
-                listaOrdens.innerHTML = `
+                // filtro da pesquisa
+                const texto = (o.cliente + ' ' + o.tecnico + ' ' + o.equipamento + ' ' + o.prioridade + ' ' + o.status).toLowerCase();
+                if (!texto.includes(termo)) {
+                    continue;
+                }
+
+                // ordem concluída ou cancelada não abre mais
+                let acao = '<a href="detalhes.html?id=' + o.id + '">Abrir</a>';
+                if (o.status === 'Concluída' || o.status === 'Cancelada') {
+                    acao = '<span class="acao-fechada">Finalizada</span>';
+                }
+
+                linhas += `
                     <tr>
-                        <td colspan="6" class="lista-vazia">Nenhuma ordem cadastrada ou encontrada.</td>
-                    </tr>
-                `;
-                return;
+                        <td>#${String(o.id).padStart(3, '0')}</td>
+                        <td>${o.cliente}</td>
+                        <td>${o.tecnico}</td>
+                        <td>${o.prioridade}</td>
+                        <td><span class="status ${classeStatus(o.status)}">${o.status}</span></td>
+                        <td>${acao}</td>
+                    </tr>`;
             }
 
-            listaOrdens.innerHTML = ordensFiltradas.map((ordem) => {
-                const statusFinal = ['Concluída', 'Cancelada'].includes(ordem.status);
-                const linkVisualizacao = statusFinal
-                    ? '<span class="acao-fechada">Encerrada</span>'
-                    : `<a href="detalhes.html?id=${ordem.id}">Visualizar</a>`;
+            if (linhas === '') {
+                linhas = '<tr><td colspan="6" class="lista-vazia">Nenhum serviço encontrado.</td></tr>';
+            }
 
-                return `
-                    <tr>
-                        <td>#${String(ordem.id).padStart(3, '0')}</td>
-                        <td>${escapeHtml(ordem.cliente)}</td>
-                        <td>${escapeHtml(ordem.tecnico)}</td>
-                        <td>${escapeHtml(ordem.prioridade)}</td>
-                        <td>
-                            <span class="status ${statusClass(ordem.status)}">
-                                ${escapeHtml(ordem.status)}
-                            </span>
-                        </td>
-                        <td>
-                            ${linkVisualizacao}
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            tabela.innerHTML = linhas;
         }
 
-        if (pesquisa) {
-            pesquisa.addEventListener('input', renderOrdens);
-        }
-
-        renderOrdens();
+        pesquisa.addEventListener('input', mostrarOrdens);
+        mostrarOrdens();
     </script>
 
 </body>
-
 </html>
