@@ -26,7 +26,6 @@
 
         <section class="box">
             <form id="form-tecnico">
-
                 <label for="nome">Nome completo</label>
                 <input type="text" id="nome" placeholder="Digite o nome" required>
 
@@ -62,7 +61,6 @@
     </main>
 
     <script>
-        // se não estiver logado volta pro login
         if (sessionStorage.getItem('osSystemAuth') !== 'true') {
             window.location.href = 'index.html';
         }
@@ -76,25 +74,28 @@
             mensagem.textContent = texto;
         }
 
-        function mostrarTecnicos() {
-            const tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
-            let linhas = '';
-
-            for (let i = 0; i < tecnicos.length; i++) {
-                linhas += `
-                    <tr>
-                        <td>${tecnicos[i].nome}</td>
-                        <td>${tecnicos[i].email}</td>
-                        <td>${tecnicos[i].especialidade}</td>
-                        <td>${tecnicos[i].telefone}</td>
-                    </tr>`;
-            }
-
-            if (linhas === '') {
-                linhas = '<tr><td colspan="4" class="lista-vazia">Nenhum técnico cadastrado.</td></tr>';
-            }
-
-            tabela.innerHTML = linhas;
+        function carregarTecnicos() {
+            fetch('http://localhost:3000/api/tecnicos/lista')
+                .then(r => r.json())
+                .then(tecnicos => {
+                    let linhas = '';
+                    tecnicos.forEach(t => {
+                        linhas += `
+                            <tr>
+                                <td>${t.nome}</td>
+                                <td>${t.email}</td>
+                                <td>${t.especialidade}</td>
+                                <td>${t.telefone}</td>
+                            </tr>`;
+                    });
+                    if (linhas === '') {
+                        linhas = '<tr><td colspan="4" class="lista-vazia">Nenhum técnico cadastrado.</td></tr>';
+                    }
+                    tabela.innerHTML = linhas;
+                })
+                .catch(() => {
+                    tabela.innerHTML = '<tr><td colspan="4" class="lista-vazia">Erro ao carregar técnicos.</td></tr>';
+                });
         }
 
         form.addEventListener('submit', function (event) {
@@ -107,32 +108,31 @@
                 especialidade: document.getElementById('especialidade').value.trim()
             };
 
-            // telefone precisa ter 10 ou 11 números
             const numeros = tecnico.telefone.replace(/\D/g, '');
             if (numeros.length < 10 || numeros.length > 11) {
-                mostrarMensagem('erro', 'Digite um telefone com 10 ou 11 números. Ex: (11) 99999-9999');
+                mostrarMensagem('erro', 'Digite um telefone com 10 ou 11 números.');
                 return;
             }
 
-            const tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
-
-            // não deixa repetir o e-mail
-            for (let i = 0; i < tecnicos.length; i++) {
-                if (tecnicos[i].email === tecnico.email) {
-                    mostrarMensagem('erro', 'Este e-mail já está cadastrado.');
+            fetch('http://localhost:3000/api/tecnicos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(tecnico)
+            })
+            .then(r => r.json())
+            .then(dados => {
+                if (dados.erro) {
+                    mostrarMensagem('erro', dados.erro);
                     return;
                 }
-            }
-
-            tecnicos.push(tecnico);
-            localStorage.setItem('tecnicos', JSON.stringify(tecnicos));
-
-            form.reset();
-            mostrarTecnicos();
-            mostrarMensagem('sucesso', 'Técnico cadastrado com sucesso!');
+                form.reset();
+                carregarTecnicos();
+                mostrarMensagem('sucesso', 'Técnico cadastrado com sucesso!');
+            })
+            .catch(() => mostrarMensagem('erro', 'Servidor offline.'));
         });
 
-        mostrarTecnicos();
+        carregarTecnicos();
     </script>
 
 </body>

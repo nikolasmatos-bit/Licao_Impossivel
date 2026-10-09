@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-
     <header>
         <h2>OS System</h2>
         <nav>
@@ -24,7 +23,7 @@
         <div class="topo">
             <div>
                 <h1>Serviços</h1>
-                <p>Veja os serviços cadastrados.</p>
+                <p>Veja os serviços cadastrados no banco de dados.</p>
             </div>
             <a href="cadastros.html" class="botao">+ Novo serviço</a>
         </div>
@@ -49,13 +48,13 @@
     </main>
 
     <script>
-        // se não estiver logado volta pro login
         if (sessionStorage.getItem('osSystemAuth') !== 'true') {
             window.location.href = 'index.html';
         }
 
         const tabela = document.getElementById('lista-ordens');
         const pesquisa = document.getElementById('pesquisa-ordens');
+        let todasOrdens = [];
 
         function classeStatus(status) {
             if (status === 'Em execução') return 'andamento';
@@ -64,21 +63,15 @@
             return 'aberta';
         }
 
-        function mostrarOrdens() {
-            const ordens = JSON.parse(localStorage.getItem('ordens')) || [];
+        function renderizar() {
             const termo = pesquisa.value.toLowerCase();
             let linhas = '';
 
-            for (let i = 0; i < ordens.length; i++) {
-                const o = ordens[i];
+            for (let i = 0; i < todasOrdens.length; i++) {
+                const o = todasOrdens[i];
+                const texto = (o.cliente + ' ' + (o.tecnico || '') + ' ' + o.equipamento + ' ' + o.prioridade + ' ' + o.status).toLowerCase();
+                if (!texto.includes(termo)) continue;
 
-                // filtro da pesquisa
-                const texto = (o.cliente + ' ' + o.tecnico + ' ' + o.equipamento + ' ' + o.prioridade + ' ' + o.status).toLowerCase();
-                if (!texto.includes(termo)) {
-                    continue;
-                }
-
-                // ordem concluída ou cancelada não abre mais
                 let acao = '<a href="detalhes.html?id=' + o.id + '">Abrir</a>';
                 if (o.status === 'Concluída' || o.status === 'Cancelada') {
                     acao = '<span class="acao-fechada">Finalizada</span>';
@@ -88,7 +81,7 @@
                     <tr>
                         <td>#${String(o.id).padStart(3, '0')}</td>
                         <td>${o.cliente}</td>
-                        <td>${o.tecnico}</td>
+                        <td>${o.tecnico || '—'}</td>
                         <td>${o.prioridade}</td>
                         <td><span class="status ${classeStatus(o.status)}">${o.status}</span></td>
                         <td>${acao}</td>
@@ -98,13 +91,20 @@
             if (linhas === '') {
                 linhas = '<tr><td colspan="6" class="lista-vazia">Nenhum serviço encontrado.</td></tr>';
             }
-
             tabela.innerHTML = linhas;
         }
 
-        pesquisa.addEventListener('input', mostrarOrdens);
-        mostrarOrdens();
-    </script>
+        fetch('http://localhost:3000/api/ordens')
+            .then(r => r.json())
+            .then(dados => {
+                todasOrdens = dados;
+                renderizar();
+            })
+            .catch(() => {
+                tabela.innerHTML = '<tr><td colspan="6" class="lista-vazia">Erro ao conectar no servidor. O Node está rodando?</td></tr>';
+            });
 
+        pesquisa.addEventListener('input', renderizar);
+    </script>
 </body>
 </html>

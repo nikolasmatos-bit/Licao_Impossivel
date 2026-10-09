@@ -21,24 +21,24 @@
 
     <main>
         <h1>Dashboard</h1>
-        <p>Visão geral do sistema · Dados de demonstração com nomes fictícios</p>
+        <p>Visão geral do sistema · Dados vindos do banco de dados</p>
 
         <section class="cards">
             <div class="card">
                 <h3>Total de OS</h3>
-                <strong>6</strong>
+                <strong id="total-os">0</strong>
             </div>
             <div class="card">
                 <h3>OS Abertas</h3>
-                <strong>2</strong>
+                <strong id="os-abertas">0</strong>
             </div>
             <div class="card">
                 <h3>Em execução</h3>
-                <strong>2</strong>
+                <strong id="em-execucao">0</strong>
             </div>
             <div class="card">
                 <h3>Concluídas</h3>
-                <strong>2</strong>
+                <strong id="concluidas">0</strong>
             </div>
         </section>
 
@@ -52,33 +52,60 @@
                         <th>Status</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>#108</td>
-                        <td>Mariana Costa</td>
-                        <td><span class="status aberta">Aberta</span></td>
-                    </tr>
-                    <tr>
-                        <td>#107</td>
-                        <td>Rafael Nogueira</td>
-                        <td><span class="status andamento">Em execução</span></td>
-                    </tr>
-                    <tr>
-                        <td>#106</td>
-                        <td>Beatriz Almeida</td>
-                        <td><span class="status concluida">Concluída</span></td>
-                    </tr>
-                </tbody>
+                <tbody id="ordens-recentes"></tbody>
             </table>
         </section>
     </main>
 
     <script>
-        // se não estiver logado volta pro login
         if (sessionStorage.getItem('osSystemAuth') !== 'true') {
             window.location.href = 'index.html';
         }
 
+        function classeStatus(status) {
+            if (status === 'Em execução') return 'andamento';
+            if (status === 'Concluída') return 'concluida';
+            if (status === 'Cancelada') return 'cancelada';
+            return 'aberta';
+        }
+
+        // Buscar contadores
+        fetch('http://localhost:3000/api/dashboard')
+            .then(r => r.json())
+            .then(d => {
+                document.getElementById('total-os').textContent = d.total_os || 0;
+                document.getElementById('os-abertas').textContent = d.os_abertas || 0;
+                document.getElementById('em-execucao').textContent = d.em_execucao || 0;
+                document.getElementById('concluidas').textContent = d.concluidas || 0;
+            })
+            .catch(() => console.warn('Erro no dashboard'));
+
+        // Buscar ordens recentes
+        fetch('http://localhost:3000/api/ordens')
+            .then(r => r.json())
+            .then(ordens => {
+                const tbody = document.getElementById('ordens-recentes');
+                const recentes = ordens.slice(0, 3);
+                let html = '';
+
+                recentes.forEach(o => {
+                    html += `
+                        <tr>
+                            <td>#${String(o.id).padStart(3, '0')}</td>
+                            <td>${o.cliente}</td>
+                            <td><span class="status ${classeStatus(o.status)}">${o.status}</span></td>
+                        </tr>`;
+                });
+
+                if (html === '') {
+                    html = '<tr><td colspan="3" class="lista-vazia">Nenhuma OS cadastrada.</td></tr>';
+                }
+                tbody.innerHTML = html;
+            })
+            .catch(() => {
+                document.getElementById('ordens-recentes').innerHTML =
+                    '<tr><td colspan="3" class="lista-vazia">Erro ao conectar no servidor.</td></tr>';
+            });
     </script>
 
 </body>

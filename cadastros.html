@@ -56,7 +56,6 @@
     </main>
 
     <script>
-        // se não estiver logado volta pro login
         if (sessionStorage.getItem('osSystemAuth') !== 'true') {
             window.location.href = 'index.html';
         }
@@ -69,72 +68,62 @@
             mensagem.textContent = texto;
         }
 
-        // coloca os técnicos na lista de sugestões
-        function carregarTecnicos() {
-            let tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
+        // Carrega técnicos do banco
+        fetch('http://localhost:3000/api/tecnicos')
+            .then(r => r.json())
+            .then(tecnicos => {
+                let opcoes = '';
+                tecnicos.forEach(t => {
+                    opcoes += '<option value="' + t.nome + '"></option>';
+                });
+                document.getElementById('lista-tecnicos').innerHTML = opcoes;
+            })
+            .catch(() => console.warn('Erro ao carregar técnicos.'));
 
-            // se não tiver nenhum, cria dois de exemplo
-            if (tecnicos.length === 0) {
-                tecnicos = [
-                    { nome: 'Marcos Ribeiro', email: 'marcos.ribeiro@os.com', telefone: '(11) 95555-4444', especialidade: 'Suporte Técnico' },
-                    { nome: 'Ana Souza', email: 'ana.souza@os.com', telefone: '(11) 94444-5555', especialidade: 'Manutenção' }
-                ];
-                localStorage.setItem('tecnicos', JSON.stringify(tecnicos));
-            }
-
-            let opcoes = '';
-            for (let i = 0; i < tecnicos.length; i++) {
-                opcoes += '<option value="' + tecnicos[i].nome + '"></option>';
-            }
-            document.getElementById('lista-tecnicos').innerHTML = opcoes;
-        }
-
-        // abre o google pesquisando a descrição do problema
+        // Buscar no Google
         document.getElementById('buscar-solucao').addEventListener('click', function () {
             const descricao = document.getElementById('descricao').value.trim();
-
             if (descricao === '') {
                 mostrarMensagem('erro', 'Digite o problema antes de buscar.');
                 return;
             }
-
             window.open('https://www.google.com/search?q=' + encodeURIComponent(descricao), '_blank');
         });
 
+        // Salvar OS no banco
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
             const descricao = document.getElementById('descricao').value.trim();
-
             if (descricao.length < 10) {
                 mostrarMensagem('erro', 'Conte o problema com pelo menos 10 caracteres.');
                 return;
             }
 
-            const ordens = JSON.parse(localStorage.getItem('ordens')) || [];
-
             const novaOrdem = {
-                id: ordens.length + 1,
-                cliente: document.getElementById('cliente').value.trim(),
+                cliente_nome: document.getElementById('cliente').value.trim(),
                 equipamento: document.getElementById('equipamento').value.trim(),
-                tecnico: document.getElementById('tecnico').value.trim(),
+                tecnico_nome: document.getElementById('tecnico').value.trim(),
                 prioridade: document.getElementById('prioridade').value,
-                descricao: descricao,
-                status: 'Aberta',
-                data: new Date().toLocaleDateString('pt-BR')
+                descricao: descricao
             };
 
-            ordens.push(novaOrdem);
-            localStorage.setItem('ordens', JSON.stringify(ordens));
-
-            mostrarMensagem('sucesso', 'Serviço salvo com sucesso!');
-
-            setTimeout(function () {
-                window.location.href = 'lista.html';
-            }, 800);
+            fetch('http://localhost:3000/api/ordens', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(novaOrdem)
+            })
+            .then(r => r.json())
+            .then(dados => {
+                if (dados.erro) {
+                    mostrarMensagem('erro', 'Erro: ' + dados.erro);
+                    return;
+                }
+                mostrarMensagem('sucesso', 'Serviço salvo no banco de dados!');
+                setTimeout(() => { window.location.href = 'lista.html'; }, 800);
+            })
+            .catch(() => mostrarMensagem('erro', 'Servidor offline. O Node está rodando?'));
         });
-
-        carregarTecnicos();
     </script>
 
 </body>
