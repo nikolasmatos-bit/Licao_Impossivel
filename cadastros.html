@@ -6,11 +6,12 @@
     <title>Novo serviço - OS System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
+    <script src="/js/auth.js" defer></script>
 </head>
 <body>
 
     <header>
-        <h2>OS System</h2>
+        <h2>Ordem Clara</h2>
         <nav>
             <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Painel</span></a>
             <a href="cadastros.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Novo serviço</span></a>
@@ -29,6 +30,12 @@
 
                 <label for="cliente">Quem é o cliente?</label>
                 <input type="text" id="cliente" placeholder="Nome do cliente" required>
+
+                <label for="cliente-telefone">Telefone / WhatsApp do cliente</label>
+                <input type="tel" id="cliente-telefone" placeholder="(11) 99999-9999" autocomplete="tel">
+
+                <label for="cliente-email">E-mail do cliente</label>
+                <input type="email" id="cliente-email" placeholder="cliente@email.com" autocomplete="email">
 
                 <label for="equipamento">Qual é o aparelho?</label>
                 <input type="text" id="equipamento" placeholder="Ex: Notebook" required>
@@ -56,10 +63,6 @@
     </main>
 
     <script>
-        if (sessionStorage.getItem('osSystemAuth') !== 'true') {
-            window.location.href = 'index.html';
-        }
-
         const form = document.getElementById('form-os');
         const mensagem = document.getElementById('mensagem-os');
 
@@ -69,7 +72,7 @@
         }
 
         // Carrega técnicos do banco
-        fetch('http://localhost:3000/api/tecnicos')
+        fetch('/api/tecnicos')
             .then(r => r.json())
             .then(tecnicos => {
                 let opcoes = '';
@@ -102,13 +105,21 @@
 
             const novaOrdem = {
                 cliente_nome: document.getElementById('cliente').value.trim(),
+                cliente_telefone: document.getElementById('cliente-telefone').value.trim(),
+                cliente_email: document.getElementById('cliente-email').value.trim(),
                 equipamento: document.getElementById('equipamento').value.trim(),
                 tecnico_nome: document.getElementById('tecnico').value.trim(),
                 prioridade: document.getElementById('prioridade').value,
                 descricao: descricao
             };
 
-            fetch('http://localhost:3000/api/ordens', {
+            const numerosTelefone = novaOrdem.cliente_telefone.replace(/\D/g, '');
+            if (numerosTelefone && (numerosTelefone.length < 10 || numerosTelefone.length > 13)) {
+                mostrarMensagem('erro', 'Digite um telefone válido com DDD.');
+                return;
+            }
+
+            fetch('/api/ordens', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(novaOrdem)

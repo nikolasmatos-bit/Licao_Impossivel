@@ -3,51 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar - OS System</title>
+    <title>Entrar - Ordem Clara</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
     
 </head>
 <body class="login">
+    <main class="auth-shell">
+        <section class="auth-story">
+            <a class="auth-brand" href="/index.html"><span class="brand-mark">OS</span><span>Ordem<span class="brand-light"> Clara</span></span></a>
+            <div class="auth-story-copy">
+                <p class="eyebrow">OPERAÇÃO DE SERVIÇO</p>
+                <h1>Atendimento com contexto. Em cada etapa.</h1>
+                <p>Uma visão conectada para quem atende, quem administra e quem acompanha o serviço.</p>
+            </div>
+            <div class="auth-story-footer"><span class="live-indicator">Banco local protegido</span><span>Workspace de atendimento</span></div>
+        </section>
 
-    <div class="login-box">
-        <h1>OS System</h1>
-        <p>Controle de serviços</p>
+        <section class="auth-panel">
+            <div class="auth-panel-heading">
+                <p class="eyebrow" id="auth-kicker">BEM-VINDO DE VOLTA</p>
+                <h2 id="auth-title">Acesse sua conta</h2>
+                <p id="auth-description">Entre com o e-mail e a senha cadastrados pela administração.</p>
+            </div>
 
-        <form id="form-login">
-            <label for="email">E-mail</label>
-            <input type="email" id="email" placeholder="Seu e-mail" required>
+            <form id="form-login" class="auth-form">
+                <label for="email">E-mail de trabalho</label>
+                <input type="email" id="email" name="email" autocomplete="username" placeholder="nome@empresa.com" required>
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" autocomplete="current-password" placeholder="Sua senha" required>
+                <button type="submit" class="button button-primary"><span>Entrar no workspace</span><i class="fa-solid fa-arrow-right"></i></button>
+                <div id="mensagem-login" class="mensagem" role="status"></div>
+            </form>
 
-            <label for="senha">Senha</label>
-            <input type="password" id="senha" placeholder="Sua senha" required>
+            <form id="form-setup" class="auth-form" hidden>
+                <label for="admin-nome">Seu nome</label>
+                <input type="text" id="admin-nome" autocomplete="name" placeholder="Nome de quem administra" required>
+                <label for="admin-email">E-mail de administração</label>
+                <input type="email" id="admin-email" autocomplete="email" placeholder="admin@empresa.com" required>
+                <label for="admin-senha">Crie uma senha forte</label>
+                <input type="password" id="admin-senha" autocomplete="new-password" minlength="12" placeholder="Mínimo de 12 caracteres" required>
+                <button type="submit" class="button button-primary"><span>Criar conta administradora</span><i class="fa-solid fa-arrow-right"></i></button>
+                <div id="mensagem-setup" class="mensagem" role="status"></div>
+            </form>
 
-            <button type="submit" class="botao">Entrar</button>
-
-            <div id="mensagem-login" class="mensagem"></div>
-        </form>
-    </div>
+            <div class="auth-panel-footer"><i class="fa-solid fa-shield-halved"></i><span>A sessão é protegida pelo servidor e expira após 8 horas.</span></div>
+        </section>
+    </main>
 
     <script>
-        const form = document.getElementById('form-login');
-        const mensagem = document.getElementById('mensagem-login');
+        const loginForm = document.getElementById('form-login');
+        const setupForm = document.getElementById('form-setup');
 
-        form.addEventListener('submit', function (event) {
+        function destinoDoPerfil(papel) {
+            return papel === 'cliente' ? '/portal-cliente.html' : '/dashboard.html';
+        }
+
+        function mostrarMensagem(elemento, texto, tipo = 'erro') {
+            elemento.className = `mensagem ${tipo}`;
+            elemento.textContent = texto;
+        }
+
+        async function enviar(url, dados) {
+            const resposta = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+            const resultado = await resposta.json();
+            if (!resposta.ok) throw new Error(resultado.erro || 'Não foi possível concluir a solicitação.');
+            return resultado;
+        }
+
+        loginForm.addEventListener('submit', async event => {
             event.preventDefault();
-
-            const email = document.getElementById('email').value;
-            const senha = document.getElementById('senha').value;
-
-            if (senha.length < 4) {
-                mensagem.className = 'mensagem erro';
-                mensagem.textContent = 'A senha precisa ter pelo menos 4 caracteres.';
-                return;
+            const botao = loginForm.querySelector('button');
+            const mensagem = document.getElementById('mensagem-login');
+            botao.disabled = true;
+            try {
+                const resultado = await enviar('/api/auth/login', {
+                    email: document.getElementById('email').value,
+                    senha: document.getElementById('senha').value
+                });
+                window.location.assign(destinoDoPerfil(resultado.usuario.papel));
+            } catch (erro) {
+                mostrarMensagem(mensagem, erro.message);
+            } finally {
+                botao.disabled = false;
             }
-
-            // guarda o login na sessão
-            sessionStorage.setItem('osSystemAuth', 'true');
-            sessionStorage.setItem('osSystemUser', email.toLowerCase());
-            window.location.href = 'dashboard.html';
         });
+
+        setupForm.addEventListener('submit', async event => {
+            event.preventDefault();
+            const botao = setupForm.querySelector('button');
+            const mensagem = document.getElementById('mensagem-setup');
+            botao.disabled = true;
+            try {
+                await enviar('/api/auth/setup', {
+                    nome: document.getElementById('admin-nome').value,
+                    email: document.getElementById('admin-email').value,
+                    senha: document.getElementById('admin-senha').value
+                });
+                window.location.assign('/dashboard.html');
+            } catch (erro) {
+                mostrarMensagem(mensagem, erro.message);
+            } finally {
+                botao.disabled = false;
+            }
+        });
+
+        fetch('/api/auth/status')
+            .then(resposta => resposta.json())
+            .then(status => {
+                if (status.configurado) return;
+                loginForm.hidden = true;
+                setupForm.hidden = false;
+                document.getElementById('auth-kicker').textContent = 'PRIMEIRO ACESSO';
+                document.getElementById('auth-title').textContent = 'Configure a administração';
+                document.getElementById('auth-description').textContent = 'Crie sua conta principal. Depois, adicione funcionários e clientes pelo painel.';
+            })
+            .catch(() => mostrarMensagem(document.getElementById('mensagem-login'), 'Servidor indisponível. Abra Abrir Ordem Clara.bat.'));
     </script>
 
 </body>

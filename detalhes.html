@@ -6,11 +6,12 @@
     <title>Detalhes da OS - OS System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
+    <script src="/js/auth.js" defer></script>
 </head>
 <body>
 
     <header>
-        <h2>OS System</h2>
+        <h2>Ordem Clara</h2>
         <nav>
             <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
             <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
@@ -65,6 +66,10 @@
                     <p id="data-os">-</p>
                 </div>
             </div>
+            <div class="contact-actions" data-roles="admin funcionario">
+                <a id="whatsapp-cliente" class="button button-whatsapp" href="#" target="_blank" rel="noopener noreferrer" hidden><i class="fa-brands fa-whatsapp"></i> WhatsApp do cliente</a>
+                <a id="email-cliente" class="button button-outline" href="#" hidden><i class="fa-regular fa-envelope"></i> Enviar e-mail</a>
+            </div>
         </section>
 
         <section class="box">
@@ -72,7 +77,20 @@
             <p id="descricao-os">-</p>
         </section>
 
-        <section class="box">
+        <section class="data-section conversation-section">
+            <div class="section-heading"><div><h2>Central de relacionamento</h2><p>Histórico de notas, atualizações e mensagens do cliente.</p></div><span class="live-indicator">Histórico salvo</span></div>
+            <form id="form-interacao" class="interaction-form">
+                <label for="canal-interacao">Tipo de interação</label>
+                <select id="canal-interacao"><option value="Nota">Nota interna</option><option value="Atualização">Atualização do atendimento</option></select>
+                <label for="mensagem-interacao">Mensagem</label>
+                <textarea id="mensagem-interacao" maxlength="2000" placeholder="Registre o que foi combinado com o cliente..." required></textarea>
+                <div class="interaction-footer"><span id="contador-mensagem">0 / 2.000</span><div class="button-row"><button class="button button-primary" type="submit"><i class="fa-solid fa-bookmark"></i> Registrar no histórico</button><button class="button button-whatsapp" type="button" id="preparar-whatsapp"><i class="fa-brands fa-whatsapp"></i> Preparar WhatsApp</button></div></div>
+                <div id="mensagem-interacao-feedback" class="mensagem" role="status"></div>
+            </form>
+            <ol id="timeline-interacoes" class="timeline"></ol>
+        </section>
+
+        <section class="box" data-roles="admin funcionario">
             <h2>Responder atendimento</h2>
 
             <form id="form-resposta">
@@ -100,10 +118,6 @@
     </main>
 
     <script>
-        if (sessionStorage.getItem('osSystemAuth') !== 'true') {
-            window.location.href = 'index.html';
-        }
-
         const id = Number(new URLSearchParams(window.location.search).get('id'));
         let ordem = null;
         let acao = '';
@@ -145,11 +159,23 @@
             document.getElementById('status').value = ordem.status;
             document.getElementById('diagnostico').value = ordem.diagnostico || '';
 
+            const telefone = (ordem.cliente_telefone || '').replace(/\D/g, '');
+            const whatsapp = document.getElementById('whatsapp-cliente');
+            whatsapp.hidden = !telefone;
+            if (telefone) {
+                const numero = telefone.startsWith('55') ? telefone : `55${telefone}`;
+                whatsapp.href = `https://wa.me/${numero}?text=${encodeURIComponent(`Olá, ${ordem.cliente}! Estamos atualizando sua OS #${ordem.id}.`)}`;
+            }
+
+            const email = document.getElementById('email-cliente');
+            email.hidden = !ordem.cliente_email;
+            if (ordem.cliente_email) email.href = `mailto:${ordem.cliente_email}`;
+
             travarSeEncerrada();
         }
 
         function salvar(status, diagnostico) {
-            fetch('http://localhost:3000/api/ordens/' + ordem.id + '/status', {
+            fetch('/api/ordens/' + ordem.id + '/status', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: status, diagnostico: diagnostico })
@@ -163,12 +189,95 @@
                 ordem.status = status;
                 ordem.diagnostico = diagnostico;
                 mostrarDados();
+                carregarInteracoes();
 
                 const mensagem = document.getElementById('mensagem-resposta');
                 mensagem.className = 'mensagem sucesso';
                 mensagem.textContent = 'Resposta salva com sucesso!';
             })
             .catch(() => alert('Servidor offline.'));
+        }
+
+        async function carregarInteracoes() {
+            const timeline = document.getElementById('timeline-interacoes');
+            try {
+                const resposta = await fetch(`/api/ordens/${ordem.id}/interacoes`);
+                const interacoes = await resposta.json();
+                timeline.replaceChildren();
+
+                if (!interacoes.length) {
+                    const vazio = document.createElement('li');
+                    vazio.className = 'timeline-empty';
+                    vazio.textContent = 'Nenhuma interação registrada nesta ordem.';
+                    timeline.append(vazio);
+                    return;
+                }
+
+                interacoes.forEach(interacao => {
+                    const item = document.createElement('li');
+                    item.className = 'timeline-item';
+                    const topo = document.createElement('div');
+                    topo.className = 'timeline-meta';
+                    const canal = document.createElement('strong');
+                    canal.textContent = interacao.canal;
+                    const data = document.createElement('time');
+                    data.dateTime = interacao.criado_em.replace(' ', 'T') + 'Z';
+                    data.textContent = new Date(data.dateTime).toLocaleString('pt-BR');
+                    const texto = document.createElement('p');
+                    texto.textContent = interacao.mensagem;
+                    topo.append(canal, data);
+                    item.append(topo, texto);
+                    timeline.append(item);
+                });
+            } catch {
+                timeline.textContent = 'Não foi possível carregar o histórico.';
+            }
+        }
+
+        async function registrarInteracao(canal, abrirWhatsApp = false) {
+            const campo = document.getElementById('mensagem-interacao');
+            const feedback = document.getElementById('mensagem-interacao-feedback');
+            const texto = campo.value.trim();
+            const telefone = (ordem.cliente_telefone || '').replace(/\D/g, '');
+            if (!texto) {
+                feedback.className = 'mensagem erro';
+                feedback.textContent = 'Escreva uma mensagem antes de registrar.';
+                campo.focus();
+                return;
+            }
+            if (abrirWhatsApp && !telefone) {
+                feedback.className = 'mensagem erro';
+                feedback.textContent = 'Cadastre um telefone para preparar o WhatsApp.';
+                return;
+            }
+
+            const janela = abrirWhatsApp ? window.open('about:blank', '_blank') : null;
+            try {
+                const resposta = await fetch(`/api/ordens/${ordem.id}/interacoes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ canal, mensagem: texto })
+                });
+                const dados = await resposta.json();
+                if (!resposta.ok) throw new Error(dados.erro || 'Não foi possível registrar a interação.');
+
+                campo.value = '';
+                document.getElementById('contador-mensagem').textContent = '0 / 2.000';
+                feedback.className = 'mensagem sucesso';
+                feedback.textContent = abrirWhatsApp ? 'Mensagem registrada. O WhatsApp foi aberto com o texto pronto.' : 'Interação registrada no histórico.';
+                await carregarInteracoes();
+
+                if (abrirWhatsApp) {
+                    const numero = telefone.startsWith('55') ? telefone : `55${telefone}`;
+                    const url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
+                    if (janela) janela.location.href = url;
+                    else feedback.textContent = 'Interação registrada. Permita pop-ups para abrir o WhatsApp.';
+                }
+            } catch (erro) {
+                if (janela) janela.close();
+                feedback.className = 'mensagem erro';
+                feedback.textContent = erro.message;
+            }
         }
 
         function abrirModal(tipo) {
@@ -191,6 +300,15 @@
             salvar(document.getElementById('status').value, document.getElementById('diagnostico').value.trim());
         });
 
+        document.getElementById('form-interacao').addEventListener('submit', event => {
+            event.preventDefault();
+            registrarInteracao(document.getElementById('canal-interacao').value);
+        });
+        document.getElementById('mensagem-interacao').addEventListener('input', event => {
+            document.getElementById('contador-mensagem').textContent = `${event.target.value.length} / 2.000`;
+        });
+        document.getElementById('preparar-whatsapp').addEventListener('click', () => registrarInteracao('WhatsApp', true));
+
         document.getElementById('concluir-atendimento').addEventListener('click', () => { if (ordem) abrirModal('concluir'); });
         document.getElementById('cancelar-servico').addEventListener('click', () => { if (ordem) abrirModal('cancelar'); });
 
@@ -206,11 +324,12 @@
 
         document.getElementById('cancelar-acoes-modal').addEventListener('click', fecharModal);
 
-        fetch('http://localhost:3000/api/ordens/' + id)
+        fetch('/api/ordens/' + id)
             .then(r => r.json())
             .then(dados => {
                 ordem = dados.erro ? null : dados;
                 mostrarDados();
+                if (ordem) carregarInteracoes();
             })
             .catch(() => {
                 ordem = null;

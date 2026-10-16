@@ -6,10 +6,11 @@
     <title>Serviços - OS System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
+    <script src="/js/auth.js" defer></script>
 </head>
 <body>
     <header>
-        <h2>OS System</h2>
+        <h2>Ordem Clara</h2>
         <nav>
             <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Painel</span></a>
             <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Novo serviço</span></a>
@@ -25,13 +26,23 @@
                 <h1>Serviços</h1>
                 <p>Veja os serviços cadastrados no banco de dados.</p>
             </div>
-            <a href="cadastros.html" class="botao">+ Novo serviço</a>
+            <a class="button button-primary" href="cadastros.html"><i class="fa-solid fa-plus"></i> Nova ordem</a>
         </div>
 
-        <input id="pesquisa-ordens" class="pesquisa" type="text" placeholder="Buscar serviço...">
+        <div class="list-toolbar">
+            <label class="search-field"><i class="fa-solid fa-magnifying-glass"></i><input id="pesquisa-ordens" type="search" placeholder="Cliente, técnico, telefone ou equipamento" aria-label="Buscar ordens"></label>
+            <div class="filter-row" id="filtros-status" aria-label="Filtrar por status">
+                <button type="button" class="filter-chip is-active" data-status="Todas" aria-pressed="true">Todas</button>
+                <button type="button" class="filter-chip" data-status="Aberta" aria-pressed="false">Abertas</button>
+                <button type="button" class="filter-chip" data-status="Em execução" aria-pressed="false">Em execução</button>
+                <button type="button" class="filter-chip" data-status="Concluída" aria-pressed="false">Concluídas</button>
+                <button type="button" class="filter-chip" data-status="Cancelada" aria-pressed="false">Canceladas</button>
+            </div>
+        </div>
 
-        <section class="box tabela">
-            <table>
+        <section class="data-section">
+            <div class="section-heading"><div><h2>Ordens de serviço</h2><p id="resultado-ordens">Carregando ordens...</p></div></div>
+            <div class="table-wrap"><table>
                 <thead>
                     <tr>
                         <th>Nº</th>
@@ -39,22 +50,24 @@
                         <th>Técnico</th>
                         <th>Urgência</th>
                         <th>Situação</th>
-                        <th>Ver</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody id="lista-ordens"></tbody>
-            </table>
+            </table></div>
+            <div class="empty-state" id="vazio-ordens" hidden><i class="fa-regular fa-folder-open"></i><strong>Nenhuma ordem encontrada</strong><span>Ajuste os filtros ou cadastre uma nova OS.</span></div>
         </section>
     </main>
 
     <script>
-        if (sessionStorage.getItem('osSystemAuth') !== 'true') {
-            window.location.href = 'index.html';
-        }
-
         const tabela = document.getElementById('lista-ordens');
         const pesquisa = document.getElementById('pesquisa-ordens');
+        const chips = [...document.querySelectorAll('[data-status]')];
+        const parametros = new URLSearchParams(window.location.search);
+        pesquisa.value = parametros.get('cliente') || '';
         let todasOrdens = [];
+        let statusSelecionado = parametros.get('status') || 'Todas';
+        if (!chips.some(chip => chip.dataset.status === statusSelecionado)) statusSelecionado = 'Todas';
 
         function classeStatus(status) {
             if (status === 'Em execução') return 'andamento';
@@ -64,37 +77,50 @@
         }
 
         function renderizar() {
-            const termo = pesquisa.value.toLowerCase();
+            const termo = pesquisa.value.trim().toLocaleLowerCase('pt-BR');
             let linhas = '';
+            let quantidade = 0;
 
             for (let i = 0; i < todasOrdens.length; i++) {
                 const o = todasOrdens[i];
-                const texto = (o.cliente + ' ' + (o.tecnico || '') + ' ' + o.equipamento + ' ' + o.prioridade + ' ' + o.status).toLowerCase();
+                const texto = [o.cliente, o.cliente_telefone, o.cliente_email, o.tecnico, o.equipamento, o.prioridade, o.status].join(' ').toLocaleLowerCase('pt-BR');
                 if (!texto.includes(termo)) continue;
+                if (statusSelecionado !== 'Todas' && o.status !== statusSelecionado) continue;
+                quantidade++;
 
-                let acao = '<a href="detalhes.html?id=' + o.id + '">Abrir</a>';
+                let acao = '<a class="icon-action" title="Abrir ordem" aria-label="Abrir ordem" href="detalhes.html?id=' + o.id + '"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>';
                 if (o.status === 'Concluída' || o.status === 'Cancelada') {
-                    acao = '<span class="acao-fechada">Finalizada</span>';
+                    acao += '<span class="acao-fechada">Finalizada</span>';
                 }
 
                 linhas += `
                     <tr>
                         <td>#${String(o.id).padStart(3, '0')}</td>
-                        <td>${o.cliente}</td>
-                        <td>${o.tecnico || '—'}</td>
-                        <td>${o.prioridade}</td>
-                        <td><span class="status ${classeStatus(o.status)}">${o.status}</span></td>
-                        <td>${acao}</td>
+                        <td><a class="customer-link" href="clientes.html">${escapar(o.cliente)}</a></td>
+                        <td>${escapar(o.tecnico || '—')}</td>
+                        <td>${escapar(o.prioridade)}</td>
+                        <td><span class="status ${classeStatus(o.status)}">${escapar(o.status)}</span></td>
+                        <td class="row-actions">${acao}<button class="icon-action copiar-link" type="button" data-os="${o.id}" title="Copiar link da ordem" aria-label="Copiar link da ordem"><i class="fa-regular fa-copy"></i></button></td>
                     </tr>`;
             }
 
-            if (linhas === '') {
-                linhas = '<tr><td colspan="6" class="lista-vazia">Nenhum serviço encontrado.</td></tr>';
-            }
             tabela.innerHTML = linhas;
+            document.getElementById('vazio-ordens').hidden = quantidade > 0;
+            document.getElementById('resultado-ordens').textContent = `${quantidade} de ${todasOrdens.length} ordens`;
+            chips.forEach(chip => {
+                const ativo = chip.dataset.status === statusSelecionado;
+                chip.classList.toggle('is-active', ativo);
+                chip.setAttribute('aria-pressed', String(ativo));
+            });
         }
 
-        fetch('http://localhost:3000/api/ordens')
+        function escapar(valor) {
+            return String(valor || '').replace(/[&<>"']/g, caractere => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[caractere]);
+        }
+
+        fetch('/api/ordens')
             .then(r => r.json())
             .then(dados => {
                 todasOrdens = dados;
@@ -105,6 +131,21 @@
             });
 
         pesquisa.addEventListener('input', renderizar);
+        chips.forEach(chip => chip.addEventListener('click', () => {
+            statusSelecionado = chip.dataset.status;
+            renderizar();
+        }));
+        tabela.addEventListener('click', async event => {
+            const botao = event.target.closest('.copiar-link');
+            if (!botao) return;
+            try {
+                await navigator.clipboard.writeText(`${location.origin}/detalhes.html?id=${botao.dataset.os}`);
+                botao.innerHTML = '<i class="fa-solid fa-check"></i>';
+                setTimeout(() => { botao.innerHTML = '<i class="fa-regular fa-copy"></i>'; }, 1400);
+            } catch {
+                alert('Não foi possível copiar o link neste navegador.');
+            }
+        });
     </script>
 </body>
 </html>

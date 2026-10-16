@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus atendimentos - Ordem Clara</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <h2>Ordem Clara</h2>
+        <nav><a href="portal-cliente.html" class="ativo">Meus atendimentos</a></nav>
+    </header>
+
+    <main>
+        <div class="page-heading">
+            <div>
+                <p class="eyebrow">ESPAÇO DO CLIENTE</p>
+                <h1 id="saudacao-cliente">Seus atendimentos</h1>
+                <p>Acompanhe o andamento e fale com a equipe responsável.</p>
+            </div>
+            <a class="button button-outline" href="#lista-atendimentos"><i class="fa-solid fa-arrow-down"></i> Ver atendimentos</a>
+        </div>
+
+        <section class="metric-grid" aria-label="Resumo dos atendimentos">
+            <article class="metric-card"><span>Total de ordens</span><strong id="total-cliente">0</strong><i class="fa-solid fa-layer-group"></i></article>
+            <article class="metric-card"><span>Em andamento</span><strong id="ativas-cliente">0</strong><i class="fa-solid fa-screwdriver-wrench"></i></article>
+            <article class="metric-card"><span>Concluídas</span><strong id="concluidas-cliente">0</strong><i class="fa-solid fa-circle-check"></i></article>
+        </section>
+
+        <section class="data-section" id="lista-atendimentos">
+            <div class="section-heading">
+                <div><h2>Suas ordens</h2><p id="resumo-cliente">Buscando atualizações...</p></div>
+                <label class="search-field"><i class="fa-solid fa-magnifying-glass"></i><input id="busca-cliente" type="search" placeholder="Buscar aparelho ou status" aria-label="Buscar atendimentos"></label>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Ordem</th><th>Equipamento</th><th>Responsável</th><th>Aberta em</th><th>Status</th><th>Detalhes</th></tr></thead>
+                    <tbody id="ordens-cliente"></tbody>
+                </table>
+            </div>
+            <div id="vazio-cliente" class="empty-state" hidden><i class="fa-regular fa-folder-open"></i><strong>Nenhuma ordem encontrada</strong><span>As novas ordens aparecerão aqui.</span></div>
+        </section>
+    </main>
+
+    <script>
+        const tabela = document.getElementById('ordens-cliente');
+        const busca = document.getElementById('busca-cliente');
+        let ordens = [];
+
+        function classeStatus(status) {
+            if (status === 'Em execução') return 'andamento';
+            if (status === 'Concluída') return 'concluida';
+            if (status === 'Cancelada') return 'cancelada';
+            return 'aberta';
+        }
+
+        function formatarData(data) {
+            return data ? new Date(data.replace(' ', 'T') + 'Z').toLocaleDateString('pt-BR') : '—';
+        }
+
+        function renderizar() {
+            const termo = busca.value.trim().toLocaleLowerCase('pt-BR');
+            const filtradas = ordens.filter(ordem =>
+                `${ordem.equipamento} ${ordem.status} ${ordem.tecnico || ''}`.toLocaleLowerCase('pt-BR').includes(termo)
+            );
+            tabela.replaceChildren();
+            filtradas.forEach(ordem => {
+                const linha = document.createElement('tr');
+                const numero = document.createElement('td');
+                numero.textContent = `#${String(ordem.id).padStart(3, '0')}`;
+                const equipamento = document.createElement('td');
+                equipamento.textContent = ordem.equipamento;
+                const tecnico = document.createElement('td');
+                tecnico.textContent = ordem.tecnico || 'A definir';
+                const abertura = document.createElement('td');
+                abertura.textContent = formatarData(ordem.aberta_em);
+                const status = document.createElement('td');
+                const etiqueta = document.createElement('span');
+                etiqueta.className = `status ${classeStatus(ordem.status)}`;
+                etiqueta.textContent = ordem.status;
+                status.append(etiqueta);
+                const acao = document.createElement('td');
+                const link = document.createElement('a');
+                link.className = 'button button-outline table-button';
+                link.href = `detalhes.html?id=${ordem.id}`;
+                link.innerHTML = '<i class="fa-regular fa-comments"></i> Acompanhar';
+                acao.append(link);
+                linha.append(numero, equipamento, tecnico, abertura, status, acao);
+                tabela.append(linha);
+            });
+            document.getElementById('vazio-cliente').hidden = filtradas.length > 0;
+            document.getElementById('resumo-cliente').textContent = `${filtradas.length} de ${ordens.length} ordens`;
+        }
+
+        busca.addEventListener('input', renderizar);
+        fetch('/api/ordens')
+            .then(async resposta => {
+                if (!resposta.ok) throw new Error('Não foi possível carregar seus atendimentos.');
+                return resposta.json();
+            })
+            .then(dados => {
+                ordens = dados;
+                document.getElementById('total-cliente').textContent = dados.length;
+                document.getElementById('ativas-cliente').textContent = dados.filter(ordem => ['Aberta', 'Em execução'].includes(ordem.status)).length;
+                document.getElementById('concluidas-cliente').textContent = dados.filter(ordem => ordem.status === 'Concluída').length;
+                renderizar();
+            })
+            .catch(() => {
+                document.getElementById('resumo-cliente').textContent = 'Não foi possível carregar os atendimentos.';
+            });
+    </script>
+</body>
+</html>

@@ -3,85 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meus serviços - OS System</title>
+    <title>Clientes - OS System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
+    <script src="/js/auth.js" defer></script>
 </head>
 <body>
 
     <header>
-        <h2>OS System</h2>
+        <h2>Ordem Clara</h2>
         <nav>
             <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Painel</span></a>
-            <a href="lista.html"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Meus serviços</span></a>
-            <a href="clientes.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Meu perfil</span></a>
+            <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
+            <a href="lista.html"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Ordens</span></a>
+            <a href="tecnicos.html"><span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span><span>Técnicos</span></a>
+            <a href="clientes.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-users"></i></span><span>Clientes</span></a>
         </nav>
     </header>
 
     <main>
-        <div class="topo">
+        <div class="page-heading">
             <div>
-                <h1 id="titulo-cliente">Olá, João!</h1>
-                <p>Veja como estão seus serviços.</p>
+                <p class="eyebrow">RELACIONAMENTO</p>
+                <h1>Clientes</h1>
+                <p>Contatos e histórico de atendimento em um só lugar.</p>
             </div>
+            <a class="button button-primary" href="cadastros.html"><i class="fa-solid fa-plus"></i> Nova ordem</a>
         </div>
 
-        <section class="cards">
-            <div class="card">
-                <h3>Total de serviços</h3>
-                <strong>04</strong>
-            </div>
-            <div class="card">
-                <h3>Em andamento</h3>
-                <strong>02</strong>
-            </div>
-            <div class="card">
-                <h3>Prontos</h3>
-                <strong>02</strong>
-            </div>
+        <section class="metric-grid" aria-label="Resumo dos clientes">
+            <article class="metric-card"><span>Clientes</span><strong id="total-clientes">0</strong><i class="fa-solid fa-users"></i></article>
+            <article class="metric-card"><span>Com contato</span><strong id="com-contato">0</strong><i class="fa-solid fa-address-book"></i></article>
+            <article class="metric-card"><span>Ordens em aberto</span><strong id="os-ativas">0</strong><i class="fa-solid fa-headset"></i></article>
         </section>
 
-        <section class="box">
-            <h2>Meus serviços</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nº</th>
-                        <th>Aparelho</th>
-                        <th>Situação</th>
-                        <th>Ver</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>#001</td>
-                        <td>Notebook Dell</td>
-                        <td><span class="status andamento">Em execução</span></td>
-                        <td><a href="detalhes.html">Abrir</a></td>
-                    </tr>
-                    <tr>
-                        <td>#003</td>
-                        <td>Computador</td>
-                        <td><span class="status concluida">Concluída</span></td>
-                        <td><a href="detalhes.html">Abrir</a></td>
-                    </tr>
-                </tbody>
-            </table>
+        <section class="data-section">
+            <div class="section-heading">
+                <div><h2>Carteira de clientes</h2><p id="resultado-clientes">Carregando clientes...</p></div>
+                <label class="search-field"><i class="fa-solid fa-magnifying-glass"></i><input id="pesquisa-clientes" type="search" placeholder="Buscar nome ou contato" aria-label="Buscar clientes"></label>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Cliente</th><th>Telefone</th><th>E-mail</th><th>Ordens</th><th>Em aberto</th><th>Último atendimento</th><th>Ações</th></tr></thead>
+                    <tbody id="lista-clientes"></tbody>
+                </table>
+            </div>
+            <div class="empty-state" id="vazio-clientes" hidden><i class="fa-regular fa-address-card"></i><strong>Nenhum cliente encontrado</strong><span>Cadastre uma ordem para adicionar clientes à carteira.</span></div>
         </section>
     </main>
 
     <script>
-        // se não estiver logado volta pro login
-        if (sessionStorage.getItem('osSystemAuth') !== 'true') {
-            window.location.href = 'index.html';
+        const tabela = document.getElementById('lista-clientes');
+        const pesquisa = document.getElementById('pesquisa-clientes');
+        const vazio = document.getElementById('vazio-clientes');
+        let clientes = [];
+
+        function criarCelula(valor, classe = '') {
+            const celula = document.createElement('td');
+            celula.textContent = valor || '—';
+            if (classe) celula.className = classe;
+            return celula;
         }
 
-        // pega o nome do usuário pelo e-mail (parte antes do @)
-        const email = sessionStorage.getItem('osSystemUser') || 'joão';
-        const nome = email.split('@')[0];
-        const nomeFormatado = nome.charAt(0).toUpperCase() + nome.slice(1);
+        function renderizarClientes() {
+            const termo = pesquisa.value.trim().toLocaleLowerCase('pt-BR');
+            const filtrados = clientes.filter(cliente =>
+                [cliente.nome, cliente.telefone, cliente.email].some(valor =>
+                    (valor || '').toLocaleLowerCase('pt-BR').includes(termo)
+                )
+            );
 
-        document.getElementById('titulo-cliente').textContent = 'Olá, ' + nomeFormatado + '!';
+            tabela.replaceChildren();
+            filtrados.forEach(cliente => {
+                const linha = document.createElement('tr');
+                linha.append(criarCelula(cliente.nome, 'customer-name'));
+                linha.append(criarCelula(cliente.telefone));
+                linha.append(criarCelula(cliente.email));
+                linha.append(criarCelula(cliente.total_os));
+                linha.append(criarCelula(cliente.os_ativas));
+                linha.append(criarCelula(cliente.ultima_os ? new Date(cliente.ultima_os.replace(' ', 'T') + 'Z').toLocaleDateString('pt-BR') : '—'));
+
+                const acoes = document.createElement('td');
+                acoes.className = 'row-actions';
+                const telefone = (cliente.telefone || '').replace(/\D/g, '');
+                if (telefone) {
+                    const whatsapp = document.createElement('a');
+                    whatsapp.href = `https://wa.me/55${telefone}?text=${encodeURIComponent(`Olá, ${cliente.nome}! Aqui é da assistência técnica.`)}`;
+                    whatsapp.target = '_blank';
+                    whatsapp.rel = 'noopener noreferrer';
+                    whatsapp.title = 'Conversar pelo WhatsApp';
+                    whatsapp.setAttribute('aria-label', `Conversar com ${cliente.nome} pelo WhatsApp`);
+                    whatsapp.innerHTML = '<i class="fa-brands fa-whatsapp"></i>';
+                    acoes.append(whatsapp);
+                }
+                if (cliente.email) {
+                    const email = document.createElement('a');
+                    email.href = `mailto:${encodeURIComponent(cliente.email)}`;
+                    email.title = 'Enviar e-mail';
+                    email.setAttribute('aria-label', `Enviar e-mail para ${cliente.nome}`);
+                    email.innerHTML = '<i class="fa-regular fa-envelope"></i>';
+                    acoes.append(email);
+                }
+                const ordens = document.createElement('a');
+                ordens.href = `lista.html?cliente=${encodeURIComponent(cliente.nome)}`;
+                ordens.title = 'Ver ordens deste cliente';
+                ordens.setAttribute('aria-label', `Ver ordens de ${cliente.nome}`);
+                ordens.innerHTML = '<i class="fa-solid fa-list-check"></i>';
+                acoes.append(ordens);
+                linha.append(acoes);
+                tabela.append(linha);
+            });
+
+            vazio.hidden = filtrados.length > 0;
+            document.getElementById('resultado-clientes').textContent = `${filtrados.length} de ${clientes.length} clientes`;
+        }
+
+        pesquisa.addEventListener('input', renderizarClientes);
+        fetch('/api/clientes')
+            .then(resposta => resposta.json())
+            .then(dados => {
+                clientes = dados;
+                document.getElementById('total-clientes').textContent = dados.length;
+                document.getElementById('com-contato').textContent = dados.filter(cliente => cliente.telefone || cliente.email).length;
+                document.getElementById('os-ativas').textContent = dados.reduce((total, cliente) => total + cliente.os_ativas, 0);
+                renderizarClientes();
+            })
+            .catch(() => {
+                document.getElementById('resultado-clientes').textContent = 'Não foi possível carregar os clientes.';
+                vazio.hidden = false;
+            });
     </script>
 
 </body>

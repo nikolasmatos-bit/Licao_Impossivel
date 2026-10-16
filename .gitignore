@@ -1,0 +1,4 @@
+node_modules/
+os_system.sqlite
+os_system.sqlite-shm
+os_system.sqlite-wal

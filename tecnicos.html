@@ -6,11 +6,12 @@
     <title>Técnicos - OS System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
+    <script src="/js/auth.js" defer></script>
 </head>
 <body>
 
     <header>
-        <h2>OS System</h2>
+        <h2>Ordem Clara</h2>
         <nav>
             <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
             <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
@@ -21,8 +22,7 @@
     </header>
 
     <main>
-        <h1>Cadastro de Técnicos</h1>
-        <p>Cadastre e consulte os técnicos do sistema.</p>
+        <div class="page-heading"><div><p class="eyebrow">EQUIPE</p><h1>Técnicos</h1><p>Organize especialidades e encontre rapidamente quem está disponível.</p></div></div>
 
         <section class="box">
             <form id="form-tecnico">
@@ -44,9 +44,9 @@
             </form>
         </section>
 
-        <section class="box">
-            <h2>Técnicos cadastrados</h2>
-            <table>
+        <section class="data-section">
+            <div class="section-heading"><div><h2>Equipe cadastrada</h2><p id="resultado-tecnicos">Carregando equipe...</p></div><label class="search-field"><i class="fa-solid fa-magnifying-glass"></i><input id="pesquisa-tecnicos" type="search" placeholder="Buscar por nome ou especialidade" aria-label="Buscar técnicos"></label></div>
+            <div class="table-wrap"><table>
                 <thead>
                     <tr>
                         <th>Nome</th>
@@ -56,47 +56,62 @@
                     </tr>
                 </thead>
                 <tbody id="lista-tecnicos"></tbody>
-            </table>
+            </table></div>
         </section>
     </main>
 
     <script>
-        if (sessionStorage.getItem('osSystemAuth') !== 'true') {
-            window.location.href = 'index.html';
-        }
-
         const form = document.getElementById('form-tecnico');
         const mensagem = document.getElementById('mensagem-tecnico');
         const tabela = document.getElementById('lista-tecnicos');
+        const pesquisa = document.getElementById('pesquisa-tecnicos');
+        let equipe = [];
 
         function mostrarMensagem(tipo, texto) {
             mensagem.className = 'mensagem ' + tipo;
             mensagem.textContent = texto;
         }
 
+        function renderizarTecnicos() {
+            const termo = pesquisa.value.trim().toLocaleLowerCase('pt-BR');
+            const filtrados = equipe.filter(tecnico =>
+                `${tecnico.nome} ${tecnico.email} ${tecnico.especialidade} ${tecnico.telefone}`.toLocaleLowerCase('pt-BR').includes(termo)
+            );
+            tabela.replaceChildren();
+            filtrados.forEach(tecnico => {
+                const linha = document.createElement('tr');
+                [tecnico.nome, tecnico.email, tecnico.especialidade, tecnico.telefone].forEach(valor => {
+                    const celula = document.createElement('td');
+                    celula.textContent = valor;
+                    linha.append(celula);
+                });
+                tabela.append(linha);
+            });
+            if (!filtrados.length) {
+                const linha = document.createElement('tr');
+                const celula = document.createElement('td');
+                celula.colSpan = 4;
+                celula.className = 'lista-vazia';
+                celula.textContent = equipe.length ? 'Nenhum técnico corresponde à busca.' : 'Nenhum técnico cadastrado.';
+                linha.append(celula);
+                tabela.append(linha);
+            }
+            document.getElementById('resultado-tecnicos').textContent = `${filtrados.length} de ${equipe.length} técnicos`;
+        }
+
         function carregarTecnicos() {
-            fetch('http://localhost:3000/api/tecnicos/lista')
+            fetch('/api/tecnicos/lista')
                 .then(r => r.json())
                 .then(tecnicos => {
-                    let linhas = '';
-                    tecnicos.forEach(t => {
-                        linhas += `
-                            <tr>
-                                <td>${t.nome}</td>
-                                <td>${t.email}</td>
-                                <td>${t.especialidade}</td>
-                                <td>${t.telefone}</td>
-                            </tr>`;
-                    });
-                    if (linhas === '') {
-                        linhas = '<tr><td colspan="4" class="lista-vazia">Nenhum técnico cadastrado.</td></tr>';
-                    }
-                    tabela.innerHTML = linhas;
+                    equipe = tecnicos;
+                    renderizarTecnicos();
                 })
                 .catch(() => {
                     tabela.innerHTML = '<tr><td colspan="4" class="lista-vazia">Erro ao carregar técnicos.</td></tr>';
                 });
         }
+
+        pesquisa.addEventListener('input', renderizarTecnicos);
 
         form.addEventListener('submit', function (event) {
             event.preventDefault();
@@ -114,7 +129,7 @@
                 return;
             }
 
-            fetch('http://localhost:3000/api/tecnicos', {
+            fetch('/api/tecnicos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(tecnico)
