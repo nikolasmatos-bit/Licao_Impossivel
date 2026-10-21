@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes da OS - OS System</title>
+    <title>Detalhes da OS - Megabrain Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
-    <script src="/js/auth.js" defer></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/auth.js" defer></script>
 </head>
 <body>
 
     <header>
-        <h2>Ordem Clara</h2>
+        <h2>Megabrain Services</h2>
         <nav>
             <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
             <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
@@ -175,7 +176,7 @@
         }
 
         function salvar(status, diagnostico) {
-            fetch('/api/ordens/' + ordem.id + '/status', {
+            apiFetch('/api/ordens/' + ordem.id + '/status', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: status, diagnostico: diagnostico })
@@ -201,7 +202,7 @@
         async function carregarInteracoes() {
             const timeline = document.getElementById('timeline-interacoes');
             try {
-                const resposta = await fetch(`/api/ordens/${ordem.id}/interacoes`);
+                const resposta = await apiFetch(`/api/ordens/${ordem.id}/interacoes`);
                 const interacoes = await resposta.json();
                 timeline.replaceChildren();
 
@@ -253,7 +254,7 @@
 
             const janela = abrirWhatsApp ? window.open('about:blank', '_blank') : null;
             try {
-                const resposta = await fetch(`/api/ordens/${ordem.id}/interacoes`, {
+                const resposta = await apiFetch(`/api/ordens/${ordem.id}/interacoes`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ canal, mensagem: texto })
@@ -324,7 +325,7 @@
 
         document.getElementById('cancelar-acoes-modal').addEventListener('click', fecharModal);
 
-        fetch('/api/ordens/' + id)
+        apiFetch('/api/ordens/' + id)
             .then(r => r.json())
             .then(dados => {
                 ordem = dados.erro ? null : dados;

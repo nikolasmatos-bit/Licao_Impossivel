@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de atendimento - Ordem Clara</title>
+    <title>Painel de atendimento - Megabrain Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
-    <script src="/js/auth.js" defer></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/auth.js" defer></script>
 </head>
 <body>
 
     <header>
-        <h2>Ordem Clara</h2>
+        <h2>Megabrain Services</h2>
         <nav>
             <a href="dashboard.html" class="ativo">Dashboard</a>
             <a href="cadastros.html">Nova OS</a>
@@ -197,7 +198,7 @@
             botao.classList.add('is-loading');
             try {
                 const [respostaDashboard, respostaOrdens] = await Promise.all([
-                    fetch('/api/dashboard'), fetch('/api/ordens')
+                    apiFetch('/api/dashboard'), apiFetch('/api/ordens')
                 ]);
                 if (!respostaDashboard.ok || !respostaOrdens.ok) throw new Error('Não foi possível sincronizar o painel.');
                 const [dashboard, ordens] = await Promise.all([respostaDashboard.json(), respostaOrdens.json()]);

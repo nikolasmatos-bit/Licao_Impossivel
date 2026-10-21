@@ -15,7 +15,7 @@ const permissoesNav = {
 };
 
 async function iniciarSessaoVisual() {
-    const resposta = await fetch('/api/auth/me');
+    const resposta = await apiFetch('/api/auth/me');
     if (!resposta.ok) {
         window.location.replace('/index.html');
         return;
@@ -97,7 +97,7 @@ async function iniciarSessaoVisual() {
     sair.setAttribute('aria-label', 'Sair da conta');
     sair.innerHTML = '<i class="fa-solid fa-arrow-right-from-bracket"></i>';
     sair.addEventListener('click', async () => {
-        await fetch('/api/auth/logout', { method: 'POST' });
+        await apiFetch('/api/auth/logout', { method: 'POST' });
         window.location.assign('/index.html');
     });
 

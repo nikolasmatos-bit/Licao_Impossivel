@@ -3,26 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar - Ordem Clara</title>
+    <title>Entrar - Megabrain Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/api.js"></script>
     
 </head>
 <body class="login">
     <main class="auth-shell">
         <section class="auth-story">
-            <a class="auth-brand" href="/index.html"><span class="brand-mark">OS</span><span>Ordem<span class="brand-light"> Clara</span></span></a>
+            <a class="auth-brand" href="/index.html"><span class="brand-mark">MB</span><span>Megabrain<span class="brand-light"> Services</span></span></a>
             <div class="auth-story-copy">
                 <p class="eyebrow">OPERAÇÃO DE SERVIÇO</p>
-                <h1>Atendimento com contexto. Em cada etapa.</h1>
-                <p>Uma visão conectada para quem atende, quem administra e quem acompanha o serviço.</p>
+                <h1>Inteligência para cada etapa do atendimento.</h1>
+                <p>Uma plataforma conectada para sua equipe cuidar de cada serviço com clareza e agilidade.</p>
             </div>
             <div class="auth-story-footer"><span class="live-indicator">Banco local protegido</span><span>Workspace de atendimento</span></div>
         </section>
 
         <section class="auth-panel">
             <div class="auth-panel-heading">
-                <p class="eyebrow" id="auth-kicker">BEM-VINDO DE VOLTA</p>
+                <p class="eyebrow" id="auth-kicker">MEGABRAIN SERVICES</p>
                 <h2 id="auth-title">Acesse sua conta</h2>
                 <p id="auth-description">Entre com o e-mail e a senha cadastrados pela administração.</p>
             </div>
@@ -31,7 +32,7 @@
                 <label for="email">E-mail de trabalho</label>
                 <input type="email" id="email" name="email" autocomplete="username" placeholder="nome@empresa.com" required>
                 <label for="senha">Senha</label>
-                <input type="password" id="senha" name="senha" autocomplete="current-password" placeholder="Sua senha" required>
+                <div class="password-field"><input type="password" id="senha" name="senha" autocomplete="current-password" placeholder="Sua senha" required><button type="button" class="password-toggle" data-password-target="senha" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div>
                 <button type="submit" class="button button-primary"><span>Entrar no workspace</span><i class="fa-solid fa-arrow-right"></i></button>
                 <div id="mensagem-login" class="mensagem" role="status"></div>
             </form>
@@ -42,7 +43,7 @@
                 <label for="admin-email">E-mail de administração</label>
                 <input type="email" id="admin-email" autocomplete="email" placeholder="admin@empresa.com" required>
                 <label for="admin-senha">Crie uma senha forte</label>
-                <input type="password" id="admin-senha" autocomplete="new-password" minlength="12" placeholder="Mínimo de 12 caracteres" required>
+                <div class="password-field"><input type="password" id="admin-senha" autocomplete="new-password" minlength="12" placeholder="Mínimo de 12 caracteres" required><button type="button" class="password-toggle" data-password-target="admin-senha" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div>
                 <button type="submit" class="button button-primary"><span>Criar conta administradora</span><i class="fa-solid fa-arrow-right"></i></button>
                 <div id="mensagem-setup" class="mensagem" role="status"></div>
             </form>
@@ -52,6 +53,7 @@
     </main>
 
     <script>
+        (() => {
         const loginForm = document.getElementById('form-login');
         const setupForm = document.getElementById('form-setup');
 
@@ -65,19 +67,33 @@
         }
 
         async function enviar(url, dados) {
-            const resposta = await fetch(url, {
+            const resposta = await apiFetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)
             });
-            const resultado = await resposta.json();
-            if (!resposta.ok) throw new Error(resultado.erro || 'Não foi possível concluir a solicitação.');
+            const resultado = await resposta.json().catch(() => null);
+            if (!resposta.ok) {
+                throw new Error(resultado?.erro || `O servidor retornou HTTP ${resposta.status}. Abra o Megabrain pelo arquivo Abrir Ordem Clara.bat.`);
+            }
+            if (!resultado) throw new Error('O servidor respondeu em um formato inesperado. Abra o Megabrain pelo arquivo Abrir Ordem Clara.bat.');
             return resultado;
         }
 
+        document.querySelectorAll('[data-password-target]').forEach(botao => {
+            botao.addEventListener('click', () => {
+                const campo = document.getElementById(botao.dataset.passwordTarget);
+                const mostrar = campo.type === 'password';
+                campo.type = mostrar ? 'text' : 'password';
+                botao.setAttribute('aria-pressed', String(mostrar));
+                botao.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
+                botao.innerHTML = `<i class="fa-regular ${mostrar ? 'fa-eye-slash' : 'fa-eye'}"></i>`;
+            });
+        });
+
         loginForm.addEventListener('submit', async event => {
             event.preventDefault();
-            const botao = loginForm.querySelector('button');
+            const botao = loginForm.querySelector('button[type="submit"]');
             const mensagem = document.getElementById('mensagem-login');
             botao.disabled = true;
             try {
@@ -95,7 +111,7 @@
 
         setupForm.addEventListener('submit', async event => {
             event.preventDefault();
-            const botao = setupForm.querySelector('button');
+            const botao = setupForm.querySelector('button[type="submit"]');
             const mensagem = document.getElementById('mensagem-setup');
             botao.disabled = true;
             try {
@@ -112,17 +128,32 @@
             }
         });
 
-        fetch('/api/auth/status')
-            .then(resposta => resposta.json())
-            .then(status => {
+        async function prepararTelaDeAcesso() {
+            try {
+                const sessaoResposta = await apiFetch('/api/auth/me');
+                if (sessaoResposta.ok) {
+                    const sessao = await sessaoResposta.json();
+                    window.location.replace(destinoDoPerfil(sessao.usuario.papel));
+                    return;
+                }
+
+                const resposta = await apiFetch('/api/auth/status');
+                if (!resposta.ok) throw new Error('Não foi possível verificar a configuração do sistema.');
+                const status = await resposta.json();
                 if (status.configurado) return;
                 loginForm.hidden = true;
                 setupForm.hidden = false;
                 document.getElementById('auth-kicker').textContent = 'PRIMEIRO ACESSO';
                 document.getElementById('auth-title').textContent = 'Configure a administração';
-                document.getElementById('auth-description').textContent = 'Crie sua conta principal. Depois, adicione funcionários e clientes pelo painel.';
-            })
-            .catch(() => mostrarMensagem(document.getElementById('mensagem-login'), 'Servidor indisponível. Abra Abrir Ordem Clara.bat.'));
+                document.getElementById('auth-description').textContent = 'Crie a primeira conta administradora. Depois, gerencie os acessos da equipe pelo painel.';
+            } catch (erro) {
+                console.error('Não foi possível preparar a tela de acesso:', erro);
+                mostrarMensagem(document.getElementById('mensagem-login'), 'Não foi possível conectar ao servidor. Feche e abra o Megabrain Services novamente.');
+            }
+        }
+
+        prepararTelaDeAcesso();
+        })();
     </script>
 
 </body>

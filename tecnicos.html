@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Técnicos - OS System</title>
+    <title>Técnicos - Megabrain Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
-    <script src="/js/auth.js" defer></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/auth.js" defer></script>
 </head>
 <body>
 
     <header>
-        <h2>Ordem Clara</h2>
+        <h2>Megabrain Services</h2>
         <nav>
             <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
             <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
@@ -100,7 +101,7 @@
         }
 
         function carregarTecnicos() {
-            fetch('/api/tecnicos/lista')
+            apiFetch('/api/tecnicos/lista')
                 .then(r => r.json())
                 .then(tecnicos => {
                     equipe = tecnicos;
@@ -129,7 +130,7 @@
                 return;
             }
 
-            fetch('/api/tecnicos', {
+            apiFetch('/api/tecnicos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(tecnico)

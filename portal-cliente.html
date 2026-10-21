@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meus atendimentos - Ordem Clara</title>
+    <title>Meus atendimentos - Megabrain Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="/css/style.css">
-    <script src="/js/auth.js" defer></script>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/api.js"></script>
+    <script src="./js/auth.js" defer></script>
 </head>
 <body>
     <header>
-        <h2>Ordem Clara</h2>
+        <h2>Megabrain Services</h2>
         <nav><a href="portal-cliente.html" class="ativo">Meus atendimentos</a></nav>
     </header>
 
@@ -96,7 +97,7 @@
         }
 
         busca.addEventListener('input', renderizar);
-        fetch('/api/ordens')
+        apiFetch('/api/ordens')
             .then(async resposta => {
                 if (!resposta.ok) throw new Error('Não foi possível carregar seus atendimentos.');
                 return resposta.json();

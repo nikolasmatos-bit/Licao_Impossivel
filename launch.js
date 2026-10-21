@@ -1,12 +1,12 @@
 const { spawn } = require('child_process');
 
-const siteUrl = 'http://localhost:3001/index.html';
-const healthUrl = 'http://127.0.0.1:3001/';
+const siteUrl = 'http://127.0.0.1:3001/index.html';
+const healthUrl = 'http://127.0.0.1:3001/api/auth/status';
 
 async function servidorDisponivel() {
     try {
         const resposta = await fetch(healthUrl, { signal: AbortSignal.timeout(1200) });
-        return resposta.ok;
+        return resposta.ok && resposta.headers.get('content-type')?.includes('application/json');
     } catch {
         return false;
     }
@@ -39,7 +39,7 @@ async function iniciar() {
         return;
     }
 
-    console.log('Iniciando Ordem Clara...');
+    console.log('Iniciando Megabrain Services...');
     const servidor = spawn(process.execPath, ['server.js'], {
         cwd: __dirname,
         stdio: 'inherit'

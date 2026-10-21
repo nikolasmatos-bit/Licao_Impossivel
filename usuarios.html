@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acessos - Ordem Clara</title>
+    <title>Acessos - Megabrain Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="/css/style.css">
-    <script src="/js/auth.js" defer></script>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/api.js"></script>
+    <script src="./js/auth.js" defer></script>
 </head>
 <body>
     <header>
-        <h2>Ordem Clara</h2>
+        <h2>Megabrain Services</h2>
         <nav>
             <a href="dashboard.html">Painel</a>
             <a href="usuarios.html" class="ativo">Acessos</a>
@@ -30,14 +31,14 @@
 
         <div class="admin-layout">
             <section class="box admin-form-section">
-                <div class="section-heading compact-heading"><div><h2>Criar acesso</h2><p>A senha é armazenada como hash e não fica visível depois.</p></div></div>
+                <div class="section-heading compact-heading"><div><h2>Criar conta</h2><p>Cadastre um administrador, funcionário ou cliente. A senha não fica visível depois.</p></div></div>
                 <form id="form-usuario" class="admin-user-form">
                     <label for="usuario-nome">Nome</label>
                     <input id="usuario-nome" name="nome" autocomplete="name" required>
                     <label for="usuario-email">E-mail</label>
                     <input id="usuario-email" name="email" type="email" autocomplete="email" required>
                     <label for="usuario-papel">Perfil</label>
-                    <select id="usuario-papel" name="papel"><option value="funcionario">Funcionário</option><option value="cliente">Cliente</option></select>
+                    <select id="usuario-papel" name="papel"><option value="funcionario">Funcionário</option><option value="admin">Administrador</option><option value="cliente">Cliente</option></select>
                     <div id="vinculo-tecnico-wrap">
                         <label for="vinculo-tecnico">Vincular ao técnico</label>
                         <select id="vinculo-tecnico" name="tecnico_id" required></select>
@@ -46,8 +47,8 @@
                         <label for="vinculo-cliente">Vincular ao cliente</label>
                         <select id="vinculo-cliente" name="cliente_id" disabled></select>
                     </div>
-                    <label for="usuario-senha">Senha temporária</label>
-                    <input id="usuario-senha" name="senha" type="password" minlength="12" autocomplete="new-password" placeholder="Mínimo de 12 caracteres" required>
+                    <label for="usuario-senha">Senha inicial</label>
+                    <div class="password-field"><input id="usuario-senha" name="senha" type="password" minlength="12" autocomplete="new-password" placeholder="Mínimo de 12 caracteres" required><button type="button" class="password-toggle" data-password-target="usuario-senha" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div>
                     <button class="button button-primary" type="submit"><i class="fa-solid fa-user-plus"></i> Criar conta</button>
                     <div id="mensagem-usuario" class="mensagem" role="status"></div>
                 </form>
@@ -77,10 +78,11 @@
 
         function atualizarVinculo() {
             const cliente = tipo.value === 'cliente';
-            tecnicoWrap.hidden = cliente;
+            const funcionario = tipo.value === 'funcionario';
+            tecnicoWrap.hidden = !funcionario;
             clienteWrap.hidden = !cliente;
-            vinculoTecnico.disabled = cliente;
-            vinculoTecnico.required = !cliente;
+            vinculoTecnico.disabled = !funcionario;
+            vinculoTecnico.required = funcionario;
             vinculoCliente.disabled = !cliente;
             vinculoCliente.required = cliente;
         }
@@ -138,7 +140,7 @@
 
         async function carregarDados() {
             const [usuariosResposta, clientesResposta, tecnicosResposta] = await Promise.all([
-                fetch('/api/usuarios'), fetch('/api/clientes'), fetch('/api/tecnicos/lista')
+                apiFetch('/api/usuarios'), apiFetch('/api/clientes'), apiFetch('/api/tecnicos/lista')
             ]);
             if (![usuariosResposta, clientesResposta, tecnicosResposta].every(resposta => resposta.ok)) {
                 throw new Error('Não foi possível carregar os dados de acesso.');
@@ -150,11 +152,21 @@
         }
 
         tipo.addEventListener('change', atualizarVinculo);
+        document.querySelectorAll('[data-password-target]').forEach(botao => {
+            botao.addEventListener('click', () => {
+                const campo = document.getElementById(botao.dataset.passwordTarget);
+                const mostrar = campo.type === 'password';
+                campo.type = mostrar ? 'text' : 'password';
+                botao.setAttribute('aria-pressed', String(mostrar));
+                botao.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
+                botao.innerHTML = `<i class="fa-regular ${mostrar ? 'fa-eye-slash' : 'fa-eye'}"></i>`;
+            });
+        });
         tabela.addEventListener('click', async event => {
             const botao = event.target.closest('.alternar-usuario');
             if (!botao) return;
             try {
-                const resposta = await fetch(`/api/usuarios/${botao.dataset.usuario}/status`, {
+                const resposta = await apiFetch(`/api/usuarios/${botao.dataset.usuario}/status`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ativo: botao.dataset.ativo !== 'true' })
@@ -180,7 +192,7 @@
                 tecnico_id: vinculoTecnico.value
             };
             try {
-                const resposta = await fetch('/api/usuarios', {
+                const resposta = await apiFetch('/api/usuarios', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dados)

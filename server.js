@@ -7,7 +7,26 @@ const path = require('path');
 const app = express();
 app.use(express.json({ limit: '64kb' }));
 
-const databasePath = path.join(__dirname, 'os_system.sqlite');
+const liveServerOrigins = new Set([
+    'http://localhost:5500',
+    'http://127.0.0.1:5500'
+]);
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (liveServerOrigins.has(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        res.vary('Origin');
+        if (req.method === 'OPTIONS') return res.sendStatus(204);
+    }
+    next();
+});
+
+const databasePath = process.env.DATABASE_PATH
+    ? path.resolve(process.env.DATABASE_PATH)
+    : path.join(__dirname, 'os_system.sqlite');
 const db = new Database(databasePath);
 db.pragma('foreign_keys = ON');
 db.exec(fs.readFileSync(path.join(__dirname, 'mega-brain.sql'), 'utf8'));
@@ -91,9 +110,10 @@ app.get('/api/auth/status', (req, res) => {
 });
 
 app.post('/api/auth/setup', (req, res) => {
-    const nome = typeof req.body.nome === 'string' ? req.body.nome.trim() : '';
-    const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
-    const senha = typeof req.body.senha === 'string' ? req.body.senha : '';
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const nome = typeof body.nome === 'string' ? body.nome.trim() : '';
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const senha = typeof body.senha === 'string' ? body.senha : '';
     if (db.prepare('SELECT 1 FROM usuarios LIMIT 1').get()) {
         return res.status(409).json({ erro: 'A configuração inicial já foi concluída.' });
     }
@@ -119,8 +139,12 @@ app.post('/api/auth/setup', (req, res) => {
 });
 
 app.post('/api/auth/login', (req, res) => {
-    const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
-    const senha = typeof req.body.senha === 'string' ? req.body.senha : '';
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const senha = typeof body.senha === 'string' ? body.senha : '';
+    if (!email || !senha) {
+        return res.status(400).json({ erro: 'Informe seu e-mail e sua senha.' });
+    }
     const usuario = db.prepare('SELECT * FROM usuarios WHERE email = ? AND ativo = 1').get(email);
     if (!usuario || !validarSenha(senha, usuario.senha_hash)) {
         return res.status(401).json({ erro: 'E-mail ou senha inválidos.' });
@@ -168,12 +192,8 @@ app.use('/css', express.static(path.join(__dirname, 'css'), { index: false }));
 app.use('/js', express.static(path.join(__dirname, 'js'), { index: false }));
 
 app.get('/', (req, res) => {
-    const ordens = db.prepare(`
-        SELECT o.id, c.nome AS cliente, o.equipamento, o.prioridade, o.status, o.aberta_em
-        FROM ordens_servico o JOIN clientes c ON c.id = o.cliente_id
-        ORDER BY o.id DESC
-    `).all();
-    res.json(ordens);
+    if (!req.user) return res.redirect('/index.html');
+    res.redirect(req.user.papel === 'cliente' ? '/portal-cliente.html' : '/dashboard.html');
 });
 
 app.use('/api', exigirPapeis('admin', 'funcionario', 'cliente'));
@@ -203,28 +223,38 @@ app.get('/api/usuarios', exigirPapeis('admin'), (req, res) => {
 });
 
 app.post('/api/usuarios', exigirPapeis('admin'), (req, res) => {
-    const { nome, email, senha, papel, cliente_id, tecnico_id } = req.body;
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const { nome, email, senha, papel, cliente_id, tecnico_id } = body;
     const nomeLimpo = typeof nome === 'string' ? nome.trim() : '';
     const emailLimpo = typeof email === 'string' ? email.trim().toLowerCase() : '';
     if (!nomeLimpo || !emailLimpo.includes('@') || typeof senha !== 'string' || senha.length < 12) {
         return res.status(400).json({ erro: 'Informe nome, e-mail válido e senha com pelo menos 12 caracteres.' });
     }
-    if (!['funcionario', 'cliente'].includes(papel)) {
-        return res.status(400).json({ erro: 'O papel deve ser funcionário ou cliente.' });
+    if (!['admin', 'funcionario', 'cliente'].includes(papel)) {
+        return res.status(400).json({ erro: 'Selecione um perfil válido.' });
     }
 
-    const vinculoId = Number(papel === 'cliente' ? cliente_id : tecnico_id);
-    const tabelaVinculo = papel === 'cliente' ? 'clientes' : 'tecnicos';
-    if (!Number.isInteger(vinculoId) || !db.prepare(`SELECT id FROM ${tabelaVinculo} WHERE id = ?`).get(vinculoId)) {
-        return res.status(400).json({ erro: 'Selecione um registro válido para vincular a conta.' });
+    let vinculoId = null;
+    if (papel !== 'admin') {
+        vinculoId = Number(papel === 'cliente' ? cliente_id : tecnico_id);
+        const tabelaVinculo = papel === 'cliente' ? 'clientes' : 'tecnicos';
+        if (!Number.isInteger(vinculoId) || !db.prepare(`SELECT id FROM ${tabelaVinculo} WHERE id = ?`).get(vinculoId)) {
+            return res.status(400).json({ erro: 'Selecione um registro válido para vincular a conta.' });
+        }
     }
 
     try {
-        const resultado = papel === 'cliente'
-            ? db.prepare('INSERT INTO usuarios (nome, email, senha_hash, papel, cliente_id) VALUES (?, ?, ?, ?, ?)')
-                .run(nomeLimpo, emailLimpo, hashSenha(senha), papel, vinculoId)
-            : db.prepare('INSERT INTO usuarios (nome, email, senha_hash, papel, tecnico_id) VALUES (?, ?, ?, ?, ?)')
+        let resultado;
+        if (papel === 'admin') {
+            resultado = db.prepare('INSERT INTO usuarios (nome, email, senha_hash, papel) VALUES (?, ?, ?, ?)')
+                .run(nomeLimpo, emailLimpo, hashSenha(senha), papel);
+        } else if (papel === 'cliente') {
+            resultado = db.prepare('INSERT INTO usuarios (nome, email, senha_hash, papel, cliente_id) VALUES (?, ?, ?, ?, ?)')
                 .run(nomeLimpo, emailLimpo, hashSenha(senha), papel, vinculoId);
+        } else {
+            resultado = db.prepare('INSERT INTO usuarios (nome, email, senha_hash, papel, tecnico_id) VALUES (?, ?, ?, ?, ?)')
+                .run(nomeLimpo, emailLimpo, hashSenha(senha), papel, vinculoId);
+        }
         res.status(201).json({ id: Number(resultado.lastInsertRowid), mensagem: 'Conta criada.' });
     } catch (erro) {
         res.status(400).json({ erro: erro.message.includes('UNIQUE') ? 'Este e-mail já possui uma conta.' : erro.message });
@@ -468,7 +498,7 @@ app.post('/api/tecnicos', exigirPapeis('admin'), (req, res) => {
 app.get('/api/tecnicos/lista', exigirPapeis('admin'), (req, res) => {
     try {
         res.json(db.prepare(
-            'SELECT nome, email, telefone, especialidade FROM tecnicos ORDER BY nome ASC'
+            'SELECT id, nome, email, telefone, especialidade FROM tecnicos ORDER BY nome ASC'
         ).all());
     } catch (erro) {
         res.status(500).json({ erro: erro.message });
@@ -519,7 +549,7 @@ app.get('/api/clientes', exigirPapeis('admin', 'funcionario'), (req, res) => {
     }
 });
 
-const PORT = 3001;
+const PORT = Number(process.env.PORT) || 3001;
 app.listen(PORT, '127.0.0.1', () => {
     console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });

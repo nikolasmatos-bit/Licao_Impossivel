@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Novo serviço - OS System</title>
+    <title>Novo serviço - Megabrain Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
-    <script src="/js/auth.js" defer></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/auth.js" defer></script>
 </head>
 <body>
 
     <header>
-        <h2>Ordem Clara</h2>
+        <h2>Megabrain Services</h2>
         <nav>
             <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Painel</span></a>
             <a href="cadastros.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Novo serviço</span></a>
@@ -72,7 +73,7 @@
         }
 
         // Carrega técnicos do banco
-        fetch('/api/tecnicos')
+        apiFetch('/api/tecnicos')
             .then(r => r.json())
             .then(tecnicos => {
                 let opcoes = '';
@@ -119,7 +120,7 @@
                 return;
             }
 
-            fetch('/api/ordens', {
+            apiFetch('/api/ordens', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(novaOrdem)
