@@ -66,12 +66,26 @@ app.use((req, res, next) => {
     next();
 });
 
+// Limpa sessões expiradas de hora em hora (unref para não travar o processo)
+setInterval(() => {
+    try {
+        db.prepare('DELETE FROM sessoes WHERE expira_em <= ?').run(Math.floor(Date.now() / 1000));
+    } catch (erro) {
+        console.error('Falha ao limpar sessões expiradas:', erro.message);
+    }
+}, 60 * 60 * 1000).unref();
+
 function exigirPapeis(...papeis) {
     return (req, res, next) => {
         if (!req.user) return res.status(401).json({ erro: 'Entre para continuar.' });
         if (!papeis.includes(req.user.papel)) return res.status(403).json({ erro: 'Seu perfil não pode executar esta ação.' });
         next();
     };
+}
+
+// Converte body de forma segura (Express 5 deixa undefined se não for JSON)
+function corpoSeguro(req) {
+    return req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
 }
 
 function emitirSessao(req, res, usuario) {
@@ -88,12 +102,16 @@ function dadosPublicosUsuario(usuario) {
 }
 
 app.get('/api/auth/status', (req, res) => {
-    const usuarios = db.prepare('SELECT COUNT(*) AS total FROM usuarios').get().total;
-    res.json({ configurado: usuarios > 0 });
+    try {
+        const usuarios = db.prepare('SELECT COUNT(*) AS total FROM usuarios').get().total;
+        res.json({ configurado: usuarios > 0 });
+    } catch (erro) {
+        res.status(500).json({ erro: erro.message });
+    }
 });
 
 app.post('/api/auth/setup', (req, res) => {
-    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const body = corpoSeguro(req);
     const nome = typeof body.nome === 'string' ? body.nome.trim() : '';
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
     const senha = typeof body.senha === 'string' ? body.senha : '';
@@ -122,25 +140,32 @@ app.post('/api/auth/setup', (req, res) => {
 });
 
 app.post('/api/auth/login', (req, res) => {
-    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const body = corpoSeguro(req);
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
     const senha = typeof body.senha === 'string' ? body.senha : '';
     if (!email || !senha) {
         return res.status(400).json({ erro: 'Informe seu e-mail e sua senha.' });
     }
-    const usuario = db.prepare('SELECT * FROM usuarios WHERE email = ? AND ativo = 1').get(email);
-    if (!usuario || !validarSenha(senha, usuario.senha_hash)) {
-        return res.status(401).json({ erro: 'E-mail ou senha inválidos.' });
+    try {
+        const usuario = db.prepare('SELECT * FROM usuarios WHERE email = ? AND ativo = 1').get(email);
+        if (!usuario || !validarSenha(senha, usuario.senha_hash)) {
+            return res.status(401).json({ erro: 'E-mail ou senha inválidos.' });
+        }
+        db.prepare('DELETE FROM sessoes WHERE expira_em <= ?').run(Math.floor(Date.now() / 1000));
+        emitirSessao(req, res, usuario);
+        res.json({ usuario: dadosPublicosUsuario(usuario) });
+    } catch (erro) {
+        res.status(500).json({ erro: erro.message });
     }
-
-    db.prepare('DELETE FROM sessoes WHERE expira_em <= ?').run(Math.floor(Date.now() / 1000));
-    emitirSessao(req, res, usuario);
-    res.json({ usuario: dadosPublicosUsuario(usuario) });
 });
 
 app.post('/api/auth/logout', (req, res) => {
-    const token = tokenDaRequisicao(req);
-    if (token) db.prepare('DELETE FROM sessoes WHERE token_hash = ?').run(hashToken(token));
+    try {
+        const token = tokenDaRequisicao(req);
+        if (token) db.prepare('DELETE FROM sessoes WHERE token_hash = ?').run(hashToken(token));
+    } catch (erro) {
+        console.error('Falha ao encerrar sessão:', erro.message);
+    }
     res.setHeader('Set-Cookie', `${AUTH_COOKIE}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0`);
     res.json({ ok: true });
 });
@@ -206,7 +231,7 @@ app.get('/api/usuarios', exigirPapeis('admin'), (req, res) => {
 });
 
 app.post('/api/usuarios', exigirPapeis('admin'), (req, res) => {
-    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const body = corpoSeguro(req);
     const { nome, email, senha, papel, cliente_id, tecnico_id } = body;
     const nomeLimpo = typeof nome === 'string' ? nome.trim() : '';
     const emailLimpo = typeof email === 'string' ? email.trim().toLowerCase() : '';
@@ -246,7 +271,8 @@ app.post('/api/usuarios', exigirPapeis('admin'), (req, res) => {
 
 app.patch('/api/usuarios/:id/status', exigirPapeis('admin'), (req, res) => {
     const usuarioId = Number(req.params.id);
-    const ativo = req.body.ativo;
+    const body = corpoSeguro(req);
+    const ativo = body.ativo;
     if (!Number.isInteger(usuarioId) || typeof ativo !== 'boolean') {
         return res.status(400).json({ erro: 'Informe um usuário e um status válido.' });
     }
@@ -265,26 +291,26 @@ app.patch('/api/usuarios/:id/status', exigirPapeis('admin'), (req, res) => {
 });
 
 app.get('/api/ordens', (req, res) => {
-    const sql = `
-         SELECT o.id, c.nome AS cliente, c.telefone AS cliente_telefone,
-             c.email AS cliente_email, t.nome AS tecnico,
-               o.equipamento, o.prioridade, o.status, o.descricao,
-               o.aberta_em
-        FROM ordens_servico o
-        JOIN clientes c ON c.id = o.cliente_id
-        LEFT JOIN tecnicos t ON t.id = o.tecnico_id
-        ORDER BY o.id DESC
-    `;
     try {
+        let sql = `
+            SELECT o.id, c.nome AS cliente, c.telefone AS cliente_telefone,
+                   c.email AS cliente_email, t.nome AS tecnico,
+                   o.equipamento, o.prioridade, o.status, o.descricao,
+                   o.aberta_em
+            FROM ordens_servico o
+            JOIN clientes c ON c.id = o.cliente_id
+            LEFT JOIN tecnicos t ON t.id = o.tecnico_id
+        `;
+        const params = [];
         if (req.user.papel === 'cliente') {
-            const filtrado = sql.replace('ORDER BY', 'WHERE o.cliente_id = ? ORDER BY');
-            return res.json(db.prepare(filtrado).all(req.user.cliente_id));
+            sql += ' WHERE o.cliente_id = ?';
+            params.push(req.user.cliente_id);
+        } else if (req.user.papel === 'funcionario') {
+            sql += ' WHERE o.tecnico_id = ?';
+            params.push(req.user.tecnico_id);
         }
-        if (req.user.papel === 'funcionario') {
-            const filtrado = sql.replace('ORDER BY', 'WHERE o.tecnico_id = ? ORDER BY');
-            return res.json(db.prepare(filtrado).all(req.user.tecnico_id));
-        }
-        res.json(db.prepare(sql).all());
+        sql += ' ORDER BY o.id DESC';
+        res.json(db.prepare(sql).all(...params));
     } catch (erro) {
         res.status(500).json({ erro: erro.message });
     }
@@ -293,8 +319,8 @@ app.get('/api/ordens', (req, res) => {
 app.get('/api/ordens/:id', (req, res) => {
     const { id } = req.params;
     const sql = `
-         SELECT o.*, c.nome AS cliente, c.telefone AS cliente_telefone,
-             c.email AS cliente_email, t.nome AS tecnico
+        SELECT o.*, c.nome AS cliente, c.telefone AS cliente_telefone,
+               c.email AS cliente_email, t.nome AS tecnico
         FROM ordens_servico o
         JOIN clientes c ON c.id = o.cliente_id
         LEFT JOIN tecnicos t ON t.id = o.tecnico_id
@@ -325,25 +351,29 @@ app.get('/api/ordens/:id/interacoes', (req, res) => {
             WHERE ordem_id = ? ${req.user.papel === 'cliente' ? "AND visibilidade = 'publica'" : ''}
             ORDER BY criado_em DESC, id DESC
         `;
-        const interacoes = db.prepare(sql).all(ordem.id);
-        res.json(interacoes);
+        res.json(db.prepare(sql).all(ordem.id));
     } catch (erro) {
         res.status(500).json({ erro: erro.message });
     }
 });
 
 app.post('/api/ordens/:id/interacoes', (req, res) => {
-    const mensagem = typeof req.body.mensagem === 'string' ? req.body.mensagem.trim() : '';
-    const canal = req.body.canal || 'Nota';
+    const body = corpoSeguro(req);
+    const mensagem = typeof body.mensagem === 'string' ? body.mensagem.trim() : '';
+    const canalInformado = typeof body.canal === 'string' ? body.canal : 'Nota';
+    const canaisPermitidos = ['Nota', 'WhatsApp', 'Atualização'];
     if (!mensagem) return res.status(400).json({ erro: 'Escreva uma mensagem antes de salvar.' });
     if (mensagem.length > 2000) return res.status(400).json({ erro: 'A mensagem deve ter até 2.000 caracteres.' });
+    if (!canaisPermitidos.includes(canalInformado)) {
+        return res.status(400).json({ erro: 'Canal de interação inválido.' });
+    }
 
     try {
         const ordem = db.prepare('SELECT id FROM ordens_servico WHERE id = ?').get(req.params.id);
         if (!ordem) return res.status(404).json({ erro: 'OS não encontrada' });
         if (!podeAcessarOrdem(req.user, ordem.id)) return res.status(403).json({ erro: 'Esta ordem não pertence ao seu perfil.' });
 
-        const canalSeguro = req.user.papel === 'cliente' ? 'Atualização' : canal;
+        const canalSeguro = req.user.papel === 'cliente' ? 'Atualização' : canalInformado;
         const visibilidade = canalSeguro === 'Nota' ? 'interna' : 'publica';
 
         const resultado = db.prepare(`
@@ -356,9 +386,22 @@ app.post('/api/ordens/:id/interacoes', (req, res) => {
     }
 });
 
-// 3. Cadastrar nova ordem (cadastros.html)
 app.post('/api/ordens', exigirPapeis('admin', 'funcionario'), (req, res) => {
-    const { cliente_nome, cliente_telefone, cliente_email, equipamento, tecnico_nome, prioridade, descricao } = req.body;
+    const body = corpoSeguro(req);
+    const cliente_nome = typeof body.cliente_nome === 'string' ? body.cliente_nome.trim() : '';
+    const cliente_telefone = typeof body.cliente_telefone === 'string' ? body.cliente_telefone.trim() : '';
+    const cliente_email = typeof body.cliente_email === 'string' ? body.cliente_email.trim() : '';
+    const equipamento = typeof body.equipamento === 'string' ? body.equipamento.trim() : '';
+    const tecnico_nome = typeof body.tecnico_nome === 'string' ? body.tecnico_nome.trim() : '';
+    const prioridade = typeof body.prioridade === 'string' ? body.prioridade : 'Média';
+    const descricao = typeof body.descricao === 'string' ? body.descricao.trim() : '';
+
+    if (!cliente_nome) return res.status(400).json({ erro: 'Informe o nome do cliente.' });
+    if (!equipamento) return res.status(400).json({ erro: 'Informe o equipamento.' });
+    if (descricao.length < 10) return res.status(400).json({ erro: 'Descreva o problema com pelo menos 10 caracteres.' });
+    if (!['Baixa', 'Média', 'Alta'].includes(prioridade)) {
+        return res.status(400).json({ erro: 'Prioridade inválida.' });
+    }
 
     try {
         const ordemId = db.transaction(() => {
@@ -380,10 +423,14 @@ app.post('/api/ordens', exigirPapeis('admin', 'funcionario'), (req, res) => {
             if (req.user.papel === 'admin' && tecnico_nome) {
                 let tecnico = db.prepare('SELECT id FROM tecnicos WHERE nome = ?').get(tecnico_nome);
                 if (!tecnico) {
-                    const email = tecnico_nome.toLowerCase().replace(/\s/g, '') + '@temp.com';
+                    const slug = tecnico_nome
+                        .toLowerCase()
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[^a-z0-9]/g, '');
+                    const emailTemp = `${slug || 'tecnico'}-${Date.now()}@temp.local`;
                     const resultado = db.prepare(
                         "INSERT INTO tecnicos (nome, email, telefone, especialidade) VALUES (?, ?, '0000', 'Geral')"
-                    ).run(tecnico_nome, email);
+                    ).run(tecnico_nome, emailTemp);
                     tecnico = { id: Number(resultado.lastInsertRowid) };
                 }
                 tecnicoId = tecnico.id;
@@ -397,24 +444,18 @@ app.post('/api/ordens', exigirPapeis('admin', 'funcionario'), (req, res) => {
             return Number(resultado.lastInsertRowid);
         })();
 
-        res.json({ mensagem: 'OS criada com sucesso!', id: ordemId });
+        res.status(201).json({ mensagem: 'OS criada com sucesso!', id: ordemId });
     } catch (erro) {
         res.status(500).json({ erro: erro.message });
     }
 });
 
-// 4. Atualizar status e diagnóstico da OS (detalhes.html)
 app.put('/api/ordens/:id/status', exigirPapeis('admin', 'funcionario'), (req, res) => {
     const { id } = req.params;
-    const { status, diagnostico } = req.body;
-    
-    const sql = `
-        UPDATE ordens_servico 
-        SET status = ?, 
-            diagnostico = ?, 
-            fechada_em = CASE WHEN ? IN ('Concluída','Cancelada') THEN CURRENT_TIMESTAMP ELSE NULL END
-        WHERE id = ?
-    `;
+    const body = corpoSeguro(req);
+    const status = body.status;
+    const diagnostico = typeof body.diagnostico === 'string' ? body.diagnostico.trim() : '';
+
     try {
         const ordemExiste = db.prepare('SELECT id FROM ordens_servico WHERE id = ?').get(id);
         if (!ordemExiste) return res.status(404).json({ erro: 'OS não encontrada' });
@@ -424,12 +465,18 @@ app.put('/api/ordens/:id/status', exigirPapeis('admin', 'funcionario'), (req, re
         }
 
         db.transaction(() => {
-            db.prepare(sql).run(status, diagnostico, status, id);
-            if (diagnostico && diagnostico.trim()) {
+            db.prepare(`
+                UPDATE ordens_servico
+                SET status = ?,
+                    diagnostico = ?,
+                    fechada_em = CASE WHEN ? IN ('Concluída','Cancelada') THEN CURRENT_TIMESTAMP ELSE NULL END
+                WHERE id = ?
+            `).run(status, diagnostico || null, status, id);
+            if (diagnostico) {
                 db.prepare(`
                     INSERT INTO interacoes_cliente (ordem_id, autor_id, canal, visibilidade, mensagem)
                     VALUES (?, ?, 'Atualização', 'publica', ?)
-                `).run(id, req.user.id, diagnostico.trim());
+                `).run(id, req.user.id, diagnostico);
             }
         })();
         res.json({ mensagem: 'OS atualizada com sucesso!' });
@@ -438,7 +485,6 @@ app.put('/api/ordens/:id/status', exigirPapeis('admin', 'funcionario'), (req, re
     }
 });
 
-// 5. Listar técnicos (para o datalist)
 app.get('/api/tecnicos', exigirPapeis('admin', 'funcionario'), (req, res) => {
     try {
         res.json(db.prepare('SELECT nome FROM tecnicos ORDER BY nome ASC').all());
@@ -447,26 +493,31 @@ app.get('/api/tecnicos', exigirPapeis('admin', 'funcionario'), (req, res) => {
     }
 });
 
-// 6. Cadastrar técnico (tecnicos.html)
 app.post('/api/tecnicos', exigirPapeis('admin'), (req, res) => {
-    const { nome, email, telefone, especialidade } = req.body;
+    const body = corpoSeguro(req);
+    const { nome, email, telefone, especialidade } = body;
+    if (typeof nome !== 'string' || !nome.trim()
+        || typeof email !== 'string' || !email.includes('@')
+        || typeof telefone !== 'string' || !telefone.trim()
+        || typeof especialidade !== 'string' || !especialidade.trim()) {
+        return res.status(400).json({ erro: 'Preencha nome, e-mail válido, telefone e especialidade.' });
+    }
 
     try {
-        const tecnicoExistente = db.prepare('SELECT id FROM tecnicos WHERE email = ?').get(email);
+        const tecnicoExistente = db.prepare('SELECT id FROM tecnicos WHERE email = ?').get(email.trim().toLowerCase());
         if (tecnicoExistente) {
             return res.status(400).json({ erro: 'Este e-mail já está cadastrado.' });
         }
 
         const resultado = db.prepare(
             'INSERT INTO tecnicos (nome, email, telefone, especialidade) VALUES (?, ?, ?, ?)'
-        ).run(nome, email, telefone, especialidade);
+        ).run(nome.trim(), email.trim().toLowerCase(), telefone.trim(), especialidade.trim());
         res.json({ mensagem: 'Técnico cadastrado!', id: Number(resultado.lastInsertRowid) });
     } catch (erro) {
         res.status(500).json({ erro: erro.message });
     }
 });
 
-// 7. Listar todos os técnicos completos (tecnicos.html)
 app.get('/api/tecnicos/lista', exigirPapeis('admin'), (req, res) => {
     try {
         res.json(db.prepare(
@@ -477,7 +528,6 @@ app.get('/api/tecnicos/lista', exigirPapeis('admin'), (req, res) => {
     }
 });
 
-// 8. Contadores do Dashboard
 app.get('/api/dashboard', exigirPapeis('admin', 'funcionario'), (req, res) => {
     try {
         const filtro = req.user.papel === 'funcionario' ? 'WHERE tecnico_id = ?' : '';
@@ -519,6 +569,19 @@ app.get('/api/clientes', exigirPapeis('admin', 'funcionario'), (req, res) => {
     } catch (erro) {
         res.status(500).json({ erro: erro.message });
     }
+});
+
+// Handler global de erros (JSON, body grande, etc.) — sempre devolve JSON
+app.use((err, req, res, next) => {
+    if (res.headersSent) return next(err);
+    if (err && (err.type === 'entity.parse.failed' || (err instanceof SyntaxError && err.status === 400))) {
+        return res.status(400).json({ erro: 'Corpo da requisição não é um JSON válido.' });
+    }
+    if (err && err.type === 'entity.too.large') {
+        return res.status(413).json({ erro: 'Requisição muito grande.' });
+    }
+    console.error('Erro não tratado:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
 });
 
 const PORT = Number(process.env.PORT) || 3001;
