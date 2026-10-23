@@ -4,15 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus atendimentos - Megabrain Services</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/api.js"></script>
     <script src="./js/auth.js" defer></script>
 </head>
 <body>
-    <header>
+        <header>
         <h2>Megabrain Services</h2>
-        <nav><a href="portal-cliente.html" class="ativo">Meus atendimentos</a></nav>
+        <nav class="menu">
+            <a href="dashboard.html">Painel</a>
+            <a href="cadastros.html">Nova OS</a>
+            <a href="lista.html">Ordens</a>
+            <a href="tecnicos.html">Tecnicos</a>
+            <a href="clientes.html">Clientes</a>
+        </nav>
     </header>
 
     <main>
@@ -22,19 +27,19 @@
                 <h1 id="saudacao-cliente">Seus atendimentos</h1>
                 <p>Acompanhe o andamento e fale com a equipe responsável.</p>
             </div>
-            <a class="button button-outline" href="#lista-atendimentos"><i class="fa-solid fa-arrow-down"></i> Ver atendimentos</a>
+            <a class="button button-outline" href="#lista-atendimentos"> Ver atendimentos</a>
         </div>
 
         <section class="metric-grid" aria-label="Resumo dos atendimentos">
-            <article class="metric-card"><span>Total de ordens</span><strong id="total-cliente">0</strong><i class="fa-solid fa-layer-group"></i></article>
-            <article class="metric-card"><span>Em andamento</span><strong id="ativas-cliente">0</strong><i class="fa-solid fa-screwdriver-wrench"></i></article>
-            <article class="metric-card"><span>Concluídas</span><strong id="concluidas-cliente">0</strong><i class="fa-solid fa-circle-check"></i></article>
+            <article class="metric-card"><span>Total de ordens</span><strong id="total-cliente">0</strong></article>
+            <article class="metric-card"><span>Em andamento</span><strong id="ativas-cliente">0</strong></article>
+            <article class="metric-card"><span>Concluídas</span><strong id="concluidas-cliente">0</strong></article>
         </section>
 
         <section class="data-section" id="lista-atendimentos">
             <div class="section-heading">
                 <div><h2>Suas ordens</h2><p id="resumo-cliente">Buscando atualizações...</p></div>
-                <label class="search-field"><i class="fa-solid fa-magnifying-glass"></i><input id="busca-cliente" type="search" placeholder="Buscar aparelho ou status" aria-label="Buscar atendimentos"></label>
+                <label class="search-field"><input id="busca-cliente" type="search" placeholder="Buscar aparelho ou status" aria-label="Buscar atendimentos"></label>
             </div>
             <div class="table-wrap">
                 <table>
@@ -42,7 +47,7 @@
                     <tbody id="ordens-cliente"></tbody>
                 </table>
             </div>
-            <div id="vazio-cliente" class="empty-state" hidden><i class="fa-regular fa-folder-open"></i><strong>Nenhuma ordem encontrada</strong><span>As novas ordens aparecerão aqui.</span></div>
+            <div id="vazio-cliente" class="empty-state" hidden><strong>Nenhuma ordem encontrada</strong><span>As novas ordens aparecerão aqui.</span></div>
         </section>
     </main>
 
@@ -87,7 +92,7 @@
                 const link = document.createElement('a');
                 link.className = 'button button-outline table-button';
                 link.href = `detalhes.html?id=${ordem.id}`;
-                link.innerHTML = '<i class="fa-regular fa-comments"></i> Acompanhar';
+                link.innerHTML = ' Acompanhar';
                 acao.append(link);
                 linha.append(numero, equipamento, tecnico, abertura, status, acao);
                 tabela.append(linha);

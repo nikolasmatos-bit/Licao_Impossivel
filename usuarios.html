@@ -4,17 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acessos - Megabrain Services</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/api.js"></script>
     <script src="./js/auth.js" defer></script>
 </head>
 <body>
-    <header>
+        <header>
         <h2>Megabrain Services</h2>
-        <nav>
+        <nav class="menu">
             <a href="dashboard.html">Painel</a>
-            <a href="usuarios.html" class="ativo">Acessos</a>
+            <a href="usuarios.html">Acessos</a>
         </nav>
     </header>
 
@@ -24,9 +23,9 @@
         </div>
 
         <section class="metric-grid" aria-label="Resumo de contas">
-            <article class="metric-card"><span>Contas ativas</span><strong id="total-usuarios">0</strong><i class="fa-solid fa-users"></i></article>
-            <article class="metric-card"><span>Equipe</span><strong id="total-funcionarios">0</strong><i class="fa-solid fa-user-gear"></i></article>
-            <article class="metric-card"><span>Clientes</span><strong id="total-contas-cliente">0</strong><i class="fa-solid fa-user"></i></article>
+            <article class="metric-card"><span>Contas ativas</span><strong id="total-usuarios">0</strong></article>
+            <article class="metric-card"><span>Equipe</span><strong id="total-funcionarios">0</strong></article>
+            <article class="metric-card"><span>Clientes</span><strong id="total-contas-cliente">0</strong></article>
         </section>
 
         <div class="admin-layout">
@@ -48,8 +47,8 @@
                         <select id="vinculo-cliente" name="cliente_id" disabled></select>
                     </div>
                     <label for="usuario-senha">Senha inicial</label>
-                    <div class="password-field"><input id="usuario-senha" name="senha" type="password" minlength="12" autocomplete="new-password" placeholder="Mínimo de 12 caracteres" required><button type="button" class="password-toggle" data-password-target="usuario-senha" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div>
-                    <button class="button button-primary" type="submit"><i class="fa-solid fa-user-plus"></i> Criar conta</button>
+                    <div class="password-field"><input id="usuario-senha" name="senha" type="password" minlength="12" autocomplete="new-password" placeholder="Mínimo de 12 caracteres" required><button type="button" class="password-toggle" data-password-target="usuario-senha" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div>
+                    <button class="button button-primary" type="submit"> Criar conta</button>
                     <div id="mensagem-usuario" class="mensagem" role="status"></div>
                 </form>
             </section>
@@ -128,7 +127,7 @@
                 botao.dataset.ativo = String(Boolean(usuario.ativo));
                 botao.title = usuario.ativo ? 'Suspender acesso' : 'Reativar acesso';
                 botao.setAttribute('aria-label', botao.title);
-                botao.innerHTML = `<i class="fa-solid ${usuario.ativo ? 'fa-user-slash' : 'fa-user-check'}"></i>`;
+                botao.textContent = usuario.ativo ? 'Suspender' : 'Reativar';
                 acoes.append(botao);
                 linha.append(nome, papel, vinculo, status, acoes);
                 tabela.append(linha);
@@ -159,7 +158,7 @@
                 campo.type = mostrar ? 'text' : 'password';
                 botao.setAttribute('aria-pressed', String(mostrar));
                 botao.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
-                botao.innerHTML = `<i class="fa-regular ${mostrar ? 'fa-eye-slash' : 'fa-eye'}"></i>`;
+                botao.textContent = mostrar ? 'Ocultar' : 'Mostrar';
             });
         });
         tabela.addEventListener('click', async event => {

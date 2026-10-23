@@ -7,23 +7,6 @@ const path = require('path');
 const app = express();
 app.use(express.json({ limit: '64kb' }));
 
-const liveServerOrigins = new Set([
-    'http://localhost:5500',
-    'http://127.0.0.1:5500'
-]);
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (liveServerOrigins.has(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-        res.vary('Origin');
-        if (req.method === 'OPTIONS') return res.sendStatus(204);
-    }
-    next();
-});
-
 const databasePath = process.env.DATABASE_PATH
     ? path.resolve(process.env.DATABASE_PATH)
     : path.join(__dirname, 'os_system.sqlite');
@@ -281,17 +264,7 @@ app.patch('/api/usuarios/:id/status', exigirPapeis('admin'), (req, res) => {
     }
 });
 
-// 0. Rota de teste
-app.get('/api/teste', exigirPapeis('admin', 'funcionario'), (req, res) => {
-    try {
-        res.json(db.prepare('SELECT nome FROM tecnicos').all());
-    } catch (erro) {
-        res.status(500).json({ erro: erro.message });
-    }
-});
-
-// 1. Listar todas as ordens (lista.html)
-app.get('/api/ordens', exigirPapeis('admin', 'funcionario', 'cliente'), (req, res) => {
+app.get('/api/ordens', (req, res) => {
     const sql = `
          SELECT o.id, c.nome AS cliente, c.telefone AS cliente_telefone,
              c.email AS cliente_email, t.nome AS tecnico,
@@ -317,8 +290,7 @@ app.get('/api/ordens', exigirPapeis('admin', 'funcionario', 'cliente'), (req, re
     }
 });
 
-// 2. Buscar uma ordem específica (detalhes.html)
-app.get('/api/ordens/:id', exigirPapeis('admin', 'funcionario', 'cliente'), (req, res) => {
+app.get('/api/ordens/:id', (req, res) => {
     const { id } = req.params;
     const sql = `
          SELECT o.*, c.nome AS cliente, c.telefone AS cliente_telefone,
@@ -341,7 +313,7 @@ app.get('/api/ordens/:id', exigirPapeis('admin', 'funcionario', 'cliente'), (req
     }
 });
 
-app.get('/api/ordens/:id/interacoes', exigirPapeis('admin', 'funcionario', 'cliente'), (req, res) => {
+app.get('/api/ordens/:id/interacoes', (req, res) => {
     try {
         const ordem = db.prepare('SELECT id FROM ordens_servico WHERE id = ?').get(req.params.id);
         if (!ordem) return res.status(404).json({ erro: 'OS não encontrada' });
@@ -360,7 +332,7 @@ app.get('/api/ordens/:id/interacoes', exigirPapeis('admin', 'funcionario', 'clie
     }
 });
 
-app.post('/api/ordens/:id/interacoes', exigirPapeis('admin', 'funcionario', 'cliente'), (req, res) => {
+app.post('/api/ordens/:id/interacoes', (req, res) => {
     const mensagem = typeof req.body.mensagem === 'string' ? req.body.mensagem.trim() : '';
     const canal = req.body.canal || 'Nota';
     if (!mensagem) return res.status(400).json({ erro: 'Escreva uma mensagem antes de salvar.' });

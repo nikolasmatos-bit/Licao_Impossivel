@@ -4,21 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clientes - Megabrain Services</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/api.js"></script>
     <script src="./js/auth.js" defer></script>
 </head>
 <body>
 
-    <header>
+        <header>
         <h2>Megabrain Services</h2>
-        <nav>
-            <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Painel</span></a>
-            <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
-            <a href="lista.html"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Ordens</span></a>
-            <a href="tecnicos.html"><span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span><span>Técnicos</span></a>
-            <a href="clientes.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-users"></i></span><span>Clientes</span></a>
+        <nav class="menu">
+            <a href="dashboard.html">Painel</a>
+            <a href="cadastros.html">Nova OS</a>
+            <a href="lista.html">Ordens</a>
+            <a href="tecnicos.html">Tecnicos</a>
+            <a href="clientes.html">Clientes</a>
         </nav>
     </header>
 
@@ -29,19 +28,19 @@
                 <h1>Clientes</h1>
                 <p>Contatos e histórico de atendimento em um só lugar.</p>
             </div>
-            <a class="button button-primary" href="cadastros.html"><i class="fa-solid fa-plus"></i> Nova ordem</a>
+            <a class="button button-primary" href="cadastros.html"> Nova ordem</a>
         </div>
 
         <section class="metric-grid" aria-label="Resumo dos clientes">
-            <article class="metric-card"><span>Clientes</span><strong id="total-clientes">0</strong><i class="fa-solid fa-users"></i></article>
-            <article class="metric-card"><span>Com contato</span><strong id="com-contato">0</strong><i class="fa-solid fa-address-book"></i></article>
-            <article class="metric-card"><span>Ordens em aberto</span><strong id="os-ativas">0</strong><i class="fa-solid fa-headset"></i></article>
+            <article class="metric-card"><span>Clientes</span><strong id="total-clientes">0</strong></article>
+            <article class="metric-card"><span>Com contato</span><strong id="com-contato">0</strong></article>
+            <article class="metric-card"><span>Ordens em aberto</span><strong id="os-ativas">0</strong></article>
         </section>
 
         <section class="data-section">
             <div class="section-heading">
                 <div><h2>Carteira de clientes</h2><p id="resultado-clientes">Carregando clientes...</p></div>
-                <label class="search-field"><i class="fa-solid fa-magnifying-glass"></i><input id="pesquisa-clientes" type="search" placeholder="Buscar nome ou contato" aria-label="Buscar clientes"></label>
+                <label class="search-field"><input id="pesquisa-clientes" type="search" placeholder="Buscar nome ou contato" aria-label="Buscar clientes"></label>
             </div>
             <div class="table-wrap">
                 <table>
@@ -49,7 +48,7 @@
                     <tbody id="lista-clientes"></tbody>
                 </table>
             </div>
-            <div class="empty-state" id="vazio-clientes" hidden><i class="fa-regular fa-address-card"></i><strong>Nenhum cliente encontrado</strong><span>Cadastre uma ordem para adicionar clientes à carteira.</span></div>
+            <div class="empty-state" id="vazio-clientes" hidden><strong>Nenhum cliente encontrado</strong><span>Cadastre uma ordem para adicionar clientes à carteira.</span></div>
         </section>
     </main>
 
@@ -94,7 +93,7 @@
                     whatsapp.rel = 'noopener noreferrer';
                     whatsapp.title = 'Conversar pelo WhatsApp';
                     whatsapp.setAttribute('aria-label', `Conversar com ${cliente.nome} pelo WhatsApp`);
-                    whatsapp.innerHTML = '<i class="fa-brands fa-whatsapp"></i>';
+                    whatsapp.textContent = 'WhatsApp';
                     acoes.append(whatsapp);
                 }
                 if (cliente.email) {
@@ -102,14 +101,14 @@
                     email.href = `mailto:${encodeURIComponent(cliente.email)}`;
                     email.title = 'Enviar e-mail';
                     email.setAttribute('aria-label', `Enviar e-mail para ${cliente.nome}`);
-                    email.innerHTML = '<i class="fa-regular fa-envelope"></i>';
+                    email.textContent = 'E-mail';
                     acoes.append(email);
                 }
                 const ordens = document.createElement('a');
                 ordens.href = `lista.html?cliente=${encodeURIComponent(cliente.nome)}`;
                 ordens.title = 'Ver ordens deste cliente';
                 ordens.setAttribute('aria-label', `Ver ordens de ${cliente.nome}`);
-                ordens.innerHTML = '<i class="fa-solid fa-list-check"></i>';
+                ordens.textContent = 'Ordens';
                 acoes.append(ordens);
                 linha.append(acoes);
                 tabela.append(linha);

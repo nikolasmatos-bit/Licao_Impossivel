@@ -4,51 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entrar - Megabrain Services</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/api.js"></script>
-    
+
 </head>
 <body class="login">
-    <main class="auth-shell">
-        <section class="auth-story">
-            <a class="auth-brand" href="/index.html"><span class="brand-mark">MB</span><span>Megabrain<span class="brand-light"> Services</span></span></a>
-            <div class="auth-story-copy">
-                <p class="eyebrow">OPERAÇÃO DE SERVIÇO</p>
-                <h1>Inteligência para cada etapa do atendimento.</h1>
-                <p>Uma plataforma conectada para sua equipe cuidar de cada serviço com clareza e agilidade.</p>
-            </div>
-            <div class="auth-story-footer"><span class="live-indicator">Banco local protegido</span><span>Workspace de atendimento</span></div>
-        </section>
-
+    <main>
         <section class="auth-panel">
-            <div class="auth-panel-heading">
-                <p class="eyebrow" id="auth-kicker">MEGABRAIN SERVICES</p>
-                <h2 id="auth-title">Acesse sua conta</h2>
-                <p id="auth-description">Entre com o e-mail e a senha cadastrados pela administração.</p>
-            </div>
+            <h1 id="auth-title">Entrar no sistema</h1>
+            <p id="auth-description">Use o e-mail e a senha da sua conta.</p>
 
-            <form id="form-login" class="auth-form">
+            <form id="form-login">
                 <label for="email">E-mail de trabalho</label>
                 <input type="email" id="email" name="email" autocomplete="username" placeholder="nome@empresa.com" required>
                 <label for="senha">Senha</label>
-                <div class="password-field"><input type="password" id="senha" name="senha" autocomplete="current-password" placeholder="Sua senha" required><button type="button" class="password-toggle" data-password-target="senha" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div>
-                <button type="submit" class="button button-primary"><span>Entrar no workspace</span><i class="fa-solid fa-arrow-right"></i></button>
+                <div class="password-field"><input type="password" id="senha" name="senha" autocomplete="current-password" placeholder="Sua senha" required><button type="button" class="password-toggle" data-password-target="senha" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div>
+                <button type="submit">Entrar</button>
                 <div id="mensagem-login" class="mensagem" role="status"></div>
             </form>
 
-            <form id="form-setup" class="auth-form" hidden>
+            <form id="form-setup" hidden>
                 <label for="admin-nome">Seu nome</label>
                 <input type="text" id="admin-nome" autocomplete="name" placeholder="Nome de quem administra" required>
                 <label for="admin-email">E-mail de administração</label>
                 <input type="email" id="admin-email" autocomplete="email" placeholder="admin@empresa.com" required>
                 <label for="admin-senha">Crie uma senha forte</label>
-                <div class="password-field"><input type="password" id="admin-senha" autocomplete="new-password" minlength="12" placeholder="Mínimo de 12 caracteres" required><button type="button" class="password-toggle" data-password-target="admin-senha" aria-label="Mostrar senha" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div>
-                <button type="submit" class="button button-primary"><span>Criar conta administradora</span><i class="fa-solid fa-arrow-right"></i></button>
+                <div class="password-field"><input type="password" id="admin-senha" autocomplete="new-password" minlength="12" placeholder="Mínimo de 12 caracteres" required><button type="button" class="password-toggle" data-password-target="admin-senha" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div>
+                <button type="submit">Criar conta administradora</button>
                 <div id="mensagem-setup" class="mensagem" role="status"></div>
             </form>
 
-            <div class="auth-panel-footer"><i class="fa-solid fa-shield-halved"></i><span>A sessão é protegida pelo servidor e expira após 8 horas.</span></div>
         </section>
     </main>
 
@@ -87,7 +72,7 @@
                 campo.type = mostrar ? 'text' : 'password';
                 botao.setAttribute('aria-pressed', String(mostrar));
                 botao.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
-                botao.innerHTML = `<i class="fa-regular ${mostrar ? 'fa-eye-slash' : 'fa-eye'}"></i>`;
+                botao.textContent = mostrar ? 'Ocultar' : 'Mostrar';
             });
         });
 
@@ -143,7 +128,6 @@
                 if (status.configurado) return;
                 loginForm.hidden = true;
                 setupForm.hidden = false;
-                document.getElementById('auth-kicker').textContent = 'PRIMEIRO ACESSO';
                 document.getElementById('auth-title').textContent = 'Configure a administração';
                 document.getElementById('auth-description').textContent = 'Crie a primeira conta administradora. Depois, gerencie os acessos da equipe pelo painel.';
             } catch (erro) {

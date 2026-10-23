@@ -4,21 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Técnicos - Megabrain Services</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/api.js"></script>
     <script src="./js/auth.js" defer></script>
 </head>
 <body>
 
-    <header>
+        <header>
         <h2>Megabrain Services</h2>
-        <nav>
-            <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
-            <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
-            <a href="lista.html"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Ordens</span></a>
-            <a href="tecnicos.html" class="ativo"><span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span><span>Técnicos</span></a>
-            <a href="clientes.html"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Cliente</span></a>
+        <nav class="menu">
+            <a href="dashboard.html">Painel</a>
+            <a href="cadastros.html">Nova OS</a>
+            <a href="lista.html">Ordens</a>
+            <a href="tecnicos.html">Tecnicos</a>
+            <a href="clientes.html">Clientes</a>
         </nav>
     </header>
 
@@ -46,7 +45,7 @@
         </section>
 
         <section class="data-section">
-            <div class="section-heading"><div><h2>Equipe cadastrada</h2><p id="resultado-tecnicos">Carregando equipe...</p></div><label class="search-field"><i class="fa-solid fa-magnifying-glass"></i><input id="pesquisa-tecnicos" type="search" placeholder="Buscar por nome ou especialidade" aria-label="Buscar técnicos"></label></div>
+            <div class="section-heading"><div><h2>Equipe cadastrada</h2><p id="resultado-tecnicos">Carregando equipe...</p></div><label class="search-field"><input id="pesquisa-tecnicos" type="search" placeholder="Buscar por nome ou especialidade" aria-label="Buscar técnicos"></label></div>
             <div class="table-wrap"><table>
                 <thead>
                     <tr>

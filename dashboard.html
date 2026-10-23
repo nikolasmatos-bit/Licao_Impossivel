@@ -4,21 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de atendimento - Megabrain Services</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/api.js"></script>
     <script src="./js/auth.js" defer></script>
 </head>
 <body>
 
-    <header>
+        <header>
         <h2>Megabrain Services</h2>
-        <nav>
-            <a href="dashboard.html" class="ativo">Dashboard</a>
+        <nav class="menu">
+            <a href="dashboard.html">Painel</a>
             <a href="cadastros.html">Nova OS</a>
             <a href="lista.html">Ordens</a>
-            <a href="tecnicos.html">Técnicos</a>
-            <a href="clientes.html">Cliente</a>
+            <a href="tecnicos.html">Tecnicos</a>
+            <a href="clientes.html">Clientes</a>
         </nav>
     </header>
 
@@ -30,48 +29,48 @@
                 <p>Acompanhe a fila e mantenha o cliente informado.</p>
             </div>
             <div class="button-row dashboard-actions">
-                <a class="button button-outline" href="clientes.html"><i class="fa-solid fa-users"></i> Clientes</a>
-                <a class="button button-primary" href="cadastros.html"><i class="fa-solid fa-plus"></i> Nova ordem</a>
+                <a class="button button-outline" href="clientes.html"> Clientes</a>
+                <a class="button button-primary" href="cadastros.html"> Nova ordem</a>
             </div>
         </div>
 
-        <div class="dashboard-sync"><span id="ultima-atualizacao" aria-live="polite">Sincronizando dados...</span><button type="button" id="atualizar-painel" class="icon-action" title="Atualizar painel" aria-label="Atualizar painel"><i class="fa-solid fa-rotate"></i></button></div>
+        <div class="dashboard-sync"><span id="ultima-atualizacao" aria-live="polite">Sincronizando dados...</span><button type="button" id="atualizar-painel" class="icon-action" title="Atualizar painel" aria-label="Atualizar painel">Atualizar painel</button></div>
 
         <section class="cards dashboard-metrics" aria-label="Indicadores da operação">
             <div class="card">
-                <i class="fa-solid fa-layer-group"></i>
+
                 <h3>Total de OS</h3>
                 <strong id="total-os">0</strong>
             </div>
             <div class="card">
-                <i class="fa-regular fa-clock"></i>
+
                 <h3>OS Abertas</h3>
                 <strong id="os-abertas">0</strong>
             </div>
             <div class="card">
-                <i class="fa-solid fa-screwdriver-wrench"></i>
+
                 <h3>Em execução</h3>
                 <strong id="em-execucao">0</strong>
             </div>
             <div class="card">
-                <i class="fa-solid fa-circle-check"></i>
+
                 <h3>Concluídas</h3>
                 <strong id="concluidas">0</strong>
             </div>
             <div class="card metric-attention">
-                <i class="fa-solid fa-triangle-exclamation"></i>
+
                 <h3>Prioridade alta</h3>
                 <strong id="alta-prioridade">0</strong>
                 <small>Na fila ativa</small>
             </div>
             <div class="card metric-delay">
-                <i class="fa-regular fa-hourglass-half"></i>
+
                 <h3>Aguardando +48h</h3>
                 <strong id="aguardando-48h">0</strong>
                 <small>Precisam de acompanhamento</small>
             </div>
             <div class="card metric-unassigned">
-                <i class="fa-solid fa-user-clock"></i>
+
                 <h3>Sem responsável</h3>
                 <strong id="sem-responsavel">0</strong>
                 <small>Precisam de atribuição</small>
@@ -84,7 +83,7 @@
         </section>
 
         <section class="data-section">
-            <div class="section-heading"><div><h2>Atendimentos recentes</h2><p>Últimas ordens registradas no sistema</p></div><a class="text-link" href="lista.html">Ver todas <i class="fa-solid fa-arrow-right"></i></a></div>
+            <div class="section-heading"><div><h2>Atendimentos recentes</h2><p>Últimas ordens registradas no sistema</p></div><a class="text-link" href="lista.html">Ver todas </a></div>
             <div class="table-wrap"><table>
                 <thead>
                     <tr>
@@ -99,10 +98,6 @@
             </table></div>
         </section>
 
-        <section class="quick-actions" aria-label="Ações rápidas">
-            <a href="cadastros.html"><span class="quick-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span><strong>Abrir atendimento</strong><small>Registrar uma nova ordem</small></span><i class="fa-solid fa-arrow-right"></i></a>
-            <a href="clientes.html"><span class="quick-icon quick-icon-gold"><i class="fa-solid fa-address-book"></i></span><span><strong>Carteira de clientes</strong><small>Contatos e ordens em aberto</small></span><i class="fa-solid fa-arrow-right"></i></a>
-        </section>
     </main>
 
     <script>
@@ -175,7 +170,7 @@
                 link.href = 'detalhes.html?id=' + ordem.id;
                 link.title = 'Abrir ordem';
                 link.setAttribute('aria-label', 'Abrir ordem ' + ordem.id);
-                link.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i>';
+                link.textContent = 'Abrir';
                 acao.append(link);
                 linha.append(numero, cliente, equipamento, status, acao);
                 tabela.append(linha);

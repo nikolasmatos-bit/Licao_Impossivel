@@ -4,21 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes da OS - Megabrain Services</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/api.js"></script>
     <script src="./js/auth.js" defer></script>
 </head>
 <body>
 
-    <header>
+        <header>
         <h2>Megabrain Services</h2>
-        <nav>
-            <a href="dashboard.html"><span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
-            <a href="cadastros.html"><span class="nav-icon"><i class="fa-solid fa-file-circle-plus"></i></span><span>Nova OS</span></a>
-            <a href="lista.html"><span class="nav-icon"><i class="fa-solid fa-list-check"></i></span><span>Ordens</span></a>
-            <a href="tecnicos.html"><span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span><span>Técnicos</span></a>
-            <a href="clientes.html"><span class="nav-icon"><i class="fa-solid fa-user"></i></span><span>Cliente</span></a>
+        <nav class="menu">
+            <a href="dashboard.html">Painel</a>
+            <a href="cadastros.html">Nova OS</a>
+            <a href="lista.html">Ordens</a>
+            <a href="tecnicos.html">Tecnicos</a>
+            <a href="clientes.html">Clientes</a>
         </nav>
     </header>
 
@@ -68,8 +67,8 @@
                 </div>
             </div>
             <div class="contact-actions" data-roles="admin funcionario">
-                <a id="whatsapp-cliente" class="button button-whatsapp" href="#" target="_blank" rel="noopener noreferrer" hidden><i class="fa-brands fa-whatsapp"></i> WhatsApp do cliente</a>
-                <a id="email-cliente" class="button button-outline" href="#" hidden><i class="fa-regular fa-envelope"></i> Enviar e-mail</a>
+                <a id="whatsapp-cliente" class="button button-whatsapp" href="#" target="_blank" rel="noopener noreferrer" hidden> WhatsApp do cliente</a>
+                <a id="email-cliente" class="button button-outline" href="#" hidden> Enviar e-mail</a>
             </div>
         </section>
 
@@ -85,7 +84,7 @@
                 <select id="canal-interacao"><option value="Nota">Nota interna</option><option value="Atualização">Atualização do atendimento</option></select>
                 <label for="mensagem-interacao">Mensagem</label>
                 <textarea id="mensagem-interacao" maxlength="2000" placeholder="Registre o que foi combinado com o cliente..." required></textarea>
-                <div class="interaction-footer"><span id="contador-mensagem">0 / 2.000</span><div class="button-row"><button class="button button-primary" type="submit"><i class="fa-solid fa-bookmark"></i> Registrar no histórico</button><button class="button button-whatsapp" type="button" id="preparar-whatsapp"><i class="fa-brands fa-whatsapp"></i> Preparar WhatsApp</button></div></div>
+                <div class="interaction-footer"><span id="contador-mensagem">0 / 2.000</span><div class="button-row"><button class="button button-primary" type="submit"> Registrar no histórico</button><button class="button button-whatsapp" type="button" id="preparar-whatsapp"> Preparar WhatsApp</button></div></div>
                 <div id="mensagem-interacao-feedback" class="mensagem" role="status"></div>
             </form>
             <ol id="timeline-interacoes" class="timeline"></ol>
@@ -106,7 +105,7 @@
                 <label for="diagnostico">Diagnóstico / Resposta</label>
                 <textarea id="diagnostico" placeholder="Descreva o diagnóstico, solução ou resposta do atendimento..." required></textarea>
 
-                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <div class="button-row">
                     <button type="submit">Salvar resposta</button>
                     <button type="button" id="concluir-atendimento" class="botao-secundario">Concluir atendimento</button>
                     <button type="button" id="cancelar-servico" class="botao-cancelar">Cancelar serviço</button>

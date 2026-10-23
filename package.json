@@ -4,8 +4,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "open": "node launch.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "open": "node launch.js"
   },
   "repository": {
     "type": "git",

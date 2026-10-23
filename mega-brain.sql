@@ -64,11 +64,3 @@ CREATE TABLE IF NOT EXISTS interacoes_cliente (
 
 CREATE INDEX IF NOT EXISTS idx_interacoes_ordem
 	ON interacoes_cliente(ordem_id, criado_em DESC);
-
-CREATE VIEW IF NOT EXISTS vw_dashboard AS
-SELECT
-	COUNT(*) AS total_os,
-	COALESCE(SUM(status = 'Aberta'), 0) AS os_abertas,
-	COALESCE(SUM(status = 'Em execução'), 0) AS em_execucao,
-	COALESCE(SUM(status = 'Concluída'), 0) AS concluidas
-FROM ordens_servico;

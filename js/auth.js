@@ -22,28 +22,30 @@ async function iniciarSessaoVisual() {
     }
 
     const { usuario } = await resposta.json();
+    const navegacao = document.querySelector('nav');
     document.body.dataset.role = usuario.papel;
 
-    document.querySelectorAll('nav a').forEach(link => {
+    navegacao.querySelectorAll('a').forEach(link => {
         const pagina = link.getAttribute('href').split('?')[0];
         const permitidos = permissoesNav[pagina];
         if (permitidos && !permitidos.includes(usuario.papel)) link.remove();
     });
 
     if (usuario.papel === 'admin') {
-        const linkUsuarios = document.createElement('a');
-        linkUsuarios.href = 'usuarios.html';
-        linkUsuarios.textContent = 'Acessos';
-        linkUsuarios.classList.toggle('ativo', location.pathname.endsWith('/usuarios.html'));
-        document.querySelector('nav')?.append(linkUsuarios);
+        if (!navegacao.querySelector('a[href="usuarios.html"]')) {
+            const linkUsuarios = document.createElement('a');
+            linkUsuarios.href = 'usuarios.html';
+            linkUsuarios.textContent = 'Acessos';
+            navegacao.append(linkUsuarios);
+        }
     }
 
     if (usuario.papel === 'cliente' && !location.pathname.endsWith('/portal-cliente.html')) {
-        document.querySelector('nav')?.replaceChildren();
+        navegacao.replaceChildren();
         const linkPortal = document.createElement('a');
         linkPortal.href = 'portal-cliente.html';
         linkPortal.textContent = 'Meus atendimentos';
-        document.querySelector('nav')?.append(linkPortal);
+        navegacao.append(linkPortal);
     }
 
     document.querySelectorAll('[data-roles]').forEach(elemento => {
@@ -93,9 +95,7 @@ async function iniciarSessaoVisual() {
     const sair = document.createElement('button');
     sair.type = 'button';
     sair.className = 'account-logout';
-    sair.title = 'Sair da conta';
-    sair.setAttribute('aria-label', 'Sair da conta');
-    sair.innerHTML = '<i class="fa-solid fa-arrow-right-from-bracket"></i>';
+    sair.textContent = 'Sair';
     sair.addEventListener('click', async () => {
         await apiFetch('/api/auth/logout', { method: 'POST' });
         window.location.assign('/index.html');
