@@ -2,9 +2,10 @@
   "name": "licao_impossivel",
   "version": "1.0.0",
   "main": "server.js",
-  "scripts": {
+     "scripts": {
     "start": "node server.js",
-    "open": "node launch.js"
+    "open": "node launch.js",
+    "test": "node --test tests/api.test.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,7 @@
     "url": "https://github.com/nikolasmatos-bit/Licao_Impossivel/issues"
   },
   "homepage": "https://github.com/nikolasmatos-bit/Licao_Impossivel#readme",
-  "description": "",
+  "description": "Sistema de OS com autenticação e portal do cliente - Megabrain Services",
   "engines": {
     "node": ">=20.0.0"
   },
