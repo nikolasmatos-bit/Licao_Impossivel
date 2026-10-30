@@ -18,10 +18,8 @@ CREATE TABLE IF NOT EXISTS ordens_servico (
 	cliente_id INTEGER NOT NULL REFERENCES clientes(id),
 	tecnico_id INTEGER REFERENCES tecnicos(id),
 	equipamento TEXT NOT NULL,
-	prioridade TEXT NOT NULL DEFAULT 'Média'
-		CHECK (prioridade IN ('Baixa', 'Média', 'Alta')),
-	status TEXT NOT NULL DEFAULT 'Aberta'
-		CHECK (status IN ('Aberta', 'Em execução', 'Concluída', 'Cancelada')),
+	prioridade TEXT NOT NULL DEFAULT 'Média' CHECK (prioridade IN ('Baixa', 'Média', 'Alta')),
+	status TEXT NOT NULL DEFAULT 'Aberta' CHECK (status IN ('Aberta', 'Em execução', 'Concluída', 'Cancelada')),
 	descricao TEXT NOT NULL,
 	diagnostico TEXT,
 	aberta_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -37,12 +35,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
 	cliente_id INTEGER REFERENCES clientes(id),
 	tecnico_id INTEGER REFERENCES tecnicos(id),
 	ativo INTEGER NOT NULL DEFAULT 1 CHECK (ativo IN (0, 1)),
-	criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	CHECK (
-		(papel = 'admin' AND cliente_id IS NULL AND tecnico_id IS NULL) OR
-		(papel = 'funcionario' AND cliente_id IS NULL AND tecnico_id IS NOT NULL) OR
-		(papel = 'cliente' AND cliente_id IS NOT NULL AND tecnico_id IS NULL)
-	)
+	criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS sessoes (
@@ -62,5 +55,4 @@ CREATE TABLE IF NOT EXISTS interacoes_cliente (
 	criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_interacoes_ordem
-	ON interacoes_cliente(ordem_id, criado_em DESC);
+CREATE INDEX IF NOT EXISTS idx_interacoes_ordem ON interacoes_cliente(ordem_id, criado_em DESC);

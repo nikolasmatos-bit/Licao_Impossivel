@@ -6,6 +6,7 @@
     <title>Acessos - Megabrain Services</title>
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/api.js"></script>
+    <script src="./js/utils.js"></script>
     <script src="./js/auth.js" defer></script>
 </head>
 <body>
@@ -25,11 +26,12 @@
             <div>
                 <p class="eyebrow">SEGURANÇA</p>
                 <h1>Gerenciar acessos</h1>
-                <p>Crie contas para equipe, clientes e administradores.</p>
+                <p>Crie contas e controle quem pode acessar o sistema.</p>
             </div>
         </div>
 
         <section class="card">
+            <h2>Nova conta</h2>
             <form id="form-usuario" class="form-grid">
                 <label for="nome">Nome completo</label>
                 <input id="nome" type="text" placeholder="Nome da pessoa" required>
@@ -38,7 +40,10 @@
                 <input id="email" type="email" placeholder="nome@empresa.com" required>
 
                 <label for="senha">Senha</label>
-                <input id="senha" type="password" placeholder="Mínimo de 12 caracteres" minlength="12" required>
+                <div class="password-field">
+                    <input id="senha" type="password" placeholder="Mínimo de 12 caracteres" minlength="12" required>
+                    <button type="button" class="password-toggle" data-password-target="senha" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button>
+                </div>
 
                 <label for="papel">Perfil</label>
                 <select id="papel" required>
@@ -53,13 +58,45 @@
                 </div>
 
                 <div id="bloco-tecnico" hidden>
-                    <label for="tecnico-id">Vincular ao técnico</label>
+                    <label for="tecnico-id">Vincular ao técnico (Opcional)</label>
                     <select id="tecnico-id"></select>
                 </div>
 
-                <button type="submit">Criar conta</button>
+                <button type="submit" id="btn-criar">Criar conta</button>
                 <div id="mensagem-usuario" class="mensagem" role="status"></div>
             </form>
+        </section>
+
+        <!-- NOVA SEÇÃO: LISTAGEM DE USUÁRIOS -->
+        <section class="data-section">
+            <div class="section-heading">
+                <div>
+                    <h2>Contas cadastradas</h2>
+                    <p id="resultado-usuarios">Carregando...</p>
+                </div>
+                <label class="search-field">
+                    <input id="pesquisa-usuarios" type="search" placeholder="Buscar nome ou e-mail" aria-label="Buscar usuários">
+                </label>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>Perfil</th>
+                            <th>Vínculo</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-usuarios"></tbody>
+                </table>
+            </div>
+            <div id="vazio-usuarios" class="empty-state" hidden>
+                <strong>Nenhum usuário encontrado</strong>
+                <span>Crie uma conta no formulário acima.</span>
+            </div>
         </section>
     </main>
 
@@ -71,48 +108,57 @@
         const blocoTecnico = document.getElementById('bloco-tecnico');
         const clienteSelect = document.getElementById('cliente-id');
         const tecnicoSelect = document.getElementById('tecnico-id');
+        const btnCriar = document.getElementById('btn-criar');
+        
+        const tabela = document.getElementById('lista-usuarios');
+        const pesquisa = document.getElementById('pesquisa-usuarios');
+        const vazio = document.getElementById('vazio-usuarios');
+        let todosUsuarios = [];
 
-        function mostrarMensagem(tipo, texto) {
-            mensagem.className = `mensagem ${tipo}`;
-            mensagem.textContent = texto;
-        }
+        // --- LÓGICA DO FORMULÁRIO (CRIAR CONTA) ---
+        document.querySelectorAll('[data-password-target]').forEach(botao => {
+            botao.addEventListener('click', () => {
+                const campo = document.getElementById(botao.dataset.passwordTarget);
+                const mostrar = campo.type === 'password';
+                campo.type = mostrar ? 'text' : 'password';
+                botao.setAttribute('aria-pressed', String(mostrar));
+                botao.textContent = mostrar ? 'Ocultar' : 'Mostrar';
+            });
+        });
 
         function atualizarCamposPapel() {
             const papel = papelSelect.value;
             blocoCliente.hidden = papel !== 'cliente';
             blocoTecnico.hidden = papel !== 'funcionario';
-            if (papel === 'cliente') {
-                clienteSelect.required = true;
-                tecnicoSelect.required = false;
-            } else if (papel === 'funcionario') {
-                clienteSelect.required = false;
-                tecnicoSelect.required = true;
-            } else {
-                clienteSelect.required = false;
-                tecnicoSelect.required = false;
-            }
+            clienteSelect.required = papel === 'cliente';
+            tecnicoSelect.required = false; // Técnico agora é opcional para funcionário
         }
 
         async function carregaSelecoes() {
             try {
-                const [clientesResposta, tecnicosResposta] = await Promise.all([
-                    apiFetch('/api/clientes'),
-                    apiFetch('/api/tecnicos')
+                const [rClientes, rTecnicos] = await Promise.all([
+                    apiFetch('/api/clientes'), apiFetch('/api/tecnicos')
                 ]);
+                const clientes = await rClientes.json();
+                const tecnicos = await rTecnicos.json();
 
-                const clientes = await clientesResposta.json();
-                const tecnicos = await tecnicosResposta.json();
+                clienteSelect.innerHTML = '<option value="">Selecione o cliente</option>';
+                clientes.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.nome;
+                    clienteSelect.appendChild(opt);
+                });
 
-                clienteSelect.innerHTML = '<option value="">Selecione o cliente</option>' + clientes.map(c => `
-                    <option value="${c.id}">${c.nome}</option>
-                `).join('');
-
-                tecnicoSelect.innerHTML = '<option value="">Selecione o técnico</option>' + tecnicos.map(t => `
-                    <option value="${t.id}">${t.nome}</option>
-                `).join('');
-            } catch (erro) {
-                console.error('Não foi possível carregar os vínculos:', erro);
-                mostrarMensagem('erro', 'Não foi possível carregar clientes e técnicos.');
+                tecnicoSelect.innerHTML = '<option value="">Nenhum (Vincular depois)</option>';
+                tecnicos.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = t.nome;
+                    tecnicoSelect.appendChild(opt);
+                });
+            } catch (e) {
+                Utils.mostrarMensagem(mensagem, 'erro', 'Erro ao carregar clientes/técnicos.');
             }
         }
 
@@ -120,49 +166,128 @@
 
         form.addEventListener('submit', async event => {
             event.preventDefault();
-
             const payload = {
                 nome: document.getElementById('nome').value.trim(),
                 email: document.getElementById('email').value.trim(),
                 senha: document.getElementById('senha').value,
                 papel: papelSelect.value
             };
-
-            if (payload.papel === 'cliente') {
-                payload.cliente_id = Number(clienteSelect.value);
-            }
-
-            if (payload.papel === 'funcionario') {
+            if (payload.papel === 'cliente') payload.cliente_id = Number(clienteSelect.value);
+            if (payload.papel === 'funcionario' && tecnicoSelect.value) {
                 payload.tecnico_id = Number(tecnicoSelect.value);
             }
-
-            if (payload.papel !== 'admin' && !payload.cliente_id && !payload.tecnico_id) {
-                mostrarMensagem('erro', 'Selecione o vínculo do perfil antes de criar a conta.');
+            if (payload.papel !== 'admin' && !payload.cliente_id && !payload.tecnico_id && payload.papel === 'cliente') {
+                Utils.mostrarMensagem(mensagem, 'erro', 'Selecione o cliente.');
                 return;
             }
 
-            try {
-                const resposta = await apiFetch('/api/usuarios', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const dados = await resposta.json();
-
-                if (!resposta.ok) {
-                    throw new Error(dados.erro || 'Não foi possível criar a conta.');
+            await Utils.comCarregando(btnCriar, async () => {
+                try {
+                    const resposta = await apiFetch('/api/usuarios', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const dados = await resposta.json();
+                    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao criar conta.');
+                    
+                    Utils.mostrarMensagem(mensagem, 'sucesso', 'Conta criada com sucesso!');
+                    form.reset();
+                    atualizarCamposPapel();
+                    carregarUsuarios(); // Recarrega a tabela
+                } catch (erro) {
+                    Utils.mostrarMensagem(mensagem, 'erro', erro.message);
                 }
-
-                mostrarMensagem('sucesso', 'Conta criada com sucesso!');
-                form.reset();
-                atualizarCamposPapel();
-            } catch (erro) {
-                mostrarMensagem('erro', erro.message);
-            }
+            });
         });
 
+        // --- LÓGICA DA TABELA (SUSPENDER / REATIVAR) ---
+        function renderizarUsuarios() {
+            const termo = pesquisa.value.trim().toLowerCase();
+            const filtrados = todosUsuarios.filter(u => 
+                u.nome.toLowerCase().includes(termo) || u.email.toLowerCase().includes(termo)
+            );
+
+            tabela.innerHTML = '';
+            filtrados.forEach(u => {
+                const tr = document.createElement('tr');
+                
+                // Nome e E-mail
+                tr.innerHTML = `
+                    <td><strong>${Utils.escapeHTML(u.nome)}</strong></td>
+                    <td>${Utils.escapeHTML(u.email)}</td>
+                    <td><span class="badge">${u.papel}</span></td>
+                    <td>${Utils.escapeHTML(u.cliente || u.tecnico || '—')}</td>
+                `;
+
+                // Status
+                const tdStatus = document.createElement('td');
+                const badgeStatus = document.createElement('span');
+                badgeStatus.className = 'badge ' + (u.ativo ? 'status-concluida' : 'status-cancelada');
+                badgeStatus.textContent = u.ativo ? 'Ativo' : 'Suspenso';
+                tdStatus.appendChild(badgeStatus);
+                tr.appendChild(tdStatus);
+
+                // Ações
+                const tdAcoes = document.createElement('td');
+                const btnStatus = document.createElement('button');
+                btnStatus.className = 'button ' + (u.ativo ? 'botao-cancelar' : 'button-primary');
+                btnStatus.textContent = u.ativo ? 'Suspender' : 'Reativar';
+                btnStatus.style.padding = '4px 12px';
+                
+                btnStatus.addEventListener('click', () => {
+                    const acao = u.ativo ? 'suspender' : 'reativar';
+                    if (confirm(`Tem certeza que deseja ${acao} a conta de ${u.nome}?`)) {
+                        alterarStatus(u.id, !u.ativo, btnStatus);
+                    }
+                });
+                tdAcoes.appendChild(btnStatus);
+                tr.appendChild(tdAcoes);
+
+                tabela.appendChild(tr);
+            });
+
+            vazio.hidden = filtrados.length > 0;
+            document.getElementById('resultado-usuarios').textContent = `${filtrados.length} conta(s) encontrada(s)`;
+        }
+
+        async function alterarStatus(id, novoStatus, botao) {
+            await Utils.comCarregando(botao, async () => {
+                try {
+                    const resposta = await apiFetch(`/api/usuarios/${id}/status`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ativo: novoStatus })
+                    });
+                    const dados = await resposta.json();
+                    if (!resposta.ok) throw new Error(dados.erro || 'Erro ao alterar status.');
+                    
+                    // Atualiza a lista local e a tabela
+                    const usuario = todosUsuarios.find(u => u.id === id);
+                    if (usuario) usuario.ativo = novoStatus;
+                    renderizarUsuarios();
+                } catch (erro) {
+                    alert(erro.message);
+                }
+            });
+        }
+
+        async function carregarUsuarios() {
+            try {
+                const resposta = await apiFetch('/api/usuarios');
+                todosUsuarios = await resposta.json();
+                renderizarUsuarios();
+            } catch (erro) {
+                document.getElementById('resultado-usuarios').textContent = 'Erro ao carregar contas.';
+            }
+        }
+
+        pesquisa.addEventListener('input', renderizarUsuarios);
+
+        // Inicialização
         atualizarCamposPapel();
         carregaSelecoes();
+        carregarUsuarios();
     </script>
 </body>
 </html>
