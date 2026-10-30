@@ -205,3 +205,17 @@ test('GET /api/auth/me — retorna 401 após logout', async () => {
     const { status } = await req('GET', '/api/auth/me');
     assert.equal(status, 401);
 });
+
+test('POST /api/auth/register — cria conta de cliente e autentica', async () => {
+    const { status, json } = await req('POST', '/api/auth/register', {
+        nome: 'Cliente Registro',
+        email: 'cliente.registro@teste.com',
+        senha: 'senha-super-segura-123',
+        papel: 'cliente',
+        telefone: '11999999999'
+    });
+
+    assert.equal(status, 201);
+    assert.equal(json.usuario.papel, 'cliente');
+    assert.equal(json.usuario.email, 'cliente.registro@teste.com');
+});

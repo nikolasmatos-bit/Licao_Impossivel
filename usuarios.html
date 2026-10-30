@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acessos - Megabrain Services</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/api.js"></script>
+    <script src="./js/auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <h2>Megabrain Services</h2>
+        <nav class="menu">
+            <a href="dashboard.html">Painel</a>
+            <a href="cadastros.html">Nova OS</a>
+            <a href="lista.html">Ordens</a>
+            <a href="tecnicos.html">Tecnicos</a>
+            <a href="clientes.html">Clientes</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="page-heading">
+            <div>
+                <p class="eyebrow">SEGURANÇA</p>
+                <h1>Gerenciar acessos</h1>
+                <p>Crie contas para equipe, clientes e administradores.</p>
+            </div>
+        </div>
+
+        <section class="card">
+            <form id="form-usuario" class="form-grid">
+                <label for="nome">Nome completo</label>
+                <input id="nome" type="text" placeholder="Nome da pessoa" required>
+
+                <label for="email">E-mail</label>
+                <input id="email" type="email" placeholder="nome@empresa.com" required>
+
+                <label for="senha">Senha</label>
+                <input id="senha" type="password" placeholder="Mínimo de 12 caracteres" minlength="12" required>
+
+                <label for="papel">Perfil</label>
+                <select id="papel" required>
+                    <option value="admin">Administrador</option>
+                    <option value="funcionario">Funcionário</option>
+                    <option value="cliente">Cliente</option>
+                </select>
+
+                <div id="bloco-cliente" hidden>
+                    <label for="cliente-id">Vincular ao cliente</label>
+                    <select id="cliente-id"></select>
+                </div>
+
+                <div id="bloco-tecnico" hidden>
+                    <label for="tecnico-id">Vincular ao técnico</label>
+                    <select id="tecnico-id"></select>
+                </div>
+
+                <button type="submit">Criar conta</button>
+                <div id="mensagem-usuario" class="mensagem" role="status"></div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById('form-usuario');
+        const mensagem = document.getElementById('mensagem-usuario');
+        const papelSelect = document.getElementById('papel');
+        const blocoCliente = document.getElementById('bloco-cliente');
+        const blocoTecnico = document.getElementById('bloco-tecnico');
+        const clienteSelect = document.getElementById('cliente-id');
+        const tecnicoSelect = document.getElementById('tecnico-id');
+
+        function mostrarMensagem(tipo, texto) {
+            mensagem.className = `mensagem ${tipo}`;
+            mensagem.textContent = texto;
+        }
+
+        function atualizarCamposPapel() {
+            const papel = papelSelect.value;
+            blocoCliente.hidden = papel !== 'cliente';
+            blocoTecnico.hidden = papel !== 'funcionario';
+            if (papel === 'cliente') {
+                clienteSelect.required = true;
+                tecnicoSelect.required = false;
+            } else if (papel === 'funcionario') {
+                clienteSelect.required = false;
+                tecnicoSelect.required = true;
+            } else {
+                clienteSelect.required = false;
+                tecnicoSelect.required = false;
+            }
+        }
+
+        async function carregaSelecoes() {
+            try {
+                const [clientesResposta, tecnicosResposta] = await Promise.all([
+                    apiFetch('/api/clientes'),
+                    apiFetch('/api/tecnicos')
+                ]);
+
+                const clientes = await clientesResposta.json();
+                const tecnicos = await tecnicosResposta.json();
+
+                clienteSelect.innerHTML = '<option value="">Selecione o cliente</option>' + clientes.map(c => `
+                    <option value="${c.id}">${c.nome}</option>
+                `).join('');
+
+                tecnicoSelect.innerHTML = '<option value="">Selecione o técnico</option>' + tecnicos.map(t => `
+                    <option value="${t.id}">${t.nome}</option>
+                `).join('');
+            } catch (erro) {
+                console.error('Não foi possível carregar os vínculos:', erro);
+                mostrarMensagem('erro', 'Não foi possível carregar clientes e técnicos.');
+            }
+        }
+
+        papelSelect.addEventListener('change', atualizarCamposPapel);
+
+        form.addEventListener('submit', async event => {
+            event.preventDefault();
+
+            const payload = {
+                nome: document.getElementById('nome').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                senha: document.getElementById('senha').value,
+                papel: papelSelect.value
+            };
+
+            if (payload.papel === 'cliente') {
+                payload.cliente_id = Number(clienteSelect.value);
+            }
+
+            if (payload.papel === 'funcionario') {
+                payload.tecnico_id = Number(tecnicoSelect.value);
+            }
+
+            if (payload.papel !== 'admin' && !payload.cliente_id && !payload.tecnico_id) {
+                mostrarMensagem('erro', 'Selecione o vínculo do perfil antes de criar a conta.');
+                return;
+            }
+
+            try {
+                const resposta = await apiFetch('/api/usuarios', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const dados = await resposta.json();
+
+                if (!resposta.ok) {
+                    throw new Error(dados.erro || 'Não foi possível criar a conta.');
+                }
+
+                mostrarMensagem('sucesso', 'Conta criada com sucesso!');
+                form.reset();
+                atualizarCamposPapel();
+            } catch (erro) {
+                mostrarMensagem('erro', erro.message);
+            }
+        });
+
+        atualizarCamposPapel();
+        carregaSelecoes();
+    </script>
+</body>
+</html>

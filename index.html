@@ -21,6 +21,10 @@
                 <div class="password-field"><input type="password" id="senha" name="senha" autocomplete="current-password" placeholder="Sua senha" required><button type="button" class="password-toggle" data-password-target="senha" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div>
                 <button type="submit">Entrar</button>
                 <div id="mensagem-login" class="mensagem" role="status"></div>
+                <div class="auth-switch">
+                    <span>Não tem conta?</span>
+                    <button type="button" id="botao-criar-conta" class="text-link">Criar conta</button>
+                </div>
             </form>
 
             <form id="form-setup" hidden>
@@ -30,8 +34,24 @@
                 <input type="email" id="admin-email" autocomplete="email" placeholder="admin@empresa.com" required>
                 <label for="admin-senha">Crie uma senha forte</label>
                 <div class="password-field"><input type="password" id="admin-senha" autocomplete="new-password" minlength="12" placeholder="Mínimo de 12 caracteres" required><button type="button" class="password-toggle" data-password-target="admin-senha" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button></div>
+                <label for="setup-papel">Tipo de conta</label>
+                <select id="setup-papel">
+                    <option value="admin">Administrador</option>
+                    <option value="funcionario">Funcionário</option>
+                    <option value="cliente">Cliente</option>
+                </select>
+                <label for="setup-telefone">Telefone</label>
+                <input type="tel" id="setup-telefone" autocomplete="tel" placeholder="(11) 99999-9999">
+                <div id="campo-especialidade" hidden>
+                    <label for="setup-especialidade">Especialidade</label>
+                    <input type="text" id="setup-especialidade" placeholder="Ex.: Redes, Suporte, TI">
+                </div>
                 <button type="submit">Criar conta administradora</button>
                 <div id="mensagem-setup" class="mensagem" role="status"></div>
+                <div class="auth-switch">
+                    <span>Já tem conta?</span>
+                    <button type="button" id="botao-voltar-login" class="text-link">Entrar</button>
+                </div>
             </form>
 
         </section>
@@ -41,9 +61,57 @@
         (() => {
         const loginForm = document.getElementById('form-login');
         const setupForm = document.getElementById('form-setup');
+        const botaoCriarConta = document.getElementById('botao-criar-conta');
+        const botaoVoltarLogin = document.getElementById('botao-voltar-login');
+        const setupPapel = document.getElementById('setup-papel');
+        const campoEspecialidade = document.getElementById('campo-especialidade');
+        const setupTelefone = document.getElementById('setup-telefone');
+
+        function atualizarTipoConta() {
+            const papel = setupPapel.value;
+            const mostraTelefone = papel === 'cliente' || papel === 'funcionario';
+            const mostraEspecialidade = papel === 'funcionario';
+
+            setupTelefone.hidden = !mostraTelefone;
+            setupTelefone.required = mostraTelefone;
+            campoEspecialidade.hidden = !mostraEspecialidade;
+            document.getElementById('setup-especialidade').required = mostraEspecialidade;
+
+            const tituloBotao = papel === 'admin' ? 'Criar conta administradora' : papel === 'funcionario' ? 'Criar conta de funcionário' : 'Criar conta de cliente';
+            const botao = setupForm.querySelector('button[type="submit"]');
+            botao.textContent = tituloBotao;
+
+            const titulo = papel === 'admin' ? 'Crie sua conta' : 'Crie sua conta no Megabrain';
+            document.getElementById('auth-title').textContent = titulo;
+            document.getElementById('auth-description').textContent = papel === 'admin'
+                ? 'Crie a primeira conta administradora para começar a usar o Megabrain Services.'
+                : 'Cadastre-se e entre no sistema logo em seguida.';
+        }
 
         function destinoDoPerfil(papel) {
             return papel === 'cliente' ? '/portal-cliente.html' : '/dashboard.html';
+        }
+
+        function alternarFormulario(modo) {
+            const loginAtivo = modo === 'login';
+            loginForm.hidden = !loginAtivo;
+            setupForm.hidden = loginAtivo;
+            document.getElementById('auth-title').textContent = loginAtivo ? 'Entrar no sistema' : 'Crie sua conta';
+            document.getElementById('auth-description').textContent = loginAtivo
+                ? 'Use o e-mail e a senha da sua conta.'
+                : 'Crie a primeira conta administradora para começar a usar o Megabrain Services.';
+            if (loginAtivo) {
+                document.getElementById('email').focus();
+            } else {
+                document.getElementById('admin-nome').focus();
+            }
+        }
+
+        function mostrarCriacaoConta() {
+            alternarFormulario('cadastro');
+            botaoCriarConta.hidden = false;
+            setupPapel.value = 'cliente';
+            atualizarTipoConta();
         }
 
         function mostrarMensagem(elemento, texto, tipo = 'erro') {
@@ -76,6 +144,9 @@
             });
         });
 
+        botaoCriarConta.addEventListener('click', mostrarCriacaoConta);
+        botaoVoltarLogin.addEventListener('click', () => alternarFormulario('login'));
+
         loginForm.addEventListener('submit', async event => {
             event.preventDefault();
             const botao = loginForm.querySelector('button[type="submit"]');
@@ -100,18 +171,27 @@
             const mensagem = document.getElementById('mensagem-setup');
             botao.disabled = true;
             try {
-                await enviar('/api/auth/setup', {
+                const payload = {
                     nome: document.getElementById('admin-nome').value,
                     email: document.getElementById('admin-email').value,
-                    senha: document.getElementById('admin-senha').value
-                });
-                window.location.assign('/dashboard.html');
+                    senha: document.getElementById('admin-senha').value,
+                    papel: setupPapel.value,
+                    telefone: setupTelefone.value.trim()
+                };
+                if (setupPapel.value === 'funcionario') {
+                    payload.especialidade = document.getElementById('setup-especialidade').value.trim();
+                }
+
+                const resultado = await enviar('/api/auth/register', payload);
+                window.location.assign(destinoDoPerfil(resultado.usuario.papel));
             } catch (erro) {
                 mostrarMensagem(mensagem, erro.message);
             } finally {
                 botao.disabled = false;
             }
         });
+
+        setupPapel.addEventListener('change', atualizarTipoConta);
 
         async function prepararTelaDeAcesso() {
             try {
@@ -125,20 +205,29 @@
                 const resposta = await apiFetch('/api/auth/status');
                 if (!resposta.ok) throw new Error('Não foi possível verificar a configuração do sistema.');
                 const status = await resposta.json();
-                if (status.configurado) return;
-                loginForm.hidden = true;
-                setupForm.hidden = false;
-                document.getElementById('auth-title').textContent = 'Configure a administração';
-                document.getElementById('auth-description').textContent = 'Crie a primeira conta administradora. Depois, gerencie os acessos da equipe pelo painel.';
+                if (status.configurado) {
+                    botaoCriarConta.hidden = false;
+                    setupPapel.value = 'cliente';
+                    atualizarTipoConta();
+                    alternarFormulario('login');
+                    return;
+                }
+                botaoCriarConta.hidden = false;
+                setupPapel.value = 'admin';
+                atualizarTipoConta();
+                mostrarCriacaoConta();
             } catch (erro) {
                 console.error('Não foi possível preparar a tela de acesso:', erro);
                 mostrarMensagem(document.getElementById('mensagem-login'), 'Não foi possível conectar ao servidor. Feche e abra o Megabrain Services novamente.');
             }
         }
 
+        atualizarTipoConta();
+        loginForm.hidden = false;
+        setupForm.hidden = true;
         prepararTelaDeAcesso();
         })();
     </script>
 
 </body>
-</html>
+</html>,

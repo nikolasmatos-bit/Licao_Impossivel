@@ -165,6 +165,66 @@ app.post('/api/auth/setup', (req, res) => {
     }
 });
 
+app.post('/api/auth/register', (req, res) => {
+    const body = corpoSeguro(req);
+    const nome = typeof body.nome === 'string' ? body.nome.trim() : '';
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const senha = typeof body.senha === 'string' ? body.senha : '';
+    const papel = typeof body.papel === 'string' ? body.papel.trim().toLowerCase() : '';
+    const telefone = typeof body.telefone === 'string' ? body.telefone.trim() : '';
+    const especialidade = typeof body.especialidade === 'string' ? body.especialidade.trim() : '';
+
+    const usuariosExistentes = db.prepare('SELECT COUNT(*) AS total FROM usuarios').get().total;
+
+    if (!['admin', 'funcionario', 'cliente'].includes(papel)) {
+        return res.status(400).json({ erro: 'Selecione um perfil válido.' });
+    }
+    if (papel === 'admin' && usuariosExistentes > 0) {
+        return res.status(403).json({ erro: 'A configuração inicial já foi concluída. Use o login do administrador.' });
+    }
+    if (papel !== 'admin' && usuariosExistentes === 0) {
+        return res.status(403).json({ erro: 'Crie primeiro a conta administrativa inicial para liberar o sistema.' });
+    }
+    if (!nome || !email.includes('@') || senha.length < 12) {
+        return res.status(400).json({ erro: 'Informe nome, e-mail válido e senha com pelo menos 12 caracteres.' });
+    }
+
+    try {
+        const usuarioExistente = db.prepare('SELECT id FROM usuarios WHERE email = ?').get(email);
+        if (usuarioExistente) {
+            return res.status(409).json({ erro: 'Este e-mail já possui uma conta.' });
+        }
+
+        let clienteId = null;
+        let tecnicoId = null;
+
+        if (papel === 'cliente') {
+            const cliente = db.prepare('INSERT INTO clientes (nome, telefone, email) VALUES (?, ?, ?)')
+                .run(nome, telefone || null, email);
+            clienteId = Number(cliente.lastInsertRowid);
+        }
+
+        if (papel === 'funcionario') {
+            if (!telefone || !especialidade) {
+                return res.status(400).json({ erro: 'Informe telefone e especialidade para o funcionário.' });
+            }
+            const tecnico = db.prepare('INSERT INTO tecnicos (nome, email, telefone, especialidade) VALUES (?, ?, ?, ?)')
+                .run(nome, email, telefone, especialidade);
+            tecnicoId = Number(tecnico.lastInsertRowid);
+        }
+
+        const resultado = db.prepare(
+            'INSERT INTO usuarios (nome, email, senha_hash, papel, cliente_id, tecnico_id) VALUES (?, ?, ?, ?, ?, ?)'
+        ).run(nome, email, hashSenha(senha), papel, clienteId, tecnicoId);
+
+        const usuario = db.prepare('SELECT id, nome, email, papel FROM usuarios WHERE id = ?').get(Number(resultado.lastInsertRowid));
+        emitirSessao(req, res, usuario);
+        res.status(201).json({ usuario: dadosPublicosUsuario(usuario) });
+    } catch (erro) {
+        res.status(400).json({ erro: erro.message });
+    }
+});
+
 app.post('/api/auth/login', (req, res) => {
     const body = corpoSeguro(req);
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
