@@ -1,10 +1,16 @@
 (() => {
+    const pagina = window.location.pathname.split('/').filter(Boolean).pop() || 'index.html';
     const liveServerOrigins = new Set([
         'http://localhost:5500',
         'http://127.0.0.1:5500'
     ]);
+    if (window.location.protocol === 'file:') {
+        window.location.replace(
+            `http://127.0.0.1:3001/${pagina}${window.location.search}${window.location.hash}`
+        );
+        return;
+    }
     if (liveServerOrigins.has(window.location.origin)) {
-        const pagina = window.location.pathname.split('/').filter(Boolean).pop() || 'index.html';
         window.location.replace(
             `${window.location.protocol}//${window.location.hostname}:3001/${pagina}${window.location.search}${window.location.hash}`
         );

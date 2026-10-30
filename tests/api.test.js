@@ -113,6 +113,43 @@ test('POST /api/tecnicos — cria técnico', async () => {
     assert.ok(json.id);
 });
 
+test('POST /api/usuarios — cria funcionário vinculado ao técnico', async () => {
+    const tecnicos = await req('GET', '/api/tecnicos');
+    assert.equal(tecnicos.status, 200);
+    assert.ok(Number.isInteger(tecnicos.json[0].id));
+
+    const { status, json } = await req('POST', '/api/usuarios', {
+        nome: 'Funcionário Teste',
+        email: 'funcionario@teste.com',
+        senha: 'senha-super-segura-123',
+        papel: 'funcionario',
+        tecnico_id: tecnicos.json[0].id
+    });
+
+    assert.equal(status, 201);
+    assert.equal(json.mensagem, 'Conta criada.');
+});
+
+test('POST /api/usuarios — administrador cria contas de cliente e admin', async () => {
+    const clientes = await req('GET', '/api/clientes');
+    const cliente = await req('POST', '/api/usuarios', {
+        nome: 'Conta Cliente Teste',
+        email: 'conta.cliente@teste.com',
+        senha: 'senha-super-segura-123',
+        papel: 'cliente',
+        cliente_id: clientes.json[0].id
+    });
+    const admin = await req('POST', '/api/usuarios', {
+        nome: 'Segundo Admin',
+        email: 'segundo.admin@teste.com',
+        senha: 'senha-super-segura-123',
+        papel: 'admin'
+    });
+
+    assert.equal(cliente.status, 201);
+    assert.equal(admin.status, 201);
+});
+
 test('PUT /api/tecnicos/:id — atualiza técnico', async () => {
     const lista = await req('GET', '/api/tecnicos/lista');
     const id = lista.json[0].id;
@@ -190,8 +227,14 @@ test('DELETE /api/ordens/:id — conclui e depois exclui', async () => {
 });
 
 test('DELETE /api/tecnicos/:id — exclui técnico sem ordens', async () => {
+    await req('POST', '/api/tecnicos', {
+        nome: 'Técnico Livre',
+        email: 'livre@teste.com',
+        telefone: '11777777777',
+        especialidade: 'Manutenção'
+    });
     const lista = await req('GET', '/api/tecnicos/lista');
-    const id = lista.json[0].id;
+    const id = lista.json.find(tecnico => tecnico.email === 'livre@teste.com').id;
     const { status } = await req('DELETE', `/api/tecnicos/${id}`);
     assert.equal(status, 200);
 });
@@ -218,4 +261,21 @@ test('POST /api/auth/register — cria conta de cliente e autentica', async () =
     assert.equal(status, 201);
     assert.equal(json.usuario.papel, 'cliente');
     assert.equal(json.usuario.email, 'cliente.registro@teste.com');
+
+    const paginaPortal = await req('GET', '/portal-cliente.html');
+    assert.equal(paginaPortal.status, 200);
+});
+
+test('POST /api/auth/register — não permite criar conta de funcionário publicamente', async () => {
+    const { status, json } = await req('POST', '/api/auth/register', {
+        nome: 'Funcionário sem autorização',
+        email: 'funcionario.publico@teste.com',
+        senha: 'senha-super-segura-123',
+        papel: 'funcionario',
+        telefone: '11999999999',
+        especialidade: 'Suporte'
+    });
+
+    assert.equal(status, 400);
+    assert.match(json.erro, /perfil válido/i);
 });

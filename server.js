@@ -172,56 +172,46 @@ app.post('/api/auth/register', (req, res) => {
     const senha = typeof body.senha === 'string' ? body.senha : '';
     const papel = typeof body.papel === 'string' ? body.papel.trim().toLowerCase() : '';
     const telefone = typeof body.telefone === 'string' ? body.telefone.trim() : '';
-    const especialidade = typeof body.especialidade === 'string' ? body.especialidade.trim() : '';
 
-    const usuariosExistentes = db.prepare('SELECT COUNT(*) AS total FROM usuarios').get().total;
-
-    if (!['admin', 'funcionario', 'cliente'].includes(papel)) {
+    if (!['admin', 'cliente'].includes(papel)) {
         return res.status(400).json({ erro: 'Selecione um perfil válido.' });
-    }
-    if (papel === 'admin' && usuariosExistentes > 0) {
-        return res.status(403).json({ erro: 'A configuração inicial já foi concluída. Use o login do administrador.' });
-    }
-    if (papel !== 'admin' && usuariosExistentes === 0) {
-        return res.status(403).json({ erro: 'Crie primeiro a conta administrativa inicial para liberar o sistema.' });
     }
     if (!nome || !email.includes('@') || senha.length < 12) {
         return res.status(400).json({ erro: 'Informe nome, e-mail válido e senha com pelo menos 12 caracteres.' });
     }
 
     try {
-        const usuarioExistente = db.prepare('SELECT id FROM usuarios WHERE email = ?').get(email);
-        if (usuarioExistente) {
-            return res.status(409).json({ erro: 'Este e-mail já possui uma conta.' });
-        }
-
-        let clienteId = null;
-        let tecnicoId = null;
-
-        if (papel === 'cliente') {
-            const cliente = db.prepare('INSERT INTO clientes (nome, telefone, email) VALUES (?, ?, ?)')
-                .run(nome, telefone || null, email);
-            clienteId = Number(cliente.lastInsertRowid);
-        }
-
-        if (papel === 'funcionario') {
-            if (!telefone || !especialidade) {
-                return res.status(400).json({ erro: 'Informe telefone e especialidade para o funcionário.' });
+        const senhaHash = hashSenha(senha);
+        const usuario = db.transaction(() => {
+            const totalUsuarios = db.prepare('SELECT COUNT(*) AS total FROM usuarios').get().total;
+            if (totalUsuarios === 0 && papel !== 'admin') {
+                throw Object.assign(new Error('Crie primeiro a conta administradora inicial.'), { status: 403 });
             }
-            const tecnico = db.prepare('INSERT INTO tecnicos (nome, email, telefone, especialidade) VALUES (?, ?, ?, ?)')
-                .run(nome, email, telefone, especialidade);
-            tecnicoId = Number(tecnico.lastInsertRowid);
-        }
+            if (totalUsuarios > 0 && papel !== 'cliente') {
+                throw Object.assign(new Error('Contas administrativas e de funcionários são criadas pelo administrador.'), { status: 403 });
+            }
+            if (db.prepare('SELECT id FROM usuarios WHERE email = ?').get(email)) {
+                throw Object.assign(new Error('Este e-mail já possui uma conta.'), { status: 409 });
+            }
 
-        const resultado = db.prepare(
-            'INSERT INTO usuarios (nome, email, senha_hash, papel, cliente_id, tecnico_id) VALUES (?, ?, ?, ?, ?, ?)'
-        ).run(nome, email, hashSenha(senha), papel, clienteId, tecnicoId);
+            let clienteId = null;
+            if (papel === 'cliente') {
+                const cliente = db.prepare('INSERT INTO clientes (nome, telefone, email) VALUES (?, ?, ?)')
+                    .run(nome, telefone || null, email);
+                clienteId = Number(cliente.lastInsertRowid);
+            }
 
-        const usuario = db.prepare('SELECT id, nome, email, papel FROM usuarios WHERE id = ?').get(Number(resultado.lastInsertRowid));
+            const resultado = db.prepare(
+                'INSERT INTO usuarios (nome, email, senha_hash, papel, cliente_id) VALUES (?, ?, ?, ?, ?)'
+            ).run(nome, email, senhaHash, papel, clienteId);
+
+            return db.prepare('SELECT id, nome, email, papel FROM usuarios WHERE id = ?')
+                .get(Number(resultado.lastInsertRowid));
+        })();
         emitirSessao(req, res, usuario);
         res.status(201).json({ usuario: dadosPublicosUsuario(usuario) });
     } catch (erro) {
-        res.status(400).json({ erro: erro.message });
+        res.status(erro.status || 400).json({ erro: erro.message });
     }
 });
 
@@ -597,7 +587,7 @@ app.put('/api/ordens/:id/status', exigirPapeis('admin', 'funcionario'), (req, re
 // ============================================================================
 app.get('/api/tecnicos', exigirPapeis('admin', 'funcionario'), (req, res) => {
     try {
-        res.json(db.prepare('SELECT nome FROM tecnicos ORDER BY nome ASC').all());
+        res.json(db.prepare('SELECT id, nome FROM tecnicos ORDER BY nome ASC').all());
     } catch (erro) {
         res.status(500).json({ erro: erro.message });
     }
