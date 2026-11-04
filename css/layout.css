@@ -1,0 +1,177 @@
+/* 05. CABEÇALHO E LOGOTIPO */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px max(24px, calc((100% - 1240px) / 2));
+    background: #ffffffed;
+    border-bottom: 1px solid var(--borda);
+    backdrop-filter: blur(16px);
+}
+
+header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+header h2::before {
+    content: "M";
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    background: var(--cor);
+    color: #fff;
+    font-size: 1.05rem;
+}
+
+/* 06. MENU E PÁGINA ATIVA */
+.menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-width: 0;
+}
+
+.menu a {
+    padding: 9px 12px;
+    border-radius: 9px;
+    color: #475467;
+    font-size: .85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.menu a:hover {
+    color: var(--cor);
+    background: var(--suave);
+    text-decoration: none;
+}
+
+body:has(#total-os) .menu a[href="dashboard.html"],
+body:has(#form-os) .menu a[href="cadastros.html"],
+body:has(#lista-ordens) .menu a[href="lista.html"],
+body:has(#lista-tecnicos) .menu a[href="tecnicos.html"],
+body:has(#lista-clientes) .menu a[href="clientes.html"],
+body:has(#lista-usuarios) .menu a[href="usuarios.html"] {
+    background: var(--suave);
+    color: var(--cor);
+}
+
+/* 07. IDENTIFICAÇÃO DA CONTA */
+.account-tools {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.account-identity {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 0;
+}
+
+.account-identity strong {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: .8rem;
+}
+
+.account-identity span {
+    color: var(--muted);
+    font-size: .7rem;
+}
+
+/* 08. PAINÉIS E SUPERFÍCIES */
+section,
+.card,
+.metric-card,
+.auth-panel {
+    min-width: 0;
+    margin: 20px 0;
+    padding: 26px;
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    box-shadow: var(--sombra);
+}
+
+section > h2 {
+    margin-bottom: 20px;
+}
+
+/* 09. TÍTULOS E ALINHAMENTOS COMPARTILHADOS */
+.page-heading,
+.topo,
+.section-heading,
+.button-row,
+.contact-actions,
+.dashboard-sync,
+.actions,
+.interaction-footer,
+.modal-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.page-heading,
+.topo,
+.section-heading,
+.dashboard-sync,
+.interaction-footer {
+    justify-content: space-between;
+}
+
+.page-heading,
+.topo {
+    margin-bottom: 26px;
+    gap: 20px;
+}
+
+.page-heading p,
+.topo p {
+    margin-top: 8px;
+    font-size: .925rem;
+}
+
+.page-heading .eyebrow {
+    margin: 0 0 9px;
+    color: var(--cor);
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .16em;
+}
+
+.section-heading {
+    margin-bottom: 22px;
+}
+
+.section-heading p {
+    margin-top: 5px;
+    font-size: .85rem;
+}
+
+.section-heading > div {
+    min-width: 0;
+}
+
+.dashboard-sync {
+    margin: 0 0 14px;
+    color: var(--muted);
+    font-size: .78rem;
+}

@@ -42,6 +42,15 @@ Funcionários e administradores são cadastrados por um administrador em **Acess
 O cadastro público permite apenas novas contas de cliente. Notas internas do
 atendimento não são exibidas no portal do cliente.
 
+Se o cliente já estiver cadastrado, um administrador deve criar a conta em
+**Acessos**, escolhendo o perfil **Cliente** e o cadastro correspondente. O
+cadastro público não duplica nem vincula automaticamente registros existentes.
+
+Em **Nova OS**, selecione um cliente cadastrado ou preencha os dados de um novo
+cliente. Clientes e técnicos com nomes iguais são diferenciados nas opções.
+O técnico pode ficar **A definir**; funcionários vinculados continuam recebendo
+automaticamente as ordens que cadastrarem.
+
 ## Banco e testes
 
 O banco usa SQLite (`better-sqlite3`). O script SQL de criação está em
@@ -52,8 +61,8 @@ npm test
 ```
 
 Os testes HTTP iniciam servidores isolados com bancos temporários: **não usam o
-arquivo `os_system.sqlite` fornecido**. Há 22 testes automatizados cobrindo o
-fluxo principal e as correções de permissões, API e indicadores.
+arquivo `os_system.sqlite` fornecido**. A suíte cobre o fluxo principal,
+permissões, API, indicadores e os casos de clientes e técnicos com nomes iguais.
 
 ## Configuração
 

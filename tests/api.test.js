@@ -4,10 +4,11 @@ const { spawn } = require('node:child_process');
 const path = require('node:path');
 const fs = require('node:fs');
 const os = require('node:os');
+const { portaLivre, pararServidor, removerDiretorioTemporario } = require('./helpers');
 
-const PORT = 3987;
-const DB_PATH = path.join(os.tmpdir(), `mb-test-${Date.now()}.sqlite`);
-const BASE = `http://127.0.0.1:${PORT}`;
+const diretorio = fs.mkdtempSync(path.join(os.tmpdir(), 'megabrain-api-'));
+const DB_PATH = path.join(diretorio, 'teste.sqlite');
+let BASE;
 let servidor;
 
 const cookies = new Map();
@@ -40,6 +41,8 @@ async function req(method, rota, corpo) {
 }
 
 before(async () => {
+    const PORT = await portaLivre();
+    BASE = `http://127.0.0.1:${PORT}`;
     servidor = spawn(process.execPath, ['server.js'], {
         cwd: path.join(__dirname, '..'),
         env: { ...process.env, PORT: String(PORT), DATABASE_PATH: DB_PATH },
@@ -57,9 +60,9 @@ before(async () => {
     throw new Error('Servidor não ficou pronto em 20s.');
 });
 
-after(() => {
-    if (servidor) servidor.kill();
-    try { fs.unlinkSync(DB_PATH); } catch {}
+after(async () => {
+    await pararServidor(servidor);
+    removerDiretorioTemporario(diretorio);
 });
 
 test('GET /api/auth/status — sistema ainda não configurado', async () => {

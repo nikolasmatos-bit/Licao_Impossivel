@@ -6,6 +6,7 @@
     <title>Clientes - Megabrain Services</title>
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/api.js"></script>
+    <script src="./js/utils.js"></script>
     <script src="./js/auth.js" defer></script>
 </head>
 <body>
@@ -81,14 +82,14 @@
                 linha.append(criarCelula(cliente.email));
                 linha.append(criarCelula(cliente.total_os));
                 linha.append(criarCelula(cliente.os_ativas));
-                linha.append(criarCelula(cliente.ultima_os ? new Date(cliente.ultima_os.replace(' ', 'T') + 'Z').toLocaleDateString('pt-BR') : '—'));
+                linha.append(criarCelula(Utils.formatarData(cliente.ultima_os)));
 
                 const acoes = document.createElement('td');
                 acoes.className = 'row-actions';
-                const telefone = (cliente.telefone || '').replace(/\D/g, '');
+                const telefone = Utils.numeroWhatsApp(cliente.telefone);
                 if (telefone) {
                     const whatsapp = document.createElement('a');
-                    whatsapp.href = `https://wa.me/55${telefone}?text=${encodeURIComponent(`Olá, ${cliente.nome}! Aqui é da assistência técnica.`)}`;
+                    whatsapp.href = `https://wa.me/${telefone}?text=${encodeURIComponent(`Olá, ${cliente.nome}! Aqui é da assistência técnica.`)}`;
                     whatsapp.target = '_blank';
                     whatsapp.rel = 'noopener noreferrer';
                     whatsapp.title = 'Conversar pelo WhatsApp';

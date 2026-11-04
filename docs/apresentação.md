@@ -19,7 +19,7 @@ Autenticação: cookie HttpOnly + SameSite=Strict, senha com `scrypt`.
 1. Setup inicial em `index.html`
 2. Login admin → painel zerado
 3. Cadastrar técnico
-4. Criar OS (datalist, validação, botão Google)
+4. Criar OS (seleção de cliente e técnico, opção A definir, validação, botão Google)
 5. Listar OS com filtros
 6. Abrir OS, mudar para Em execução, salvar diagnóstico, registrar nota interna
 7. Criar conta de cliente em `usuarios.html`
@@ -27,7 +27,7 @@ Autenticação: cookie HttpOnly + SameSite=Strict, senha com `scrypt`.
 9. Login admin → Concluir atendimento → campos bloqueados
 
 ## 5. Testes (2 min)
-`npm test` ao vivo (22 testes automatizados, ~3s).
+`npm test` ao vivo (26 testes automatizados).
 Mencionar validações manuais.
 
 ## 6. Desafios (1 min)
@@ -47,5 +47,5 @@ Mencionar validações manuais.
 | Onde fica o hash de senha? | `crypto.scryptSync` com salt 16 bytes |
 | Se o servidor cair? | Sessões em SQLite persistem e a validade é verificada a cada requisição |
 | Rodar em outra máquina? | `npm install && npm start` |
-| Risco de dois clientes com mesmo nome? | Sim — A criação tenta localizar primeiro por e-mail e depois por nome; nomes duplicados ainda exigem atenção |
+| Como distingue clientes com o mesmo nome? | O formulário seleciona pelo ID; a API exige seleção explícita quando há ambiguidade e não vincula clientes só pelo nome |
 | Por que SQLite? | Portabilidade, sem servidor de banco |

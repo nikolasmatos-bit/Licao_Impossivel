@@ -28,6 +28,13 @@ const emailNormalizado = valor => texto(valor).toLowerCase();
 const idValido = valor => /^\d+$/.test(String(valor)) && Number.isSafeInteger(Number(valor)) && Number(valor) > 0 ? Number(valor) : null;
 const emailValido = valor => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
 
+class ErroEntrada extends Error {
+    constructor(mensagem, status = 400) {
+        super(mensagem);
+        this.status = status;
+    }
+}
+
 function falha(res, status, mensagem) { return res.status(status).json({ erro: mensagem }); }
 function falhaBanco(res, erro, mensagem = 'Não foi possível concluir a operação.') {
     if (erro.code?.startsWith('SQLITE_CONSTRAINT_UNIQUE')) return falha(res, 409, 'E-mail já cadastrado.');
@@ -121,6 +128,11 @@ app.post('/api/auth/register', (req, res) => {
     try {
         const usuario = db.transaction(() => {
             if (db.prepare('SELECT id FROM usuarios WHERE email = ?').get(dados.email)) return null;
+            // O e-mail informado no cadastro público não comprova a identidade do cliente.
+            // A equipe deve criar o acesso vinculado quando já existe um cadastro.
+            if (db.prepare('SELECT id FROM clientes WHERE email = ? COLLATE NOCASE LIMIT 1').get(dados.email)) {
+                throw new ErroEntrada('Já existe um cadastro para este e-mail. Solicite à equipe a criação do acesso ao portal.', 409);
+            }
             const c = db.prepare('INSERT INTO clientes (nome, telefone, email) VALUES (?, ?, ?)').run(dados.nome, telefone, dados.email);
             const u = db.prepare('INSERT INTO usuarios (nome, email, senha_hash, papel, cliente_id) VALUES (?, ?, ?, ?, ?)')
                 .run(dados.nome, dados.email, hashSenha(dados.senha), 'cliente', Number(c.lastInsertRowid));
@@ -129,7 +141,10 @@ app.post('/api/auth/register', (req, res) => {
         if (!usuario) return falha(res, 409, 'Este e-mail já está em uso.');
         emitirSessao(res, usuario);
         res.status(201).json({ usuario });
-    } catch (erro) { falhaBanco(res, erro); }
+    } catch (erro) {
+        if (erro instanceof ErroEntrada) return falha(res, erro.status, erro.message);
+        falhaBanco(res, erro);
+    }
 });
 app.post('/api/auth/login', (req, res) => {
     const dados = corpo(req);
@@ -320,10 +335,16 @@ app.post('/api/ordens', exigirPapeis('admin', 'funcionario'), (req, res) => {
     try {
         const id = db.transaction(() => {
             let cId = clienteId;
-            if (cId && !encontrarCliente(cId)) throw new Error('Cliente não encontrado.');
+            if (cId && !encontrarCliente(cId)) throw new ErroEntrada('Cliente não encontrado.');
             if (!cId) {
-                let c = email ? db.prepare('SELECT id FROM clientes WHERE email = ? COLLATE NOCASE ORDER BY id LIMIT 1').get(email) : null;
-                if (!c) c = db.prepare('SELECT id FROM clientes WHERE nome = ? COLLATE NOCASE ORDER BY id LIMIT 1').get(nome);
+                const candidatos = email
+                    ? db.prepare('SELECT id FROM clientes WHERE email = ? COLLATE NOCASE ORDER BY id LIMIT 2').all(email)
+                    : [];
+                if (candidatos.length > 1) throw new ErroEntrada('Há mais de um cliente com este e-mail. Selecione o cliente cadastrado.', 409);
+                if (!email && db.prepare('SELECT id FROM clientes WHERE nome = ? COLLATE NOCASE LIMIT 1').get(nome)) {
+                    throw new ErroEntrada('Já existe um cliente com este nome. Selecione o cliente cadastrado ou informe o e-mail do novo cliente.', 409);
+                }
+                let c = candidatos[0];
                 if (!c) c = { id: Number(db.prepare('INSERT INTO clientes (nome, telefone, email) VALUES (?, ?, ?)').run(nome, telefone || null, email || null).lastInsertRowid) };
                 else db.prepare('UPDATE clientes SET telefone=COALESCE(NULLIF(telefone, \'\'), ?), email=COALESCE(NULLIF(email, \'\'), ?) WHERE id=?')
                     .run(telefone || null, email || null, c.id);
@@ -332,19 +353,20 @@ app.post('/api/ordens', exigirPapeis('admin', 'funcionario'), (req, res) => {
             let tId = null;
             if (req.user.papel === 'funcionario') tId = req.user.tecnico_id;
             else if (tecnicoId) {
-                if (!encontrarTecnico(tecnicoId)) throw new Error('Técnico não encontrado.');
+                if (!encontrarTecnico(tecnicoId)) throw new ErroEntrada('Técnico não encontrado.');
                 tId = tecnicoId;
             } else if (nomeTecnico) {
-                const tecnico = db.prepare('SELECT id FROM tecnicos WHERE nome = ? COLLATE NOCASE ORDER BY id LIMIT 1').get(nomeTecnico);
-                if (!tecnico) throw new Error('Técnico não cadastrado. Cadastre-o antes de criar a ordem.');
-                tId = tecnico.id;
+                const tecnicos = db.prepare('SELECT id FROM tecnicos WHERE nome = ? COLLATE NOCASE ORDER BY id LIMIT 2').all(nomeTecnico);
+                if (!tecnicos.length) throw new ErroEntrada('Técnico não cadastrado. Cadastre-o antes de criar a ordem.');
+                if (tecnicos.length > 1) throw new ErroEntrada('Há mais de um técnico com este nome. Selecione o técnico pelo identificador.', 409);
+                tId = tecnicos[0].id;
             }
             return Number(db.prepare(`INSERT INTO ordens_servico (cliente_id, tecnico_id, equipamento, prioridade, descricao) VALUES (?, ?, ?, ?, ?)`)
                 .run(cId, tId, equipamento, prioridade, descricao).lastInsertRowid);
         })();
         res.status(201).json({ id });
     } catch (e) {
-        if (e.message === 'Cliente não encontrado.' || e.message.startsWith('Técnico não')) return falha(res, 400, e.message);
+        if (e instanceof ErroEntrada) return falha(res, e.status, e.message);
         falhaBanco(res, e);
     }
 });

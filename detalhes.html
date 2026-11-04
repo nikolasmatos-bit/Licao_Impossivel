@@ -6,6 +6,7 @@
     <title>Detalhes da OS - Megabrain Services</title>
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/api.js"></script>
+    <script src="./js/utils.js"></script>
     <script src="./js/auth.js" defer></script>
 </head>
 <body>
@@ -152,8 +153,7 @@
             document.getElementById('tecnico-os').textContent = ordem.tecnico || '—';
             document.getElementById('equipamento-os').textContent = ordem.equipamento;
             document.getElementById('prioridade-os').textContent = ordem.prioridade;
-            document.getElementById('data-os').textContent = ordem.aberta_em
-                ? new Date(ordem.aberta_em).toLocaleDateString('pt-BR') : '-';
+            document.getElementById('data-os').textContent = Utils.formatarData(ordem.aberta_em);
             document.getElementById('descricao-os').textContent = ordem.descricao;
 
             document.getElementById('status-os').textContent = ordem.status;
@@ -162,12 +162,11 @@
             document.getElementById('status').value = ordem.status;
             document.getElementById('diagnostico').value = ordem.diagnostico || '';
 
-            const telefone = (ordem.cliente_telefone || '').replace(/\D/g, '');
+            const telefone = Utils.numeroWhatsApp(ordem.cliente_telefone);
             const whatsapp = document.getElementById('whatsapp-cliente');
             whatsapp.hidden = !telefone;
             if (telefone) {
-                const numero = telefone.startsWith('55') ? telefone : `55${telefone}`;
-                whatsapp.href = `https://wa.me/${numero}?text=${encodeURIComponent(`Olá, ${ordem.cliente}! Estamos atualizando sua OS #${ordem.id}.`)}`;
+                whatsapp.href = `https://wa.me/${telefone}?text=${encodeURIComponent(`Olá, ${ordem.cliente}! Estamos atualizando sua OS #${ordem.id}.`)}`;
             }
 
             const email = document.getElementById('email-cliente');
@@ -224,8 +223,9 @@
                     const canal = document.createElement('strong');
                     canal.textContent = interacao.canal;
                     const data = document.createElement('time');
-                    data.dateTime = interacao.criado_em.replace(' ', 'T') + 'Z';
-                    data.textContent = new Date(data.dateTime).toLocaleString('pt-BR');
+                    const criadoEm = Utils.dataUTC(interacao.criado_em);
+                    if (criadoEm) data.dateTime = criadoEm.toISOString();
+                    data.textContent = criadoEm?.toLocaleString('pt-BR') || '—';
                     const texto = document.createElement('p');
                     texto.textContent = interacao.mensagem;
                     topo.append(canal, data);
@@ -241,7 +241,7 @@
             const campo = document.getElementById('mensagem-interacao');
             const feedback = document.getElementById('mensagem-interacao-feedback');
             const texto = campo.value.trim();
-            const telefone = (ordem.cliente_telefone || '').replace(/\D/g, '');
+            const telefone = Utils.numeroWhatsApp(ordem.cliente_telefone);
             if (!texto) {
                 feedback.className = 'mensagem erro';
                 feedback.textContent = 'Escreva uma mensagem antes de registrar.';
@@ -250,7 +250,7 @@
             }
             if (abrirWhatsApp && !telefone) {
                 feedback.className = 'mensagem erro';
-                feedback.textContent = 'Cadastre um telefone para preparar o WhatsApp.';
+                feedback.textContent = 'Cadastre um telefone válido com DDD para preparar o WhatsApp.';
                 return;
             }
 
@@ -271,8 +271,7 @@
                 await carregarInteracoes();
 
                 if (abrirWhatsApp) {
-                    const numero = telefone.startsWith('55') ? telefone : `55${telefone}`;
-                    const url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
+                    const url = `https://wa.me/${telefone}?text=${encodeURIComponent(texto)}`;
                     if (janela) janela.location.href = url;
                     else feedback.textContent = 'Interação registrada. Permita pop-ups para abrir o WhatsApp.';
                 }

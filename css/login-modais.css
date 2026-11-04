@@ -1,0 +1,97 @@
+/* 25. TELA DE LOGIN */
+.login {
+    background: radial-gradient(ellipse at 10% 10%, #dceee7, transparent 55%), radial-gradient(ellipse at 90% 90%, #e0e9ef, transparent 50%), #f7f9fa;
+}
+
+.login main {
+    display: grid;
+    align-items: center;
+    width: min(100% - 40px, 460px);
+    min-height: 100svh;
+    margin: 0 auto;
+    padding: 32px 0;
+}
+
+.auth-panel {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 38px;
+    box-shadow: 0 20px 70px #203f4d12;
+}
+
+.auth-panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 38px;
+    right: 38px;
+    height: 3px;
+    background: var(--cor);
+    border-radius: 0 0 8px 8px;
+}
+
+.auth-panel h1 {
+    margin-bottom: 10px;
+    font-size: 1.85rem;
+}
+
+.auth-panel > p {
+    margin-bottom: 26px;
+    font-size: .9rem;
+}
+
+.auth-switch {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+/* 26. MODAIS DE CONFIRMAÇÃO */
+.modal-confirmacao {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: #10182885;
+    backdrop-filter: blur(5px);
+}
+
+.modal-confirmacao.hidden {
+    display: none;
+}
+
+.modal-box {
+    width: min(100%, 450px);
+    padding: 30px;
+    border: 1px solid var(--borda);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 24px 80px #10182830;
+}
+
+.modal-box h3 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.modal-box p {
+    font-size: .9rem;
+}
+
+.modal-actions {
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+/* 27. CONTROLE DE VISIBILIDADE */
+[hidden] {
+    display: none !important;
+}

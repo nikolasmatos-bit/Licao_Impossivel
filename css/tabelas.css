@@ -1,0 +1,144 @@
+/* 17. TABELAS */
+.table-wrap {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: .85rem;
+}
+
+th,
+td {
+    padding: 15px 16px;
+    border-bottom: 1px solid var(--borda);
+    white-space: nowrap;
+}
+
+th {
+    background: #f8fafb;
+    color: var(--muted);
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+tbody tr {
+    transition: background .15s;
+}
+
+tbody tr:hover {
+    background: #f5faf8;
+}
+
+tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+td:first-child,
+.customer-name,
+.customer-link {
+    font-weight: 600;
+}
+
+/* 18. AÇÕES DAS TABELAS */
+td.row-actions {
+    display: table-cell;
+    white-space: nowrap;
+}
+
+.row-actions > :not(:last-child) {
+    margin-right: 6px;
+}
+
+.icon-action,
+.row-actions > a {
+    min-height: 34px;
+    padding: 7px 11px;
+    border-radius: 8px;
+    font-size: .75rem;
+}
+
+.acao-fechada {
+    margin: 0 6px;
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+/* 19. PESQUISA E FILTROS */
+.search-field {
+    display: block;
+    width: min(100%, 340px);
+    min-width: 0;
+}
+
+.search-field input {
+    min-height: 42px;
+    background: #fafbfc;
+    font-size: .8rem;
+}
+
+.list-toolbar {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.filter-chip {
+    min-height: 38px;
+    padding: 8px 13px;
+    border-color: var(--borda);
+    border-radius: 9px;
+    background: #fff;
+    color: #475467;
+    font-size: .78rem;
+}
+
+.filter-chip:not(:disabled):hover {
+    background: var(--suave);
+    color: var(--cor);
+}
+
+.filter-chip.is-active,
+.filter-chip.is-active:not(:disabled):hover {
+    background: var(--cor);
+    border-color: var(--cor);
+    color: #fff;
+}
+
+/* 20. LISTAS VAZIAS */
+.empty-state,
+.lista-vazia,
+.timeline-empty {
+    padding: 36px 20px;
+    color: var(--muted);
+    text-align: center;
+    white-space: normal;
+}
+
+.empty-state strong,
+.empty-state span {
+    display: block;
+}
+
+.empty-state span {
+    margin-top: 6px;
+    font-size: .85rem;
+}

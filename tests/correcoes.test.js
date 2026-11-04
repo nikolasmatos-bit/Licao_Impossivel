@@ -4,18 +4,7 @@ const { spawn } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
-const net = require('node:net');
-
-function portaLivre() {
-    return new Promise((resolve, reject) => {
-        const server = net.createServer();
-        server.once('error', reject);
-        server.listen(0, '127.0.0.1', () => {
-            const porta = server.address().port;
-            server.close(() => resolve(porta));
-        });
-    });
-}
+const { portaLivre, pararServidor, removerDiretorioTemporario } = require('./helpers');
 
 test('integração: permissões, cadastro, ordens, contatos, dashboard e notas privadas', { timeout: 60000 }, async () => {
     const diretorio = fs.mkdtempSync(path.join(os.tmpdir(), 'megabrain-correcoes-'));
@@ -141,7 +130,7 @@ test('integração: permissões, cadastro, ordens, contatos, dashboard e notas p
         assert.equal((await admin('POST', '/api/tecnicos', { nome: 'Incompleto' })).status, 400);
         assert.equal((await admin('GET', '/dashboard.html')).status, 200);
     } finally {
-        servidor.kill();
-        fs.rmSync(diretorio, { force: true, recursive: true });
+        await pararServidor(servidor);
+        removerDiretorioTemporario(diretorio);
     }
 });

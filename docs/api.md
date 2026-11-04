@@ -14,6 +14,11 @@ Autenticação: cookie `os_session` (HttpOnly, SameSite=Strict, 8h).
 | POST | `/api/auth/logout` | logado | Encerra sessão |
 | GET | `/api/auth/me` | logado | Usuário atual |
 
+O cadastro público retorna `409` se já existir um cliente com o e-mail informado.
+Nesse caso, um administrador deve criar a conta em `/api/usuarios`, com
+`papel: "cliente"` e o `cliente_id` correspondente. Informar um e-mail no cadastro
+público não comprova a identidade para acessar ordens anteriores.
+
 ## Clientes
 
 | Método | Rota | Papel |
@@ -49,8 +54,21 @@ Body: `{nome, email, telefone, especialidade}`
 | PUT | `/api/ordens/:id/status` | admin, funcionario |
 | DELETE | `/api/ordens/:id` | admin (só Concluída/Cancelada) |
 
-Body POST: `{cliente_nome, cliente_telefone, cliente_email, equipamento, tecnico_nome, prioridade, descricao}`.
-Também aceita IDs já existentes (`cliente_id`, `tecnico_id`). Ao informar nome de técnico no formulário, o nome deve corresponder a um técnico cadastrado. Funcionários vinculados assumem automaticamente suas novas ordens.
+Body POST: `{cliente_id, equipamento, tecnico_id, prioridade, descricao}` para
+cadastros existentes. Para novos clientes, envie `cliente_nome`,
+`cliente_telefone` e `cliente_email` no lugar de `cliente_id`.
+
+O formulário seleciona clientes e técnicos por ID, inclusive quando os nomes
+coincidem. `tecnico_id` pode ser nulo ou omitido para deixar a OS sem responsável.
+Funcionários vinculados assumem automaticamente suas novas ordens.
+
+Por compatibilidade, a API também aceita `tecnico_nome` quando identifica um
+único técnico. Mais de um técnico com o mesmo nome resulta em `409` e exige ID.
+Sem `cliente_id`, um e-mail que identifica um único cliente reaproveita esse
+cadastro. E-mail presente em vários cadastros, ou nome já existente sem e-mail,
+resulta em `409` e exige seleção explícita. Nomes iguais com e-mails diferentes
+não são vinculados automaticamente.
+
 Body PUT: `{status, diagnostico}`. Após a conclusão ou o cancelamento não é possível alterar a ordem. A exclusão depende de a OS estar encerrada.
 
 ## Interações

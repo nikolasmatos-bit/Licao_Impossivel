@@ -1,0 +1,143 @@
+/* 15. CARTÕES E INDICADORES DO PAINEL */
+.cards,
+.metric-grid,
+.distribution-grid,
+.informacoes,
+.admin-layout {
+    display: grid;
+    gap: 16px;
+}
+
+.cards,
+.metric-grid {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.cards {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.metric-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dashboard-metrics {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.dashboard-metrics .card {
+    grid-column: span 3;
+}
+
+.dashboard-metrics .card:nth-child(n+5) {
+    grid-column: span 4;
+}
+
+.cards .card,
+.metric-card {
+    position: relative;
+    margin: 0;
+    padding: 22px;
+}
+
+.card h3,
+.metric-card > span {
+    display: block;
+    color: var(--muted);
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.card strong,
+.metric-card > strong {
+    display: block;
+    margin-top: 12px;
+    font-size: 2.15rem;
+    line-height: 1.1;
+    letter-spacing: -.045em;
+    font-variant-numeric: tabular-nums;
+}
+
+.card small {
+    display: block;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: .72rem;
+}
+
+.dashboard-metrics .card:first-child {
+    background: var(--cor);
+    border-color: var(--cor);
+    color: #fff;
+}
+
+.dashboard-metrics .card:first-child h3 {
+    color: #d1ebe3;
+}
+
+.metric-attention {
+    border-top: 3px solid #e4b04e;
+}
+
+.metric-delay {
+    border-top: 3px solid #d88a7a;
+}
+
+.metric-unassigned {
+    border-top: 3px solid #8b9bb9;
+}
+
+/* 16. BARRAS DE DISTRIBUIÇÃO */
+.distribution-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.distribution-label {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: .78rem;
+    color: var(--muted);
+}
+
+.distribution-label strong {
+    color: var(--texto);
+    font-variant-numeric: tabular-nums;
+}
+
+.distribution-track {
+    height: 7px;
+    margin-top: 12px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #edf1f5;
+}
+
+.distribution-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--cor);
+    transition: width .3s;
+}
+
+.distribution-fill.aberta {
+    background: #d8a241;
+}
+
+.distribution-fill.andamento {
+    background: #478eaa;
+}
+
+.distribution-fill.concluida {
+    background: #278568;
+}
+
+.distribution-fill.cancelada {
+    background: #d28a7e;
+}

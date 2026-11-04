@@ -1,0 +1,101 @@
+/* 10. BOTÕES: ESTRUTURA E ESTADOS */
+button,
+.button,
+.botao,
+.icon-action,
+.row-actions > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 16px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: var(--cor);
+    color: #fff;
+    font: inherit;
+    font-size: .85rem;
+    font-weight: 650;
+    line-height: 1.35;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .18s, border-color .18s, box-shadow .18s, transform .18s;
+}
+
+:is(button, .button, .botao):not(:disabled):hover {
+    background: var(--cor-hover);
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* 11. BOTÕES: VARIANTES E LINKS */
+.button-outline,
+.icon-action,
+.password-toggle,
+.account-logout,
+.row-actions > a {
+    background: #fff;
+    border-color: var(--borda);
+    color: #475467;
+}
+
+:is(.button-outline, .icon-action, .password-toggle, .account-logout, .row-actions > a):not(:disabled):hover {
+    background: var(--suave);
+    border-color: #badbd0;
+    color: var(--cor);
+    text-decoration: none;
+}
+
+.button-whatsapp {
+    background: #177a52;
+    border-color: #177a52;
+}
+
+.button-whatsapp:not(:disabled):hover {
+    background: #11633f;
+}
+
+.botao-secundario {
+    background: var(--suave);
+    border-color: #cce7de;
+    color: var(--cor);
+}
+
+.botao-secundario:not(:disabled):hover {
+    background: #d9eee5;
+    color: var(--cor-hover);
+}
+
+.botao-cancelar {
+    background: #fff1ef;
+    border-color: #f3d1cc;
+    color: var(--erro);
+}
+
+.botao-cancelar:not(:disabled):hover {
+    background: #ffe3de;
+    color: #912018;
+}
+
+.text-link {
+    min-height: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--cor);
+    font-weight: 650;
+}
+
+.text-link:not(:disabled):hover {
+    background: transparent;
+    color: var(--cor-hover);
+    text-decoration: underline;
+    transform: none;
+}

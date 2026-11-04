@@ -1,0 +1,88 @@
+/* 01. CORES E VARIÁVEIS */
+:root {
+    color-scheme: light;
+    --cor: #087f70;
+    --cor-hover: #06695d;
+    --suave: #eaf6f2;
+    --fundo: #f5f7fa;
+    --card: #ffffff;
+    --texto: #1d2939;
+    --muted: #667085;
+    --borda: #e4e9ef;
+    --sucesso: #166a48;
+    --erro: #b42318;
+    --destaque: #d99527;
+    --sombra: 0 4px 24px #182b4910;
+    --raio: 16px;
+}
+
+/* 02. RESET E FUNDO DA PÁGINA */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-padding-top: 110px;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--fundo);
+    color: var(--texto);
+    font: 16px/1.55 "Inter", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+    background: #c9eadf;
+    color: #104b40;
+}
+
+/* 03. LINKS E TIPOGRAFIA */
+a {
+    color: var(--cor);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+h1,
+h2,
+h3,
+p {
+    margin: 0;
+}
+
+h1 {
+    font-size: clamp(1.65rem, 3vw, 2.15rem);
+    line-height: 1.2;
+    letter-spacing: -.045em;
+    font-weight: 750;
+}
+
+h2 {
+    font-size: 1.05rem;
+    letter-spacing: -.02em;
+    font-weight: 700;
+}
+
+h3 {
+    font-size: .9rem;
+}
+
+p {
+    color: var(--muted);
+}
+
+/* 04. CONTEÚDO PRINCIPAL */
+main {
+    width: min(100% - 48px, 1240px);
+    margin: 36px auto 56px;
+}
+
+main > h1 + p {
+    margin: 8px 0 24px;
+}

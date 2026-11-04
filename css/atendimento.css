@@ -1,0 +1,154 @@
+/* 21. ETIQUETAS DE STATUS */
+.status,
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 7px;
+    background: #eef2f6;
+    color: #475467;
+    font-size: .72rem;
+    font-weight: 650;
+    line-height: 1.4;
+}
+
+.status::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.aberta {
+    background: #fff5de;
+    color: #8a5b13;
+}
+
+.andamento {
+    background: #eaf2fa;
+    color: #326885;
+}
+
+.concluida,
+.status-concluida {
+    background: #e8f5ee;
+    color: var(--sucesso);
+}
+
+.cancelada,
+.status-cancelada {
+    background: #fceeea;
+    color: #a84234;
+}
+
+/* 22. MENSAGENS DE SUCESSO E ERRO */
+.mensagem {
+    display: none;
+    padding: 12px 15px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: .85rem;
+}
+
+.mensagem.erro,
+.mensagem.sucesso {
+    display: block;
+}
+
+.mensagem.erro {
+    background: #fff2ef;
+    border-color: #f8d9d2;
+    color: var(--erro);
+}
+
+.mensagem.sucesso {
+    background: #edf8f1;
+    border-color: #cee9d9;
+    color: var(--sucesso);
+}
+
+/* 23. INFORMAÇÕES E CONTATO DA OS */
+.informacoes {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.informacoes strong {
+    color: var(--muted);
+    font-size: .73rem;
+    font-weight: 600;
+}
+
+.informacoes p {
+    margin-top: 6px;
+    color: var(--texto);
+    font-size: .925rem;
+    overflow-wrap: anywhere;
+}
+
+.contact-actions {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--borda);
+}
+
+/* 24. HISTÓRICO E CONVERSAS */
+.live-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--sucesso);
+    font-size: .75rem;
+    white-space: nowrap;
+}
+
+.live-indicator::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2b9c70;
+    box-shadow: 0 0 0 4px #e9f6ef;
+}
+
+.interaction-footer {
+    margin: 4px 0;
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+.timeline {
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.timeline-item {
+    margin-top: 12px;
+    padding: 16px 18px;
+    border: 1px solid var(--borda);
+    border-left: 3px solid #79b6a4;
+    border-radius: 10px;
+    background: #fafcfb;
+}
+
+.timeline-item p {
+    margin-top: 8px;
+    color: #344054;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: .875rem;
+}
+
+.timeline-meta {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: .75rem;
+}
+
+.timeline-meta time {
+    color: var(--muted);
+}

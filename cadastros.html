@@ -6,6 +6,7 @@
     <title>Novo serviço - Megabrain Services</title>
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/api.js"></script>
+    <script src="./js/utils.js"></script>
     <script src="./js/auth.js" defer></script>
 </head>
 <body>
@@ -28,6 +29,9 @@
         <section class="box">
             <form id="form-os" class="form-grid">
 
+                <label for="cliente-id">Cliente cadastrado</label>
+                <select id="cliente-id"><option value="">Novo cliente</option></select>
+
                 <label for="cliente">Quem é o cliente?</label>
                 <input type="text" id="cliente" placeholder="Nome do cliente" required>
 
@@ -41,8 +45,7 @@
                 <input type="text" id="equipamento" placeholder="Ex: Notebook" required>
 
                 <label for="tecnico">Quem vai fazer o serviço?</label>
-                <input type="text" id="tecnico" list="lista-tecnicos" placeholder="Nome do técnico" required>
-                <datalist id="lista-tecnicos"></datalist>
+                <select id="tecnico"><option value="">A definir</option></select>
 
                 <label for="prioridade">Qual é a urgência?</label>
                 <select id="prioridade">
@@ -65,25 +68,56 @@
     <script>
         const form = document.getElementById('form-os');
         const mensagem = document.getElementById('mensagem-os');
+        const clienteSelect = document.getElementById('cliente-id');
+        const camposCliente = ['cliente', 'cliente-telefone', 'cliente-email'].map(id => document.getElementById(id));
+        let clientes = [];
 
         function mostrarMensagem(tipo, texto) {
             mensagem.className = 'mensagem ' + tipo;
             mensagem.textContent = texto;
         }
 
-        // Carrega técnicos do banco
+        clienteSelect.addEventListener('change', () => {
+            const cliente = clientes.find(item => item.id === Number(clienteSelect.value));
+            const valores = cliente ? [cliente.nome, cliente.telefone, cliente.email] : ['', '', ''];
+            camposCliente.forEach((campo, indice) => {
+                campo.value = valores[indice] || '';
+                campo.readOnly = Boolean(cliente);
+            });
+        });
+
+        apiFetch('/api/clientes')
+            .then(async resposta => {
+                if (!resposta.ok) throw new Error('Não foi possível carregar os clientes.');
+                return resposta.json();
+            })
+            .then(dados => {
+                clientes = dados;
+                dados.forEach(cliente => {
+                    const opcao = document.createElement('option');
+                    opcao.value = cliente.id;
+                    opcao.textContent = `${cliente.nome} — ${cliente.email || 'Sem e-mail'} (#${cliente.id})`;
+                    clienteSelect.append(opcao);
+                });
+            })
+            .catch(erro => mostrarMensagem('erro', erro.message));
+
+        // O identificador distingue técnicos que tenham o mesmo nome.
         apiFetch('/api/tecnicos')
-            .then(r => r.json())
+            .then(async resposta => {
+                if (!resposta.ok) throw new Error('Não foi possível carregar os técnicos.');
+                return resposta.json();
+            })
             .then(tecnicos => {
-                const lista = document.getElementById('lista-tecnicos');
-                lista.replaceChildren();
+                const lista = document.getElementById('tecnico');
                 tecnicos.forEach(t => {
                     const opcao = document.createElement('option');
-                    opcao.value = t.nome;
+                    opcao.value = t.id;
+                    opcao.textContent = `${t.nome} (#${t.id})`;
                     lista.append(opcao);
                 });
             })
-            .catch(() => console.warn('Erro ao carregar técnicos.'));
+            .catch(erro => mostrarMensagem('erro', erro.message));
 
         // Buscar no Google
         document.getElementById('buscar-solucao').addEventListener('click', function () {
@@ -106,17 +140,17 @@
             }
 
             const novaOrdem = {
+                cliente_id: clienteSelect.value ? Number(clienteSelect.value) : null,
                 cliente_nome: document.getElementById('cliente').value.trim(),
                 cliente_telefone: document.getElementById('cliente-telefone').value.trim(),
                 cliente_email: document.getElementById('cliente-email').value.trim(),
                 equipamento: document.getElementById('equipamento').value.trim(),
-                tecnico_nome: document.getElementById('tecnico').value.trim(),
+                tecnico_id: document.getElementById('tecnico').value ? Number(document.getElementById('tecnico').value) : null,
                 prioridade: document.getElementById('prioridade').value,
                 descricao: descricao
             };
 
-            const numerosTelefone = novaOrdem.cliente_telefone.replace(/\D/g, '');
-            if (numerosTelefone && (numerosTelefone.length < 10 || numerosTelefone.length > 13)) {
+            if (!novaOrdem.cliente_id && novaOrdem.cliente_telefone && !Utils.numeroWhatsApp(novaOrdem.cliente_telefone)) {
                 mostrarMensagem('erro', 'Digite um telefone válido com DDD.');
                 return;
             }
