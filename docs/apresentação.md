@@ -27,7 +27,7 @@ Autenticação: cookie HttpOnly + SameSite=Strict, senha com `scrypt`.
 9. Login admin → Concluir atendimento → campos bloqueados
 
 ## 5. Testes (2 min)
-`npm test` ao vivo (17 testes de integração, ~3s).
+`npm test` ao vivo (22 testes automatizados, ~3s).
 Mencionar validações manuais.
 
 ## 6. Desafios (1 min)
@@ -45,7 +45,7 @@ Mencionar validações manuais.
 | Por que não React? | Escopo pedagógico: DOM e fetch |
 | Como isola OS por cliente? | `podeAcessarOrdem()` checa `cliente_id` |
 | Onde fica o hash de senha? | `crypto.scryptSync` com salt 16 bytes |
-| Se o servidor cair? | Sessões em SQLite persistem; limpeza horária |
+| Se o servidor cair? | Sessões em SQLite persistem e a validade é verificada a cada requisição |
 | Rodar em outra máquina? | `npm install && npm start` |
-| Risco de dois clientes com mesmo nome? | Sim — POST /ordens cria por nome. Limitação documentada |
+| Risco de dois clientes com mesmo nome? | Sim — A criação tenta localizar primeiro por e-mail e depois por nome; nomes duplicados ainda exigem atenção |
 | Por que SQLite? | Portabilidade, sem servidor de banco |

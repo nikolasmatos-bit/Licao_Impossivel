@@ -66,7 +66,7 @@ sequenceDiagram
     E->>E: valida payload
     E->>DB: BEGIN
     E->>DB: cliente existe? senão INSERT
-    E->>DB: técnico existe? senão INSERT
+    E->>DB: localizar técnico cadastrado (quando informado)
     E->>DB: INSERT OS status=Aberta
     E->>DB: COMMIT
     E-->>F: 201 {id}
@@ -77,10 +77,10 @@ sequenceDiagram
 | Decisão | Motivo |
 |---|---|
 | `better-sqlite3` | Simples, síncrono, sem pool |
-| Sessão em cookie HttpOnly | Imune a XSS/CSRF sem dependência externa |
+| Sessão em cookie HttpOnly + SameSite=Strict | Reduz a exposição do cookie a scripts e requisições entre sites (não torna o sistema imune a XSS/CSRF) |
 | `scrypt` + salt | Padrão do Node |
 | Sem framework no front | Domínio de JS/DOM |
-| `exigirPapeis` centralizado | Não esquece autorização em endpoints novos |
+| `exigirPapeis` centralizado | Garante validação de papéis nos endpoints protegidos |
 | Validação antes do SQL | 400 com mensagem clara em vez de 500 |
 | DELETE de OS só após concluir | Preserva histórico |
 | `corpoSeguro(req)` | Express 5 deixa body `undefined` sem Content-Type |

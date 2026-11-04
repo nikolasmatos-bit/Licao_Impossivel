@@ -135,6 +135,9 @@
             document.getElementById('status').disabled = encerrada;
             document.getElementById('concluir-atendimento').disabled = encerrada;
             document.getElementById('cancelar-servico').disabled = encerrada;
+            document.querySelectorAll('#form-interacao textarea, #form-interacao select, #form-interacao button').forEach(campo => {
+                campo.disabled = encerrada;
+            });
         }
 
         function mostrarDados() {

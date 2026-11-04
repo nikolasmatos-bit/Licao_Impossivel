@@ -42,11 +42,9 @@
                     <button type="button" class="password-toggle" data-password-target="admin-senha" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button>
                 </div>
                 
-                <!-- Removido o disabled das opções -->
                 <label for="setup-papel">Tipo de conta</label>
                 <select id="setup-papel">
                     <option value="admin">Administrador</option>
-                    <option value="funcionario">Funcionário</option>
                     <option value="cliente">Cliente</option>
                 </select>
 
@@ -54,12 +52,6 @@
                 <div id="campo-telefone" hidden>
                     <label for="setup-telefone">Telefone</label>
                     <input type="tel" id="setup-telefone" autocomplete="tel" placeholder="(11) 99999-9999">
-                </div>
-
-                <!-- Campo condicional: Funcionário -->
-                <div id="campo-tecnico" hidden>
-                    <label for="setup-tecnico">Vincular ao Técnico</label>
-                    <select id="setup-tecnico"></select>
                 </div>
 
                 <button type="submit" id="btn-criar">Criar conta</button>
@@ -82,45 +74,18 @@
         const setupPapel = document.getElementById('setup-papel');
         const campoTelefone = document.getElementById('campo-telefone');
         const setupTelefone = document.getElementById('setup-telefone');
-        const campoTecnico = document.getElementById('campo-tecnico');
-        const setupTecnico = document.getElementById('setup-tecnico');
 
-        // --- LÓGICA PARA CARREGAR TÉCNICOS (necessário para criar funcionário) ---
-        let tecnicosCarregados = false;
-        async function carregarTecnicos() {
-            if (tecnicosCarregados) return;
-            try {
-                const resp = await apiFetch('/api/tecnicos');
-                const tecnicos = await resp.json();
-                setupTecnico.innerHTML = '<option value="">Selecione o técnico</option>';
-                tecnicos.forEach(t => {
-                    const opt = document.createElement('option');
-                    opt.value = t.id;
-                    opt.textContent = t.nome;
-                    setupTecnico.appendChild(opt);
-                });
-                tecnicosCarregados = true;
-            } catch (e) {
-                console.error('Erro ao carregar técnicos:', e);
-            }
-        }
+        let sistemaConfigurado = true;
 
         // --- ATUALIZA OS CAMPOS CONFORME O TIPO DE CONTA ---
         function atualizarTipoConta() {
             const papel = setupPapel.value;
             
-            // Mostra/oculta telefone (apenas cliente) ou select de técnico (apenas funcionário)
             campoTelefone.hidden = papel !== 'cliente';
-            campoTecnico.hidden = papel !== 'funcionario';
-
-            if (papel === 'funcionario') {
-                carregarTecnicos();
-            }
 
             // Ajusta o texto do botão
             const botao = setupForm.querySelector('button[type="submit"]');
             if (papel === 'admin') botao.textContent = 'Criar conta administradora';
-            else if (papel === 'funcionario') botao.textContent = 'Criar conta de funcionário';
             else botao.textContent = 'Criar conta de cliente';
 
             // Ajusta os títulos
@@ -148,7 +113,7 @@
 
         function mostrarCriacaoConta() {
             botaoCriarConta.hidden = false;
-            setupPapel.value = 'admin'; // Sempre começa no admin por padrão
+            setupPapel.value = sistemaConfigurado ? 'cliente' : 'admin';
             alternarFormulario('cadastro');
         }
 
@@ -219,12 +184,9 @@
                 
                 if (payload.papel === 'cliente') {
                     payload.telefone = setupTelefone.value.trim();
-                } else if (payload.papel === 'funcionario') {
-                    payload.tecnico_id = Number(setupTecnico.value);
-                    if (!payload.tecnico_id) throw new Error('Selecione um técnico para vincular.');
                 }
 
-                const resultado = await enviar('/api/auth/register', payload);
+                const resultado = await enviar(sistemaConfigurado ? '/api/auth/register' : '/api/auth/setup', payload);
                 window.location.assign(destinoDoPerfil(resultado.usuario.papel));
             } catch (erro) {
                 mostrarMensagem(mensagem, erro.message);
@@ -233,7 +195,19 @@
             }
         });
 
-        // Sempre inicia no Login
+        // Primeiro acesso cria somente o administrador; depois, a página pública cria clientes.
+        apiFetch('/api/auth/status').then(async resposta => {
+            if (!resposta.ok) throw new Error('Não foi possível verificar a configuração do sistema.');
+            const status = await resposta.json();
+            sistemaConfigurado = status.configurado;
+            const admin = setupPapel.querySelector('option[value="admin"]');
+            const cliente = setupPapel.querySelector('option[value="cliente"]');
+            admin.disabled = sistemaConfigurado;
+            cliente.disabled = !sistemaConfigurado;
+            setupPapel.value = sistemaConfigurado ? 'cliente' : 'admin';
+            setupPapel.disabled = true;
+            if (!sistemaConfigurado) mostrarCriacaoConta();
+        }).catch(erro => mostrarMensagem(document.getElementById('mensagem-login'), erro.message));
         loginForm.hidden = false;
         setupForm.hidden = true;
         })();

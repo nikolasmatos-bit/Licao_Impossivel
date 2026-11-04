@@ -8,7 +8,8 @@ Autenticação: cookie `os_session` (HttpOnly, SameSite=Strict, 8h).
 | Método | Rota | Papel | Descrição |
 |---|---|---|---|
 | GET | `/api/auth/status` | público | `{configurado: bool}` |
-| POST | `/api/auth/setup` | público | Cria o primeiro admin |
+| POST | `/api/auth/setup` | público, apenas banco vazio | Cria o primeiro admin |
+| POST | `/api/auth/register` | público, após configuração | Cadastra somente cliente e cria vínculo em `clientes` |
 | POST | `/api/auth/login` | público | Autentica e emite cookie |
 | POST | `/api/auth/logout` | logado | Encerra sessão |
 | GET | `/api/auth/me` | logado | Usuário atual |
@@ -48,8 +49,9 @@ Body: `{nome, email, telefone, especialidade}`
 | PUT | `/api/ordens/:id/status` | admin, funcionario |
 | DELETE | `/api/ordens/:id` | admin (só Concluída/Cancelada) |
 
-Body POST: `{cliente_nome, cliente_telefone, cliente_email, equipamento, tecnico_nome, prioridade, descricao}`
-Body PUT: `{status, diagnostico}`
+Body POST: `{cliente_nome, cliente_telefone, cliente_email, equipamento, tecnico_nome, prioridade, descricao}`.
+Também aceita IDs já existentes (`cliente_id`, `tecnico_id`). Ao informar nome de técnico no formulário, o nome deve corresponder a um técnico cadastrado. Funcionários vinculados assumem automaticamente suas novas ordens.
+Body PUT: `{status, diagnostico}`. Após a conclusão ou o cancelamento não é possível alterar a ordem. A exclusão depende de a OS estar encerrada.
 
 ## Interações
 
@@ -59,7 +61,7 @@ Body PUT: `{status, diagnostico}`
 | POST | `/api/ordens/:id/interacoes` | conforme vínculo |
 
 Body: `{canal: "Nota"|"WhatsApp"|"Atualização", mensagem}`
-Cliente sempre grava como `Atualização`. Nota fica interna.
+Cliente sempre grava como `Atualização`. `Nota` é interna, não aparece no portal do cliente; `WhatsApp` e `Atualização` são públicas. Interações não podem ser adicionadas a OS encerradas.
 
 ## Usuários (admin)
 
@@ -71,7 +73,9 @@ Cliente sempre grava como `Atualização`. Nota fica interna.
 
 ## Dashboard
 
-`GET /api/dashboard` — admin e funcionario.
+`GET /api/dashboard` — admin e funcionario. Retorna `total_os`, `os_abertas`,
+`em_execucao`, `concluidas`, `alta_prioridade`, `aguardando_48h`,
+`sem_responsavel`, `distribuicao` e `atualizado_em`, de acordo com a fila visível ao perfil.
 
 ## Códigos de resposta
 

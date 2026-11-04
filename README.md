@@ -1,71 +1,76 @@
 # Megabrain Services — Sistema de Ordens de Serviço
 
-Sistema web para assistência técnica: cadastro de clientes, técnicos, ordens de serviço, controle de acesso por perfil e portal do cliente.
+Sistema web local de assistência técnica: clientes, técnicos, ordens de serviço,
+autenticação por perfil, dashboard, gerenciamento de contas e portal do cliente.
 
-## Stack
+## Windows: como abrir
 
-- **Runtime:** Node.js 20+
-- **Back-end:** Express 5
-- **Banco:** SQLite (via `better-sqlite3`)
-- **Autenticação:** sessões em cookie `HttpOnly` + `SameSite=Strict`, senhas com `scrypt` + salt
-- **Front-end:** HTML/CSS/JS puro
+1. Instale o **Node.js 20 ou mais recente**, se ainda não estiver instalado.
+2. Extraia **todo** o ZIP em uma pasta no computador.
+3. Dê dois cliques em **`Abrir Ordem Clara.bat`**, na raiz do projeto.
+4. O sistema iniciará em **http://127.0.0.1:3001** e abrirá o navegador.
 
-## Como rodar
+O ZIP inclui as dependências que vieram no projeto original para Windows. O
+inicializador confere se são compatíveis com o Node.js instalado e, se
+necessário, tenta recompilar/instalar o módulo SQLite; essa etapa pode exigir
+conexão à internet. Não execute o `.bat` dentro do ZIP sem extraí-lo.
 
-### Windows
-Duplo-clique em **`Abrir Ordem Clara.bat`**.
+O banco `os_system.sqlite` acompanha o pacote, **preservando os dados e as contas
+já existentes**. Faça backup desse arquivo antes de substituir outra instalação.
+Na primeira instalação com um banco vazio, a tela de entrada permite configurar
+o primeiro administrador. Com um banco já configurado, entre usando suas
+credenciais existentes — **o pacote não redefine senhas**.
 
-### Manual
+## Comandos manuais
+
 ```bash
-npm install
-npm start
-npm run open
+npm install       # necessário se as dependências não funcionarem ou não existirem
+npm run open      # inicia o servidor e abre o navegador
 ```
 
-Na primeira execução o sistema pede para criar a **conta administradora** em `/index.html`.
+`npm start` inicia somente o servidor (acesso via http://127.0.0.1:3001).
 
-## Perfis de acesso
+## Perfis
 
-| Papel | Pode fazer |
+| Perfil | Permissões |
 |---|---|
-| **admin** | Tudo: CRUD de técnicos, clientes, ordens, gestão de usuários |
-| **funcionario** | Criar OS, atualizar as OS atribuídas a ele, cadastrar clientes |
-| **cliente** | Ver as próprias OS pelo portal do cliente e responder no histórico |
+| Administrador | Gerenciar técnicos, clientes, contas e ordens, com acesso ao painel |
+| Funcionário | Acompanhar ordens próprias e sem responsável, cadastrar clientes e OS |
+| Cliente | Consultar as próprias ordens e responder no histórico público |
 
-## Estrutura
+Funcionários e administradores são cadastrados por um administrador em **Acessos**.
+O cadastro público permite apenas novas contas de cliente. Notas internas do
+atendimento não são exibidas no portal do cliente.
 
-```
-.
-├── Abrir Ordem Clara.bat
-├── launch.js
-├── server.js
-├── mega-brain.sql
-├── package.json
-├── tests/api.test.js
-├── docs/
-│   ├── API.md
-│   ├── ARQUITETURA.md
-│   ├── TESTES.md
-│   └── APRESENTACAO.md
-├── css/    js/
-└── *.html
-```
+## Banco e testes
 
-## Testes
+O banco usa SQLite (`better-sqlite3`). O script SQL de criação está em
+`mega-brain.sql` e é aplicado sem eliminar tabelas existentes.
 
 ```bash
 npm test
 ```
 
-Sobe um servidor isolado com banco temporário e valida o fluxo completo via HTTP.
+Os testes HTTP iniciam servidores isolados com bancos temporários: **não usam o
+arquivo `os_system.sqlite` fornecido**. Há 22 testes automatizados cobrindo o
+fluxo principal e as correções de permissões, API e indicadores.
 
-## Variáveis de ambiente
+## Configuração
 
-| Variável | Padrão | Descrição |
+| Variável | Padrão | Uso |
 |---|---|---|
-| `PORT` | `3001` | Porta HTTP |
-| `DATABASE_PATH` | `./os_system.sqlite` | Caminho do banco |
+| `PORT` | `3001` | Porta HTTP, limitada ao endereço local `127.0.0.1` |
+| `DATABASE_PATH` | `./os_system.sqlite` na pasta do sistema | Caminho de outro banco SQLite, se desejado |
 
-## Licença
+Não publique a pasta do projeto, especialmente o arquivo do banco, em
+repositórios públicos: ela pode conter informações de clientes e contas.
 
-ISC.
+## Arquivos principais
+
+- `Abrir Ordem Clara.bat` / `launch.js`: inicialização no Windows;
+- `server.js`, `mega-brain.sql`, `os_system.sqlite`: API e banco;
+- `index.html`, `dashboard.html`, `cadastros.html`, `lista.html`, `detalhes.html`,
+  `clientes.html`, `tecnicos.html`, `usuarios.html`, `portal-cliente.html`: páginas;
+- `js/`, `css/`: scripts e visual;
+- `tests/`: testes automatizados;
+- `docs/`: documentação.

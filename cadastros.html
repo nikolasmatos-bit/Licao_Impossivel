@@ -75,11 +75,13 @@
         apiFetch('/api/tecnicos')
             .then(r => r.json())
             .then(tecnicos => {
-                let opcoes = '';
+                const lista = document.getElementById('lista-tecnicos');
+                lista.replaceChildren();
                 tecnicos.forEach(t => {
-                    opcoes += '<option value="' + t.nome + '"></option>';
+                    const opcao = document.createElement('option');
+                    opcao.value = t.nome;
+                    lista.append(opcao);
                 });
-                document.getElementById('lista-tecnicos').innerHTML = opcoes;
             })
             .catch(() => console.warn('Erro ao carregar técnicos.'));
 

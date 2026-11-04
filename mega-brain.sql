@@ -1,3 +1,4 @@
+-- database: os_system.sqlite
 CREATE TABLE IF NOT EXISTS clientes (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	nome TEXT NOT NULL,

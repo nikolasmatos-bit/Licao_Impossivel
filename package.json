@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "open": "node launch.js",
-    "test": "node --test tests/api.test.js"
+    "test": "node --test tests/*.test.js"
   },
   "repository": {
     "type": "git",

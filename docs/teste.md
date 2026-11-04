@@ -1,45 +1,30 @@
-# Testes — Sprint 3
+# Testes automatizados — Megabrain Services
 
-## Ferramenta
+Os testes são executados com `node:test` (Node.js 20+) usando `npm test`.
 
-`node:test` (built-in do Node 20). Roda com `npm test`.
+Os dois arquivos em `tests/` inicializam servidores locais e usam bancos SQLite
+**temporários**. O banco `os_system.sqlite` da instalação não é alterado.
 
-Sobe um servidor isolado em `127.0.0.1:3987` apontando para SQLite temporário. Ao final, o banco é apagado.
+## Cobertura — 22 testes
 
-## Cobertura
+- Instalação inicial, criação do administrador, login, sessão, logout e cadastro público de clientes;
+- Rejeição de uma segunda configuração inicial e do cadastro público de funcionário/admin;
+- Criação e consulta de clientes, técnicos, contas de funcionários/clientes/admin e alteração de técnicos;
+- Criação de ordens, validação de entradas, listagem, mudança de status e exclusão de OS encerradas;
+- Bloqueio de exclusão de ordens ainda abertas e de técnicos vinculados a outros registros;
+- Salvamento de telefone, e-mail e técnico da OS ao utilizar o formulário;
+- Métricas e distribuição do dashboard;
+- Restrições entre cliente, funcionário e administrador; visibilidade de notas internas;
+- Acesso coerente a ordens sem técnico, encerramento imutável e prevenção de suspensão da própria conta admin.
 
-| # | Cenário | Tipo |
-|---|---|---|
-| 1 | `/api/auth/status` antes do setup → `configurado=false` | integração |
-| 2 | Setup cria admin e emite cookie | integração |
-| 3 | Segundo setup é rejeitado (409) | integração |
-| 4 | `/api/auth/me` retorna admin | integração |
-| 5 | Criação de cliente | integração |
-| 6 | Criação de técnico | integração |
-| 7 | Atualização de técnico via PUT | integração |
-| 8 | Criação de OS | integração |
-| 9 | Payload inválido → 400 | validação |
-| 10 | Listagem de OS | integração |
-| 11 | Atualização de status | integração |
-| 12 | Nota interna no histórico | integração |
-| 13 | DELETE de OS aberta → 409 | regra de negócio |
-| 14 | DELETE de OS concluída → 200 | regra de negócio |
-| 15 | DELETE de técnico sem OS | integração |
-| 16 | Logout | integração |
-| 17 | `/api/auth/me` após logout → 401 | integração |
+## Verificações manuais complementares
 
-## Testes manuais complementares
+- Testar no Windows o inicializador `Abrir Ordem Clara.bat` com a versão instalada do Node.js;
+- Navegar por todas as páginas e verificar os formulários e filtros;
+- Confirmar a aparência e a acessibilidade em Chrome, Edge e Firefox;
+- Fazer backup do banco e verificar os dados após atualizar uma instalação existente.
 
-- Login como admin → dashboard com métricas
-- Login como funcionario → vê só suas OS
-- Login como cliente → redireciona para portal
-- Cliente não acessa `/dashboard.html`
-- Cliente não vê notas internas
-- Busca e filtros funcionam combinados
-- Modal de confirmação bloqueia OS encerrada
-
-## Fora do escopo
-
-- Testes de carga
-- Acessibilidade WCAG formalizada
-- Cross-browser além de Chrome/Edge/Firefox atuais
+**Resultado da revisão em 04/11/2026:** 22/22 testes automatizados aprovados;
+validação de sintaxe dos scripts próprios e inicialização com cópia do banco original
+aprovadas. O teste visual por navegador automatizado não pôde ser executado no
+ambiente utilizado para a revisão devido a uma restrição de navegação local.

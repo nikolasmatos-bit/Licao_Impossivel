@@ -60,7 +60,7 @@
 
         function criarCelula(valor, classe = '') {
             const celula = document.createElement('td');
-            celula.textContent = valor || '—';
+            celula.textContent = valor === null || valor === undefined || valor === '' ? '—' : String(valor);
             if (classe) celula.className = classe;
             return celula;
         }
