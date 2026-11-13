@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!-- Elemento raiz do documento e idioma usado. -->
+<html lang="pt-br">
+<!-- Agrupa as configurações e recursos carregados antes do corpo. -->
+<head>
+    <meta charset="UTF-8">
+    <!-- Configuração técnica da página. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Texto que aparece na aba do navegador. -->
+    <title>Entrar - Megabrain Services</title>
+    <!-- Importa um arquivo CSS para estilizar a página; carrega/aponta para "./css/base.css". -->
+    <link rel="stylesheet" href="./css/base.css">
+    <!-- Importa um arquivo CSS para estilizar a página; carrega/aponta para "./css/index.css". -->
+    <link rel="stylesheet" href="./css/index.css">
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/api.js". -->
+    <script src="./js/api.js"></script>
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/utils.js". -->
+    <script src="./js/utils.js"></script>
+<!-- Encerra o elemento head iniciado anteriormente. -->
+</head>
+<!-- Contém todo o conteúdo visível da página; class associa estilos CSS. -->
+<body class="login">
+    <!-- Marca a área principal da tela. -->
+    <main>
+        <!-- Agrupa uma seção funcional do conteúdo; class associa estilos CSS. -->
+        <section class="auth-panel">
+            <!-- Título principal desta tela; id="auth-title" identifica o elemento para o JavaScript e o CSS. -->
+            <h1 id="auth-title">Entrar no sistema</h1>
+            <!-- Parágrafo de texto explicativo; id="auth-description" identifica o elemento para o JavaScript e o CSS. -->
+            <p id="auth-description">Use o e-mail e a senha da sua conta.</p>
+
+            <!-- Formulário que reúne campos e envia dados; id="form-login" identifica o elemento para o JavaScript e o CSS. -->
+            <form id="form-login">
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="email">E-mail de trabalho</label>
+                <!-- Campo de entrada de dados do usuário; id="email" identifica o elemento para o JavaScript e o CSS; type="email" determina seu tipo; required exige preenchimento do campo. -->
+                <input type="email" id="email" name="email" autocomplete="username" placeholder="nome@empresa.com" required>
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="senha">Senha</label>
+                <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+                <div class="password-field">
+                    <!-- Campo de entrada de dados do usuário; id="senha" identifica o elemento para o JavaScript e o CSS; type="password" determina seu tipo; required exige preenchimento do campo. -->
+                    <input type="password" id="senha" name="senha" autocomplete="current-password" placeholder="Sua senha" required>
+                    <!-- Botão de ação ou envio de formulário; type="button" determina seu tipo; atributos aria-* ajudam tecnologias assistivas; class associa estilos CSS. -->
+                    <button type="button" class="password-toggle" data-password-target="senha" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button>
+                <!-- Encerra o elemento div iniciado anteriormente. -->
+                </div>
+                <!-- Botão de ação ou envio de formulário; type="submit" determina seu tipo. -->
+                <button type="submit">Entrar</button>
+                <!-- Agrupa elementos para organização e estilo; id="mensagem-login" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+                <div id="mensagem-login" class="mensagem" role="status"></div>
+                <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+                <div class="auth-switch">
+                    <!-- Trecho de texto usado para aplicar estilo/identificação. -->
+                    <span>Não tem conta?</span>
+                    <!-- Botão de ação ou envio de formulário; id="botao-criar-conta" identifica o elemento para o JavaScript e o CSS; type="button" determina seu tipo; class associa estilos CSS. -->
+                    <button type="button" id="botao-criar-conta" class="text-link">Criar conta</button>
+                <!-- Encerra o elemento div iniciado anteriormente. -->
+                </div>
+            <!-- Encerra o elemento form iniciado anteriormente. -->
+            </form>
+
+            <!-- Formulário que reúne campos e envia dados; id="form-setup" identifica o elemento para o JavaScript e o CSS; hidden deixa o conteúdo inicialmente oculto. -->
+            <form id="form-setup" hidden>
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="admin-nome">Nome completo</label>
+                <!-- Campo de entrada de dados do usuário; id="admin-nome" identifica o elemento para o JavaScript e o CSS; type="text" determina seu tipo; required exige preenchimento do campo. -->
+                <input type="text" id="admin-nome" autocomplete="name" placeholder="Nome da pessoa" required>
+                
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="admin-email">E-mail</label>
+                <!-- Campo de entrada de dados do usuário; id="admin-email" identifica o elemento para o JavaScript e o CSS; type="email" determina seu tipo; required exige preenchimento do campo. -->
+                <input type="email" id="admin-email" autocomplete="email" placeholder="nome@empresa.com" required>
+                
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="admin-senha">Crie uma senha forte</label>
+                <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+                <div class="password-field">
+                    <!-- Campo de entrada de dados do usuário; id="admin-senha" identifica o elemento para o JavaScript e o CSS; type="password" determina seu tipo; required exige preenchimento do campo. -->
+                    <input type="password" id="admin-senha" autocomplete="new-password" minlength="12" placeholder="Mínimo de 12 caracteres" required>
+                    <!-- Botão de ação ou envio de formulário; type="button" determina seu tipo; atributos aria-* ajudam tecnologias assistivas; class associa estilos CSS. -->
+                    <button type="button" class="password-toggle" data-password-target="admin-senha" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button>
+                <!-- Encerra o elemento div iniciado anteriormente. -->
+                </div>
+                
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="setup-papel">Tipo de conta</label>
+                <!-- Menu de opções para seleção; id="setup-papel" identifica o elemento para o JavaScript e o CSS. -->
+                <select id="setup-papel">
+                    <!-- Opção disponível dentro do campo de seleção. -->
+                    <option value="admin">Administrador</option>
+                    <!-- Opção disponível dentro do campo de seleção. -->
+                    <option value="cliente">Cliente</option>
+                <!-- Encerra o elemento select iniciado anteriormente. -->
+                </select>
+
+                <!-- Campo condicional: Cliente -->
+                <!-- Agrupa elementos para organização e estilo; id="campo-telefone" identifica o elemento para o JavaScript e o CSS; hidden deixa o conteúdo inicialmente oculto. -->
+                <div id="campo-telefone" hidden>
+                    <!-- Rótulo que identifica o campo do formulário. -->
+                    <label for="setup-telefone">Telefone</label>
+                    <!-- Campo de entrada de dados do usuário; id="setup-telefone" identifica o elemento para o JavaScript e o CSS; type="tel" determina seu tipo. -->
+                    <input type="tel" id="setup-telefone" autocomplete="tel" placeholder="(11) 99999-9999">
+                <!-- Encerra o elemento div iniciado anteriormente. -->
+                </div>
+
+                <!-- Botão de ação ou envio de formulário; id="btn-criar" identifica o elemento para o JavaScript e o CSS; type="submit" determina seu tipo. -->
+                <button type="submit" id="btn-criar">Criar conta</button>
+                <!-- Agrupa elementos para organização e estilo; id="mensagem-setup" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+                <div id="mensagem-setup" class="mensagem" role="status"></div>
+                <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+                <div class="auth-switch">
+                    <!-- Trecho de texto usado para aplicar estilo/identificação. -->
+                    <span>Já tem conta?</span>
+                    <!-- Botão de ação ou envio de formulário; id="botao-voltar-login" identifica o elemento para o JavaScript e o CSS; type="button" determina seu tipo; class associa estilos CSS. -->
+                    <button type="button" id="botao-voltar-login" class="text-link">Entrar</button>
+                <!-- Encerra o elemento div iniciado anteriormente. -->
+                </div>
+            <!-- Encerra o elemento form iniciado anteriormente. -->
+            </form>
+
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+    <!-- Encerra o elemento main iniciado anteriormente. -->
+    </main>
+
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/index.js". -->
+    <script src="./js/index.js"></script>
+<!-- Encerra o elemento body iniciado anteriormente. -->
+</body>
+<!-- Encerra o elemento html iniciado anteriormente. -->
+</html>

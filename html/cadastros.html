@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!-- Elemento raiz do documento e idioma usado. -->
+<html lang="pt-br">
+<!-- Agrupa as configurações e recursos carregados antes do corpo. -->
+<head>
+    <meta charset="UTF-8">
+    <!-- Configuração técnica da página. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Texto que aparece na aba do navegador. -->
+    <title>Novo serviço - Megabrain Services</title>
+    <!-- Importa um arquivo CSS para estilizar a página; carrega/aponta para "./css/base.css". -->
+    <link rel="stylesheet" href="./css/base.css">
+    <!-- Importa um arquivo CSS para estilizar a página; carrega/aponta para "./css/cadastros.css". -->
+    <link rel="stylesheet" href="./css/cadastros.css">
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/api.js". -->
+    <script src="./js/api.js"></script>
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/utils.js". -->
+    <script src="./js/utils.js"></script>
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/auth.js"; defer adia a execução até o HTML ser analisado. -->
+    <script src="./js/auth.js" defer></script>
+<!-- Encerra o elemento head iniciado anteriormente. -->
+</head>
+<!-- Contém todo o conteúdo visível da página. -->
+<body>
+
+        <!-- Cabeçalho do sistema com identidade e navegação. -->
+        <header>
+        <!-- Título de seção. -->
+        <h2>Megabrain Services</h2>
+        <!-- Agrupa os links de navegação entre páginas; class associa estilos CSS. -->
+        <nav class="menu">
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "dashboard.html". -->
+            <a href="dashboard.html">Painel</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "cadastros.html". -->
+            <a href="cadastros.html">Nova OS</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "lista.html". -->
+            <a href="lista.html">Ordens</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "tecnicos.html". -->
+            <a href="tecnicos.html">Tecnicos</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "clientes.html". -->
+            <a href="clientes.html">Clientes</a>
+        <!-- Encerra o elemento nav iniciado anteriormente. -->
+        </nav>
+    <!-- Encerra o elemento header iniciado anteriormente. -->
+    </header>
+
+    <!-- Marca a área principal da tela. -->
+    <main>
+        <!-- Título principal desta tela. -->
+        <h1>Novo serviço</h1>
+        <!-- Parágrafo de texto explicativo. -->
+        <p>Preencha os dados do serviço.</p>
+
+        <!-- Agrupa uma seção funcional do conteúdo; class associa estilos CSS. -->
+        <section class="box">
+            <!-- Formulário que reúne campos e envia dados; id="form-os" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+            <form id="form-os" class="form-grid">
+
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="cliente-id">Cliente cadastrado</label>
+                <!-- Menu de opções para seleção; id="cliente-id" identifica o elemento para o JavaScript e o CSS. -->
+                <select id="cliente-id"><option value="">Novo cliente</option></select>
+
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="cliente">Quem é o cliente?</label>
+                <!-- Campo de entrada de dados do usuário; id="cliente" identifica o elemento para o JavaScript e o CSS; type="text" determina seu tipo; required exige preenchimento do campo. -->
+                <input type="text" id="cliente" placeholder="Nome do cliente" required>
+
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="cliente-telefone">Telefone / WhatsApp do cliente</label>
+                <!-- Campo de entrada de dados do usuário; id="cliente-telefone" identifica o elemento para o JavaScript e o CSS; type="tel" determina seu tipo. -->
+                <input type="tel" id="cliente-telefone" placeholder="(11) 99999-9999" autocomplete="tel">
+
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="cliente-email">E-mail do cliente</label>
+                <!-- Campo de entrada de dados do usuário; id="cliente-email" identifica o elemento para o JavaScript e o CSS; type="email" determina seu tipo. -->
+                <input type="email" id="cliente-email" placeholder="cliente@email.com" autocomplete="email">
+
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="equipamento">Qual é o aparelho?</label>
+                <!-- Campo de entrada de dados do usuário; id="equipamento" identifica o elemento para o JavaScript e o CSS; type="text" determina seu tipo; required exige preenchimento do campo. -->
+                <input type="text" id="equipamento" placeholder="Ex: Notebook" required>
+
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="tecnico">Quem vai fazer o serviço?</label>
+                <!-- Menu de opções para seleção; id="tecnico" identifica o elemento para o JavaScript e o CSS. -->
+                <select id="tecnico"><option value="">A definir</option></select>
+
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="prioridade">Qual é a urgência?</label>
+                <!-- Menu de opções para seleção; id="prioridade" identifica o elemento para o JavaScript e o CSS. -->
+                <select id="prioridade">
+                    <!-- Opção disponível dentro do campo de seleção. -->
+                    <option value="Baixa">Baixa</option>
+                    <!-- Opção disponível dentro do campo de seleção. -->
+                    <option value="Média" selected>Média</option>
+                    <!-- Opção disponível dentro do campo de seleção. -->
+                    <option value="Alta">Alta</option>
+                <!-- Encerra o elemento select iniciado anteriormente. -->
+                </select>
+
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="descricao">O que aconteceu?</label>
+                <!-- Campo para escrever várias linhas de texto; id="descricao" identifica o elemento para o JavaScript e o CSS; required exige preenchimento do campo. -->
+                <textarea id="descricao" placeholder="Conte o problema" required></textarea>
+
+                <!-- Botão de ação ou envio de formulário; id="buscar-solucao" identifica o elemento para o JavaScript e o CSS; type="button" determina seu tipo; class associa estilos CSS. -->
+                <button type="button" id="buscar-solucao" class="botao-secundario">Buscar ajuda na internet</button>
+                <!-- Botão de ação ou envio de formulário; type="submit" determina seu tipo; class associa estilos CSS. -->
+                <button type="submit" class="botao-primary">Salvar</button>
+
+                <!-- Agrupa elementos para organização e estilo; id="mensagem-os" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+                <div id="mensagem-os" class="mensagem"></div>
+            <!-- Encerra o elemento form iniciado anteriormente. -->
+            </form>
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+    <!-- Encerra o elemento main iniciado anteriormente. -->
+    </main>
+
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/cadastros.js". -->
+    <script src="./js/cadastros.js"></script>
+
+<!-- Encerra o elemento body iniciado anteriormente. -->
+</body>
+<!-- Encerra o elemento html iniciado anteriormente. -->
+</html>

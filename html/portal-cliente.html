@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!-- Elemento raiz do documento e idioma usado. -->
+<html lang="pt-br">
+<!-- Agrupa as configurações e recursos carregados antes do corpo. -->
+<head>
+    <meta charset="UTF-8">
+    <!-- Configuração técnica da página. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Texto que aparece na aba do navegador. -->
+    <title>Meus atendimentos - Megabrain Services</title>
+    <!-- Importa um arquivo CSS para estilizar a página; carrega/aponta para "./css/base.css". -->
+    <link rel="stylesheet" href="./css/base.css">
+    <!-- Importa um arquivo CSS para estilizar a página; carrega/aponta para "./css/portal-cliente.css". -->
+    <link rel="stylesheet" href="./css/portal-cliente.css">
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/api.js". -->
+    <script src="./js/api.js"></script>
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/utils.js". -->
+    <script src="./js/utils.js"></script>
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/auth.js"; defer adia a execução até o HTML ser analisado. -->
+    <script src="./js/auth.js" defer></script>
+<!-- Encerra o elemento head iniciado anteriormente. -->
+</head>
+<!-- Contém todo o conteúdo visível da página. -->
+<body>
+        <!-- Cabeçalho do sistema com identidade e navegação. -->
+        <header>
+        <!-- Título de seção. -->
+        <h2>Megabrain Services</h2>
+        <!-- Agrupa os links de navegação entre páginas; class associa estilos CSS. -->
+        <nav class="menu">
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "dashboard.html". -->
+            <a href="dashboard.html">Painel</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "cadastros.html". -->
+            <a href="cadastros.html">Nova OS</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "lista.html". -->
+            <a href="lista.html">Ordens</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "tecnicos.html". -->
+            <a href="tecnicos.html">Tecnicos</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "clientes.html". -->
+            <a href="clientes.html">Clientes</a>
+        <!-- Encerra o elemento nav iniciado anteriormente. -->
+        </nav>
+    <!-- Encerra o elemento header iniciado anteriormente. -->
+    </header>
+
+    <!-- Marca a área principal da tela. -->
+    <main>
+        <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+        <div class="page-heading">
+            <!-- Agrupa elementos para organização e estilo. -->
+            <div>
+                <!-- Parágrafo de texto explicativo; class associa estilos CSS. -->
+                <p class="eyebrow">ESPAÇO DO CLIENTE</p>
+                <!-- Título principal desta tela; id="saudacao-cliente" identifica o elemento para o JavaScript e o CSS. -->
+                <h1 id="saudacao-cliente">Seus atendimentos</h1>
+                <!-- Parágrafo de texto explicativo. -->
+                <p>Acompanhe o andamento e fale com a equipe responsável.</p>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "#lista-atendimentos"; class associa estilos CSS. -->
+            <a class="button button-outline" href="#lista-atendimentos"> Ver atendimentos</a>
+        <!-- Encerra o elemento div iniciado anteriormente. -->
+        </div>
+
+        <!-- Agrupa uma seção funcional do conteúdo; atributos aria-* ajudam tecnologias assistivas; class associa estilos CSS. -->
+        <section class="metric-grid" aria-label="Resumo dos atendimentos">
+            <!-- Agrupa um conteúdo independente; id="total-cliente" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+            <article class="metric-card"><span>Total de ordens</span><strong id="total-cliente">0</strong></article>
+            <!-- Agrupa um conteúdo independente; id="ativas-cliente" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+            <article class="metric-card"><span>Em andamento</span><strong id="ativas-cliente">0</strong></article>
+            <!-- Agrupa um conteúdo independente; id="concluidas-cliente" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+            <article class="metric-card"><span>Concluídas</span><strong id="concluidas-cliente">0</strong></article>
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+
+        <!-- Agrupa uma seção funcional do conteúdo; id="lista-atendimentos" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+        <section class="data-section" id="lista-atendimentos">
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="section-heading">
+                <!-- Agrupa elementos para organização e estilo; id="resumo-cliente" identifica o elemento para o JavaScript e o CSS. -->
+                <div><h2>Suas ordens</h2><p id="resumo-cliente">Buscando atualizações...</p></div>
+                <!-- Rótulo que identifica o campo do formulário; id="busca-cliente" identifica o elemento para o JavaScript e o CSS; type="search" determina seu tipo; atributos aria-* ajudam tecnologias assistivas; class associa estilos CSS. -->
+                <label class="search-field"><input id="busca-cliente" type="search" placeholder="Buscar aparelho ou status" aria-label="Buscar atendimentos"></label>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="table-wrap">
+                <!-- Tabela de apresentação de registros. -->
+                <table>
+                    <!-- Cabeçalho da tabela. -->
+                    <thead><tr><th>Ordem</th><th>Equipamento</th><th>Responsável</th><th>Aberta em</th><th>Status</th><th>Detalhes</th></tr></thead>
+                    <!-- Corpo com as linhas de dados da tabela; id="ordens-cliente" identifica o elemento para o JavaScript e o CSS. -->
+                    <tbody id="ordens-cliente"></tbody>
+                <!-- Encerra o elemento table iniciado anteriormente. -->
+                </table>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+            <!-- Agrupa elementos para organização e estilo; id="vazio-cliente" identifica o elemento para o JavaScript e o CSS; hidden deixa o conteúdo inicialmente oculto; class associa estilos CSS. -->
+            <div id="vazio-cliente" class="empty-state" hidden><strong>Nenhuma ordem encontrada</strong><span>As novas ordens aparecerão aqui.</span></div>
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+    <!-- Encerra o elemento main iniciado anteriormente. -->
+    </main>
+
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/portal-cliente.js". -->
+    <script src="./js/portal-cliente.js"></script>
+<!-- Encerra o elemento body iniciado anteriormente. -->
+</body>
+<!-- Encerra o elemento html iniciado anteriormente. -->
+</html>

@@ -1,85 +1,96 @@
 # Megabrain Services — Sistema de Ordens de Serviço
 
-Sistema web local de assistência técnica: clientes, técnicos, ordens de serviço,
-autenticação por perfil, dashboard, gerenciamento de contas e portal do cliente.
+Sistema local com login, administrador, funcionários vinculados a técnicos,
+clientes, ordens de serviço e portal do cliente. Esta edição acrescenta comentários explicativos aos arquivos
+autorais, sem mudar as funções, controles de acesso ou dados de origem.
+O SQL tem somente comentários novos; as instruções executadas são as mesmas.
 
-## Windows: como abrir
+## Como abrir no Windows
 
-1. Instale o **Node.js 20 ou mais recente**, se ainda não estiver instalado.
-2. Extraia **todo** o ZIP em uma pasta no computador.
-3. Dê dois cliques em **`Abrir Ordem Clara.bat`**, na raiz do projeto.
-4. O sistema iniciará em **http://127.0.0.1:3001** e abrirá o navegador.
+1. Instale o **Node.js 20 ou mais recente** (se ainda não tiver).
+2. Extraia todo o ZIP, mantendo as pastas.
+3. Execute **`Abrir Ordem Clara.bat`** (na raiz).
+4. A aplicação abrirá em **http://127.0.0.1:3001**.
 
-O ZIP inclui as dependências que vieram no projeto original para Windows. O
-inicializador confere se são compatíveis com o Node.js instalado e, se
-necessário, tenta recompilar/instalar o módulo SQLite; essa etapa pode exigir
-conexão à internet. Não execute o `.bat` dentro do ZIP sem extraí-lo.
+O .bat verifica as dependências e tenta corrigir a biblioteca nativa SQLite
+se a versão do Node.js instalada precisar. Para uma correção/reinstalação, pode
+ser necessário acesso à internet. Nunca execute o programa de dentro do ZIP.
 
-O banco `os_system.sqlite` acompanha o pacote, **preservando os dados e as contas
-já existentes**. Faça backup desse arquivo antes de substituir outra instalação.
-Na primeira instalação com um banco vazio, a tela de entrada permite configurar
-o primeiro administrador. Com um banco já configurado, entre usando suas
-credenciais existentes — **o pacote não redefine senhas**.
+## Pastas organizadas
+
+```text
+Licao_Impossivel/
+├── Abrir Ordem Clara.bat       Inicia no Windows
+├── launch.js                   Inicializa e abre o navegador
+├── package.json               Comandos e dependências
+├── html/                      Todas as 9 páginas
+├── css/
+│   ├── base.css               Estilos compartilhados por todas as páginas
+│   ├── index.css              Login e cadastro inicial
+│   ├── dashboard.css          Painel de indicadores
+│   ├── cadastros.css          Cadastro de ordens
+│   ├── lista.css              Listagem de ordens
+│   ├── detalhes.css           Detalhes e histórico da OS
+│   ├── tecnicos.css           Cadastro e lista de técnicos
+│   ├── clientes.css           Clientes
+│   ├── usuarios.css           Contas e permissões
+│   ├── portal-cliente.css     Portal do cliente
+│   └── img/                   Imagem original
+├── js/                        JavaScript original (funções preservadas)
+├── server/
+│   ├── server.js              API e regras de acesso
+│   ├── mega-brain.sql         Script SQL com comentários explicativos
+│   └── os_system.sqlite       Banco SQLite original, com dados
+├── tests/                     Testes automatizados
+├── docs/                      Documentação da versão anterior
+└── node_modules/              Bibliotecas originais (não editar os arquivos de terceiros)
+```
+
+**Importante:** As URLs das páginas são iguais às de antes, por exemplo
+`/index.html`, `/dashboard.html` e `/portal-cliente.html`. Não abra os HTMLs
+por clique duplo: o servidor é necessário para login e API.
+
+## Perfis e acesso
+
+- **Administrador:** gerencia contas, técnicos, clientes e ordens; visualiza todas.
+- **Funcionário:** precisa de uma conta vinculada a um técnico cadastrado;
+  visualiza apenas ordens atribuídas a ele ou ainda sem responsável.
+- **Cliente:** consulta ordens vinculadas ao seu cadastro.
+
+A primeira conta administradora é criada na configuração inicial **somente se o
+banco estiver vazio**. Com o banco incluído, faça login com as contas já
+existentes. Só um administrador pode criar contas de administrador ou funcionário
+em **Acessos**. O cadastro público é exclusivo para clientes.
 
 ## Comandos manuais
 
-```bash
-npm install       # necessário se as dependências não funcionarem ou não existirem
-npm run open      # inicia o servidor e abre o navegador
-```
-
-`npm start` inicia somente o servidor (acesso via http://127.0.0.1:3001).
-
-## Perfis
-
-| Perfil | Permissões |
-|---|---|
-| Administrador | Gerenciar técnicos, clientes, contas e ordens, com acesso ao painel |
-| Funcionário | Acompanhar ordens próprias e sem responsável, cadastrar clientes e OS |
-| Cliente | Consultar as próprias ordens e responder no histórico público |
-
-Funcionários e administradores são cadastrados por um administrador em **Acessos**.
-O cadastro público permite apenas novas contas de cliente. Notas internas do
-atendimento não são exibidas no portal do cliente.
-
-Se o cliente já estiver cadastrado, um administrador deve criar a conta em
-**Acessos**, escolhendo o perfil **Cliente** e o cadastro correspondente. O
-cadastro público não duplica nem vincula automaticamente registros existentes.
-
-Em **Nova OS**, selecione um cliente cadastrado ou preencha os dados de um novo
-cliente. Clientes e técnicos com nomes iguais são diferenciados nas opções.
-O técnico pode ficar **A definir**; funcionários vinculados continuam recebendo
-automaticamente as ordens que cadastrarem.
-
-## Banco e testes
-
-O banco usa SQLite (`better-sqlite3`). O script SQL de criação está em
-`mega-brain.sql` e é aplicado sem eliminar tabelas existentes.
+Na raiz do projeto:
 
 ```bash
-npm test
+npm start      # Inicia o servidor
+npm run open   # Inicia e abre o navegador
+npm test       # Testa API, permissões e cadastros (bancos temporários)
 ```
 
-Os testes HTTP iniciam servidores isolados com bancos temporários: **não usam o
-arquivo `os_system.sqlite` fornecido**. A suíte cobre o fluxo principal,
-permissões, API, indicadores e os casos de clientes e técnicos com nomes iguais.
+O banco real foi preservado em `server/os_system.sqlite`. Faça um backup antes
+de substituir o sistema em outra instalação. As instruções do script `server/mega-brain.sql`
+foram preservadas; somente comentários explicativos foram acrescentados. Não publique o banco em repositórios públicos,
+pois ele pode conter informações pessoais.
 
-## Configuração
+Variáveis opcionais: `PORT` (padrão 3001) e `DATABASE_PATH` (caminho de outro
+banco SQLite). A aplicação escuta apenas em `127.0.0.1`.
 
-| Variável | Padrão | Uso |
-|---|---|---|
-| `PORT` | `3001` | Porta HTTP, limitada ao endereço local `127.0.0.1` |
-| `DATABASE_PATH` | `./os_system.sqlite` na pasta do sistema | Caminho de outro banco SQLite, se desejado |
+Consulte `SIMPLIFICACAO.md` para a lista de mudanças e validações.
 
-Não publique a pasta do projeto, especialmente o arquivo do banco, em
-repositórios públicos: ela pode conter informações de clientes e contas.
+## Comentários educativos
 
-## Arquivos principais
+Todos os arquivos autorais em `js/`, `html/`, `css/`, `server/server.js`,
+`server/mega-brain.sql`, `launch.js`, `tests/` e no arquivo `.bat` receberam
+comentários em português que explicam cada instrução, tag ou propriedade.
+O código executável foi mantido; os comentários não aparecem na interface.
+Arquivos de terceiros dentro de `node_modules/` não foram alterados para evitar
+quebrar dependências e licenças. Arquivos `.json` também não admitem comentários
+por padrão: seus campos estão explicados no `GUIA_DE_CODIGO.md`.
 
-- `Abrir Ordem Clara.bat` / `launch.js`: inicialização no Windows;
-- `server.js`, `mega-brain.sql`, `os_system.sqlite`: API e banco;
-- `index.html`, `dashboard.html`, `cadastros.html`, `lista.html`, `detalhes.html`,
-  `clientes.html`, `tecnicos.html`, `usuarios.html`, `portal-cliente.html`: páginas;
-- `js/`, `css/`: scripts e visual;
-- `tests/`: testes automatizados;
-- `docs/`: documentação.
+Foi retirada uma pasta temporária duplicada de `node_modules` que não faz parte
+da inicialização. A biblioteca SQLite original para Windows foi mantida.

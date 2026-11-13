@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!-- Elemento raiz do documento e idioma usado. -->
+<html lang="pt-br">
+<!-- Agrupa as configurações e recursos carregados antes do corpo. -->
+<head>
+    <meta charset="UTF-8">
+    <!-- Configuração técnica da página. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Texto que aparece na aba do navegador. -->
+    <title>Técnicos - Megabrain Services</title>
+    <!-- Importa um arquivo CSS para estilizar a página; carrega/aponta para "./css/base.css". -->
+    <link rel="stylesheet" href="./css/base.css">
+    <!-- Importa um arquivo CSS para estilizar a página; carrega/aponta para "./css/tecnicos.css". -->
+    <link rel="stylesheet" href="./css/tecnicos.css">
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/api.js". -->
+    <script src="./js/api.js"></script>
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/utils.js". -->
+    <script src="./js/utils.js"></script>
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/auth.js"; defer adia a execução até o HTML ser analisado. -->
+    <script src="./js/auth.js" defer></script>
+<!-- Encerra o elemento head iniciado anteriormente. -->
+</head>
+<!-- Contém todo o conteúdo visível da página. -->
+<body>
+
+        <!-- Cabeçalho do sistema com identidade e navegação. -->
+        <header>
+        <!-- Título de seção. -->
+        <h2>Megabrain Services</h2>
+        <!-- Agrupa os links de navegação entre páginas; class associa estilos CSS. -->
+        <nav class="menu">
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "dashboard.html". -->
+            <a href="dashboard.html">Painel</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "cadastros.html". -->
+            <a href="cadastros.html">Nova OS</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "lista.html". -->
+            <a href="lista.html">Ordens</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "tecnicos.html". -->
+            <a href="tecnicos.html">Tecnicos</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "clientes.html". -->
+            <a href="clientes.html">Clientes</a>
+        <!-- Encerra o elemento nav iniciado anteriormente. -->
+        </nav>
+    <!-- Encerra o elemento header iniciado anteriormente. -->
+    </header>
+
+    <!-- Marca a área principal da tela. -->
+    <main>
+        <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+        <div class="page-heading"><div><p class="eyebrow">EQUIPE</p><h1>Técnicos</h1><p>Organize especialidades e encontre rapidamente quem está disponível.</p></div></div>
+
+        <!-- Agrupa uma seção funcional do conteúdo; class associa estilos CSS. -->
+        <section class="box">
+            <!-- Formulário que reúne campos e envia dados; id="form-tecnico" identifica o elemento para o JavaScript e o CSS. -->
+            <form id="form-tecnico">
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="nome">Nome completo</label>
+                <!-- Campo de entrada de dados do usuário; id="nome" identifica o elemento para o JavaScript e o CSS; type="text" determina seu tipo; required exige preenchimento do campo. -->
+                <input type="text" id="nome" placeholder="Digite o nome" required>
+
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="email">E-mail</label>
+                <!-- Campo de entrada de dados do usuário; id="email" identifica o elemento para o JavaScript e o CSS; type="email" determina seu tipo; required exige preenchimento do campo. -->
+                <input type="email" id="email" placeholder="seunome@gmail.com" required>
+
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="telefone">Telefone</label>
+                <!-- Campo de entrada de dados do usuário; id="telefone" identifica o elemento para o JavaScript e o CSS; type="text" determina seu tipo; required exige preenchimento do campo. -->
+                <input type="text" id="telefone" placeholder="(11) 99999-9999" required>
+
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="especialidade">Especialidade</label>
+                <!-- Campo de entrada de dados do usuário; id="especialidade" identifica o elemento para o JavaScript e o CSS; type="text" determina seu tipo; required exige preenchimento do campo. -->
+                <input type="text" id="especialidade" placeholder="Ex: Informática" required>
+
+                <!-- Botão de ação ou envio de formulário; type="submit" determina seu tipo. -->
+                <button type="submit">Salvar técnico</button>
+
+                <!-- Agrupa elementos para organização e estilo; id="mensagem-tecnico" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+                <div id="mensagem-tecnico" class="mensagem"></div>
+            <!-- Encerra o elemento form iniciado anteriormente. -->
+            </form>
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+
+        <!-- Agrupa uma seção funcional do conteúdo; class associa estilos CSS. -->
+        <section class="data-section">
+            <!-- Agrupa elementos para organização e estilo; id="resultado-tecnicos" identifica o elemento para o JavaScript e o CSS; type="search" determina seu tipo; atributos aria-* ajudam tecnologias assistivas; class associa estilos CSS. -->
+            <div class="section-heading"><div><h2>Equipe cadastrada</h2><p id="resultado-tecnicos">Carregando equipe...</p></div><label class="search-field"><input id="pesquisa-tecnicos" type="search" placeholder="Buscar por nome ou especialidade" aria-label="Buscar técnicos"></label></div>
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="table-wrap"><table>
+                <!-- Cabeçalho da tabela. -->
+                <thead>
+                    <!-- Linha da tabela. -->
+                    <tr>
+                        <!-- Célula de título de coluna. -->
+                        <th>Nome</th>
+                        <!-- Célula de título de coluna. -->
+                        <th>E-mail</th>
+                        <!-- Célula de título de coluna. -->
+                        <th>Especialidade</th>
+                        <!-- Célula de título de coluna. -->
+                        <th>Telefone</th>
+                    <!-- Encerra o elemento tr iniciado anteriormente. -->
+                    </tr>
+                <!-- Encerra o elemento thead iniciado anteriormente. -->
+                </thead>
+                <!-- Corpo com as linhas de dados da tabela; id="lista-tecnicos" identifica o elemento para o JavaScript e o CSS. -->
+                <tbody id="lista-tecnicos"></tbody>
+            <!-- Encerra o elemento table iniciado anteriormente. -->
+            </table></div>
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+    <!-- Encerra o elemento main iniciado anteriormente. -->
+    </main>
+
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/tecnicos.js". -->
+    <script src="./js/tecnicos.js"></script>
+
+<!-- Encerra o elemento body iniciado anteriormente. -->
+</body>
+<!-- Encerra o elemento html iniciado anteriormente. -->
+</html>

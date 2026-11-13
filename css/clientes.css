@@ -1,0 +1,882 @@
+/* MEGABRAIN SERVICES — Estilos da página clientes.html.
+   Carregar depois de base.css para preservar a cascata original. */
+
+/* 15. CARTÕES E INDICADORES DO PAINEL */
+/* Inclui o seletor .cards no grupo de elementos que receberá as mesmas regras. */
+.cards,
+/* Inclui o seletor .metric-grid no grupo de elementos que receberá as mesmas regras. */
+.metric-grid,
+/* Inclui o seletor .distribution-grid no grupo de elementos que receberá as mesmas regras. */
+.distribution-grid,
+/* Inclui o seletor .informacoes no grupo de elementos que receberá as mesmas regras. */
+.informacoes,
+/* Inicia a regra que estiliza os elementos correspondentes a: .admin-layout. */
+.admin-layout {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe grid. */
+    display: grid;
+    /* Define o espaçamento entre elementos; aqui recebe 16px. */
+    gap: 16px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor .cards no grupo de elementos que receberá as mesmas regras. */
+.cards,
+/* Inicia a regra que estiliza os elementos correspondentes a: .metric-grid. */
+.metric-grid {
+    /* Controla o espaço interno; aqui recebe 0. */
+    padding: 0;
+    /* Define borda, espessura, estilo e cor; aqui recebe 0. */
+    border: 0;
+    /* Define a cor ou o preenchimento do fundo; aqui recebe transparent. */
+    background: transparent;
+    /* Adiciona sombra à caixa; aqui recebe none. */
+    box-shadow: none;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .cards. */
+.cards {
+    /* Define as colunas do layout em grade; aqui recebe repeat(auto-fit, minmax(160px, 1fr)). */
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .metric-grid. */
+.metric-grid {
+    /* Define as colunas do layout em grade; aqui recebe repeat(3, minmax(0, 1fr)). */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .dashboard-metrics. */
+.dashboard-metrics {
+    /* Define as colunas do layout em grade; aqui recebe repeat(12, minmax(0, 1fr)). */
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .dashboard-metrics .card. */
+.dashboard-metrics .card {
+    /* Define quais colunas o item ocupa; aqui recebe span 3. */
+    grid-column: span 3;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .dashboard-metrics .card:nth-child(n+5). */
+.dashboard-metrics .card:nth-child(n+5) {
+    /* Define quais colunas o item ocupa; aqui recebe span 4. */
+    grid-column: span 4;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor .cards .card no grupo de elementos que receberá as mesmas regras. */
+.cards .card,
+/* Inicia a regra que estiliza os elementos correspondentes a: .metric-card. */
+.metric-card {
+    /* Determina o modo de posicionamento; aqui recebe relative. */
+    position: relative;
+    /* Controla o espaço externo; aqui recebe 0. */
+    margin: 0;
+    /* Controla o espaço interno; aqui recebe 22px. */
+    padding: 22px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor .card h3 no grupo de elementos que receberá as mesmas regras. */
+.card h3,
+/* Inicia a regra que estiliza os elementos correspondentes a: .metric-card > span. */
+.metric-card > span {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe block. */
+    display: block;
+    /* Define a cor do texto; aqui recebe var(--muted). */
+    color: var(--muted);
+    /* Define o tamanho da letra; aqui recebe .8rem. */
+    font-size: .8rem;
+    /* Define a espessura da letra; aqui recebe 600. */
+    font-weight: 600;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor .card strong no grupo de elementos que receberá as mesmas regras. */
+.card strong,
+/* Inicia a regra que estiliza os elementos correspondentes a: .metric-card > strong. */
+.metric-card > strong {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe block. */
+    display: block;
+    /* Define o espaço externo acima; aqui recebe 12px. */
+    margin-top: 12px;
+    /* Define o tamanho da letra; aqui recebe 2.15rem. */
+    font-size: 2.15rem;
+    /* Define a altura das linhas de texto; aqui recebe 1.1. */
+    line-height: 1.1;
+    /* Ajusta o espaço entre letras; aqui recebe -.045em. */
+    letter-spacing: -.045em;
+    /* Configura a propriedade CSS font-variant-numeric; aqui recebe tabular-nums. */
+    font-variant-numeric: tabular-nums;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .card small. */
+.card small {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe block. */
+    display: block;
+    /* Define o espaço externo acima; aqui recebe 10px. */
+    margin-top: 10px;
+    /* Define a cor do texto; aqui recebe var(--muted). */
+    color: var(--muted);
+    /* Define o tamanho da letra; aqui recebe .72rem. */
+    font-size: .72rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .dashboard-metrics .card:first-child. */
+.dashboard-metrics .card:first-child {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe var(--cor). */
+    background: var(--cor);
+    /* Define a cor da borda; aqui recebe var(--cor). */
+    border-color: var(--cor);
+    /* Define a cor do texto; aqui recebe #fff. */
+    color: #fff;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .dashboard-metrics .card:first-child h3. */
+.dashboard-metrics .card:first-child h3 {
+    /* Define a cor do texto; aqui recebe #d1ebe3. */
+    color: #d1ebe3;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .metric-attention. */
+.metric-attention {
+    /* Define a borda superior; aqui recebe 3px solid #e4b04e. */
+    border-top: 3px solid #e4b04e;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .metric-delay. */
+.metric-delay {
+    /* Define a borda superior; aqui recebe 3px solid #d88a7a. */
+    border-top: 3px solid #d88a7a;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .metric-unassigned. */
+.metric-unassigned {
+    /* Define a borda superior; aqui recebe 3px solid #8b9bb9. */
+    border-top: 3px solid #8b9bb9;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 17. TABELAS */
+/* Inicia a regra que estiliza os elementos correspondentes a: .table-wrap. */
+.table-wrap {
+    /* Determina a largura do elemento; aqui recebe 100%. */
+    width: 100%;
+    /* Impõe uma largura mínima; aqui recebe 0. */
+    min-width: 0;
+    /* Controla excesso de conteúdo na horizontal; aqui recebe auto. */
+    overflow-x: auto;
+    /* Define borda, espessura, estilo e cor; aqui recebe 1px solid var(--borda). */
+    border: 1px solid var(--borda);
+    /* Arredonda os cantos do elemento; aqui recebe 12px. */
+    border-radius: 12px;
+    /* Configura a propriedade CSS overscroll-behavior-x; aqui recebe contain. */
+    overscroll-behavior-x: contain;
+    /* Configura a propriedade CSS scrollbar-width; aqui recebe thin. */
+    scrollbar-width: thin;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: table. */
+table {
+    /* Determina a largura do elemento; aqui recebe 100%. */
+    width: 100%;
+    /* Define se as bordas da tabela se unem; aqui recebe collapse. */
+    border-collapse: collapse;
+    /* Alinha o conteúdo textual; aqui recebe left. */
+    text-align: left;
+    /* Define o tamanho da letra; aqui recebe .85rem. */
+    font-size: .85rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor th no grupo de elementos que receberá as mesmas regras. */
+th,
+/* Inicia a regra que estiliza os elementos correspondentes a: td. */
+td {
+    /* Controla o espaço interno; aqui recebe 15px 16px. */
+    padding: 15px 16px;
+    /* Define a borda inferior; aqui recebe 1px solid var(--borda). */
+    border-bottom: 1px solid var(--borda);
+    /* Controla quebras e espaços do texto; aqui recebe nowrap. */
+    white-space: nowrap;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: th. */
+th {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #f8fafb. */
+    background: #f8fafb;
+    /* Define a cor do texto; aqui recebe var(--muted). */
+    color: var(--muted);
+    /* Define o tamanho da letra; aqui recebe .65rem. */
+    font-size: .65rem;
+    /* Define a espessura da letra; aqui recebe 700. */
+    font-weight: 700;
+    /* Ajusta o espaço entre letras; aqui recebe .07em. */
+    letter-spacing: .07em;
+    /* Transforma maiúsculas/minúsculas visualmente; aqui recebe uppercase. */
+    text-transform: uppercase;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: tbody tr. */
+tbody tr {
+    /* Suaviza mudanças de propriedades ao longo do tempo; aqui recebe background .15s. */
+    transition: background .15s;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: tbody tr:hover. */
+tbody tr:hover {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #f5faf8. */
+    background: #f5faf8;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: tbody tr:last-child td. */
+tbody tr:last-child td {
+    /* Define a borda inferior; aqui recebe 0. */
+    border-bottom: 0;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Configura a propriedade CSS td; aqui recebe first-child,. */
+td:first-child,
+/* Inclui o seletor .customer-name no grupo de elementos que receberá as mesmas regras. */
+.customer-name,
+/* Inicia a regra que estiliza os elementos correspondentes a: .customer-link. */
+.customer-link {
+    /* Define a espessura da letra; aqui recebe 600. */
+    font-weight: 600;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 18. AÇÕES DAS TABELAS */
+/* Inicia a regra que estiliza os elementos correspondentes a: td.row-actions. */
+td.row-actions {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe table-cell. */
+    display: table-cell;
+    /* Controla quebras e espaços do texto; aqui recebe nowrap. */
+    white-space: nowrap;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .row-actions > :not(:last-child). */
+.row-actions > :not(:last-child) {
+    /* Define o espaço externo à direita; aqui recebe 6px. */
+    margin-right: 6px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor .icon-action no grupo de elementos que receberá as mesmas regras. */
+.icon-action,
+/* Inicia a regra que estiliza os elementos correspondentes a: .row-actions > a. */
+.row-actions > a {
+    /* Impõe uma altura mínima; aqui recebe 34px. */
+    min-height: 34px;
+    /* Controla o espaço interno; aqui recebe 7px 11px. */
+    padding: 7px 11px;
+    /* Arredonda os cantos do elemento; aqui recebe 8px. */
+    border-radius: 8px;
+    /* Define o tamanho da letra; aqui recebe .75rem. */
+    font-size: .75rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .acao-fechada. */
+.acao-fechada {
+    /* Controla o espaço externo; aqui recebe 0 6px. */
+    margin: 0 6px;
+    /* Define a cor do texto; aqui recebe var(--muted). */
+    color: var(--muted);
+    /* Define o tamanho da letra; aqui recebe .75rem. */
+    font-size: .75rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 19. PESQUISA E FILTROS */
+/* Inicia a regra que estiliza os elementos correspondentes a: .search-field. */
+.search-field {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe block. */
+    display: block;
+    /* Determina a largura do elemento; aqui recebe min(100%, 340px). */
+    width: min(100%, 340px);
+    /* Impõe uma largura mínima; aqui recebe 0. */
+    min-width: 0;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .search-field input. */
+.search-field input {
+    /* Impõe uma altura mínima; aqui recebe 42px. */
+    min-height: 42px;
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #fafbfc. */
+    background: #fafbfc;
+    /* Define o tamanho da letra; aqui recebe .8rem. */
+    font-size: .8rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .list-toolbar. */
+.list-toolbar {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe flex. */
+    display: flex;
+    /* Distribui elementos ao longo do eixo principal; aqui recebe space-between. */
+    justify-content: space-between;
+    /* Permite ou impede a quebra dos itens para outra linha; aqui recebe wrap. */
+    flex-wrap: wrap;
+    /* Define o espaçamento entre elementos; aqui recebe 14px. */
+    gap: 14px;
+    /* Define o espaço externo abaixo; aqui recebe 20px. */
+    margin-bottom: 20px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .filter-row. */
+.filter-row {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe flex. */
+    display: flex;
+    /* Permite ou impede a quebra dos itens para outra linha; aqui recebe wrap. */
+    flex-wrap: wrap;
+    /* Define o espaçamento entre elementos; aqui recebe 6px. */
+    gap: 6px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .filter-chip. */
+.filter-chip {
+    /* Impõe uma altura mínima; aqui recebe 38px. */
+    min-height: 38px;
+    /* Controla o espaço interno; aqui recebe 8px 13px. */
+    padding: 8px 13px;
+    /* Define a cor da borda; aqui recebe var(--borda). */
+    border-color: var(--borda);
+    /* Arredonda os cantos do elemento; aqui recebe 9px. */
+    border-radius: 9px;
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #fff. */
+    background: #fff;
+    /* Define a cor do texto; aqui recebe #475467. */
+    color: #475467;
+    /* Define o tamanho da letra; aqui recebe .78rem. */
+    font-size: .78rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .filter-chip:not(:disabled):hover. */
+.filter-chip:not(:disabled):hover {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe var(--suave). */
+    background: var(--suave);
+    /* Define a cor do texto; aqui recebe var(--cor). */
+    color: var(--cor);
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor .filter-chip.is-active no grupo de elementos que receberá as mesmas regras. */
+.filter-chip.is-active,
+/* Inicia a regra que estiliza os elementos correspondentes a: .filter-chip.is-active:not(:disabled):hover. */
+.filter-chip.is-active:not(:disabled):hover {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe var(--cor). */
+    background: var(--cor);
+    /* Define a cor da borda; aqui recebe var(--cor). */
+    border-color: var(--cor);
+    /* Define a cor do texto; aqui recebe #fff. */
+    color: #fff;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 20. LISTAS VAZIAS */
+/* Inclui o seletor .empty-state no grupo de elementos que receberá as mesmas regras. */
+.empty-state,
+/* Inclui o seletor .lista-vazia no grupo de elementos que receberá as mesmas regras. */
+.lista-vazia,
+/* Inicia a regra que estiliza os elementos correspondentes a: .timeline-empty. */
+.timeline-empty {
+    /* Controla o espaço interno; aqui recebe 36px 20px. */
+    padding: 36px 20px;
+    /* Define a cor do texto; aqui recebe var(--muted). */
+    color: var(--muted);
+    /* Alinha o conteúdo textual; aqui recebe center. */
+    text-align: center;
+    /* Controla quebras e espaços do texto; aqui recebe normal. */
+    white-space: normal;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor .empty-state strong no grupo de elementos que receberá as mesmas regras. */
+.empty-state strong,
+/* Inicia a regra que estiliza os elementos correspondentes a: .empty-state span. */
+.empty-state span {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe block. */
+    display: block;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .empty-state span. */
+.empty-state span {
+    /* Define o espaço externo acima; aqui recebe 6px. */
+    margin-top: 6px;
+    /* Define o tamanho da letra; aqui recebe .85rem. */
+    font-size: .85rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 21. ETIQUETAS DE STATUS */
+/* Inclui o seletor .status no grupo de elementos que receberá as mesmas regras. */
+.status,
+/* Inicia a regra que estiliza os elementos correspondentes a: .badge. */
+.badge {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe inline-flex. */
+    display: inline-flex;
+    /* Alinha os elementos no eixo transversal; aqui recebe center. */
+    align-items: center;
+    /* Define o espaçamento entre elementos; aqui recebe 6px. */
+    gap: 6px;
+    /* Controla o espaço interno; aqui recebe 5px 10px. */
+    padding: 5px 10px;
+    /* Arredonda os cantos do elemento; aqui recebe 7px. */
+    border-radius: 7px;
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #eef2f6. */
+    background: #eef2f6;
+    /* Define a cor do texto; aqui recebe #475467. */
+    color: #475467;
+    /* Define o tamanho da letra; aqui recebe .72rem. */
+    font-size: .72rem;
+    /* Define a espessura da letra; aqui recebe 650. */
+    font-weight: 650;
+    /* Define a altura das linhas de texto; aqui recebe 1.4. */
+    line-height: 1.4;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .status::before. */
+.status::before {
+    /* Define o conteúdo gerado em pseudoelementos; aqui recebe "". */
+    content: "";
+    /* Determina a largura do elemento; aqui recebe 5px. */
+    width: 5px;
+    /* Determina a altura do elemento; aqui recebe 5px. */
+    height: 5px;
+    /* Arredonda os cantos do elemento; aqui recebe 50%. */
+    border-radius: 50%;
+    /* Define a cor ou o preenchimento do fundo; aqui recebe currentColor. */
+    background: currentColor;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .aberta. */
+.aberta {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #fff5de. */
+    background: #fff5de;
+    /* Define a cor do texto; aqui recebe #8a5b13. */
+    color: #8a5b13;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .andamento. */
+.andamento {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #eaf2fa. */
+    background: #eaf2fa;
+    /* Define a cor do texto; aqui recebe #326885. */
+    color: #326885;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor .concluida no grupo de elementos que receberá as mesmas regras. */
+.concluida,
+/* Inicia a regra que estiliza os elementos correspondentes a: .status-concluida. */
+.status-concluida {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #e8f5ee. */
+    background: #e8f5ee;
+    /* Define a cor do texto; aqui recebe var(--sucesso). */
+    color: var(--sucesso);
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor .cancelada no grupo de elementos que receberá as mesmas regras. */
+.cancelada,
+/* Inicia a regra que estiliza os elementos correspondentes a: .status-cancelada. */
+.status-cancelada {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #fceeea. */
+    background: #fceeea;
+    /* Define a cor do texto; aqui recebe #a84234. */
+    color: #a84234;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 27. CONTROLE DE VISIBILIDADE */
+/* Inicia a regra que estiliza os elementos correspondentes a: [hidden]. */
+[hidden] {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe none !important. */
+    display: none !important;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 28. RESPONSIVO: NAVEGAÇÃO ATÉ 1100 PX */
+/* Aplica os próximos estilos somente quando a condição de mídia (max-width: 1100px) for verdadeira. */
+@media (max-width: 1100px) {
+    /* Inicia a regra que estiliza os elementos correspondentes a: header. */
+    header {
+        /* Define o espaçamento entre elementos; aqui recebe 12px. */
+        gap: 12px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .menu. */
+    .menu {
+        /* Configura a propriedade CSS order; aqui recebe 3. */
+        order: 3;
+        /* Determina a largura do elemento; aqui recebe 100%. */
+        width: 100%;
+        /* Permite ou impede a quebra dos itens para outra linha; aqui recebe nowrap. */
+        flex-wrap: nowrap;
+        /* Controla excesso de conteúdo na horizontal; aqui recebe auto. */
+        overflow-x: auto;
+        /* Define o espaço interno abaixo; aqui recebe 2px. */
+        padding-bottom: 2px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .menu a. */
+    .menu a {
+        /* Define como o item cresce/encolhe no Flexbox; aqui recebe 0 0 auto. */
+        flex: 0 0 auto;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .distribution-grid. */
+    .distribution-grid {
+        /* Define as colunas do layout em grade; aqui recebe repeat(2, minmax(0, 1fr)). */
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 29. RESPONSIVO: TABLETS ATÉ 760 PX */
+/* Aplica os próximos estilos somente quando a condição de mídia (max-width: 760px) for verdadeira. */
+@media (max-width: 760px) {
+    /* Inicia a regra que estiliza os elementos correspondentes a: main. */
+    main {
+        /* Determina a largura do elemento; aqui recebe calc(100% - 32px). */
+        width: calc(100% - 32px);
+        /* Define o espaço externo acima; aqui recebe 26px. */
+        margin-top: 26px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: header. */
+    header {
+        /* Controla o espaço interno; aqui recebe 12px 16px. */
+        padding: 12px 16px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inclui o seletor .dashboard-metrics .card no grupo de elementos que receberá as mesmas regras. */
+    .dashboard-metrics .card,
+    /* Inicia a regra que estiliza os elementos correspondentes a: .dashboard-metrics .card:nth-child(n+5). */
+    .dashboard-metrics .card:nth-child(n+5) {
+        /* Define quais colunas o item ocupa; aqui recebe span 6. */
+        grid-column: span 6;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .dashboard-metrics .card:last-child. */
+    .dashboard-metrics .card:last-child {
+        /* Define quais colunas o item ocupa; aqui recebe 1 / -1. */
+        grid-column: 1 / -1;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .metric-grid. */
+    .metric-grid {
+        /* Define as colunas do layout em grade; aqui recebe repeat(3, minmax(0, 1fr)). */
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        /* Define o espaçamento entre elementos; aqui recebe 10px. */
+        gap: 10px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inclui o seletor section no grupo de elementos que receberá as mesmas regras. */
+    section,
+    /* Inclui o seletor .card no grupo de elementos que receberá as mesmas regras. */
+    .card,
+    /* Inicia a regra que estiliza os elementos correspondentes a: .metric-card. */
+    .metric-card {
+        /* Controla o espaço interno; aqui recebe 20px. */
+        padding: 20px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inclui o seletor .cards no grupo de elementos que receberá as mesmas regras. */
+    .cards,
+    /* Inicia a regra que estiliza os elementos correspondentes a: .metric-grid. */
+    .metric-grid {
+        /* Controla o espaço interno; aqui recebe 0. */
+        padding: 0;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inclui o seletor .card strong no grupo de elementos que receberá as mesmas regras. */
+    .card strong,
+    /* Inicia a regra que estiliza os elementos correspondentes a: .metric-card > strong. */
+    .metric-card > strong {
+        /* Define o tamanho da letra; aqui recebe 1.85rem. */
+        font-size: 1.85rem;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .section-heading. */
+    .section-heading {
+        /* Alinha os elementos no eixo transversal; aqui recebe flex-start. */
+        align-items: flex-start;
+        /* Define o espaçamento entre elementos; aqui recebe 16px. */
+        gap: 16px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .search-field. */
+    .search-field {
+        /* Determina a largura do elemento; aqui recebe 100%. */
+        width: 100%;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .admin-layout. */
+    .admin-layout {
+        /* Define as colunas do layout em grade; aqui recebe 1fr. */
+        grid-template-columns: 1fr;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 30. RESPONSIVO: CELULARES ATÉ 480 PX */
+/* Aplica os próximos estilos somente quando a condição de mídia (max-width: 480px) for verdadeira. */
+@media (max-width: 480px) {
+    /* Inclui o seletor input no grupo de elementos que receberá as mesmas regras. */
+    input,
+    /* Inclui o seletor select no grupo de elementos que receberá as mesmas regras. */
+    select,
+    /* Inicia a regra que estiliza os elementos correspondentes a: textarea. */
+    textarea {
+        /* Define o tamanho da letra; aqui recebe 16px. */
+        font-size: 16px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: header h2. */
+    header h2 {
+        /* Define o espaçamento entre elementos; aqui recebe 8px. */
+        gap: 8px;
+        /* Define o tamanho da letra; aqui recebe .825rem. */
+        font-size: .825rem;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: header h2::before. */
+    header h2::before {
+        /* Determina a largura do elemento; aqui recebe 30px. */
+        width: 30px;
+        /* Determina a altura do elemento; aqui recebe 30px. */
+        height: 30px;
+        /* Define o tamanho da letra; aqui recebe .9rem. */
+        font-size: .9rem;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .account-tools. */
+    .account-tools {
+        /* Define o espaçamento entre elementos; aqui recebe 8px. */
+        gap: 8px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .account-identity strong. */
+    .account-identity strong {
+        /* Impõe uma largura máxima; aqui recebe 105px. */
+        max-width: 105px;
+        /* Define o tamanho da letra; aqui recebe .7rem. */
+        font-size: .7rem;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .account-identity span. */
+    .account-identity span {
+        /* Define o tamanho da letra; aqui recebe .65rem. */
+        font-size: .65rem;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .account-logout. */
+    .account-logout {
+        /* Impõe uma altura mínima; aqui recebe 36px. */
+        min-height: 36px;
+        /* Controla o espaço interno; aqui recebe 8px 10px. */
+        padding: 8px 10px;
+        /* Define o tamanho da letra; aqui recebe .75rem. */
+        font-size: .75rem;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .menu a. */
+    .menu a {
+        /* Controla o espaço interno; aqui recebe 8px 11px. */
+        padding: 8px 11px;
+        /* Define o tamanho da letra; aqui recebe .8rem. */
+        font-size: .8rem;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inclui o seletor .page-heading no grupo de elementos que receberá as mesmas regras. */
+    .page-heading,
+    /* Inicia a regra que estiliza os elementos correspondentes a: .topo. */
+    .topo {
+        /* Alinha os elementos no eixo transversal; aqui recebe flex-start. */
+        align-items: flex-start;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .dashboard-actions. */
+    .dashboard-actions {
+        /* Determina a largura do elemento; aqui recebe 100%. */
+        width: 100%;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inclui o seletor .button-row > * no grupo de elementos que receberá as mesmas regras. */
+    .button-row > *,
+    /* Inicia a regra que estiliza os elementos correspondentes a: .contact-actions > *. */
+    .contact-actions > * {
+        /* Define como o item cresce/encolhe no Flexbox; aqui recebe 1 1 auto. */
+        flex: 1 1 auto;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .cards. */
+    .cards {
+        /* Define o espaçamento entre elementos; aqui recebe 12px. */
+        gap: 12px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inclui o seletor .cards .card no grupo de elementos que receberá as mesmas regras. */
+    .cards .card,
+    /* Inicia a regra que estiliza os elementos correspondentes a: .metric-card. */
+    .metric-card {
+        /* Controla o espaço interno; aqui recebe 18px. */
+        padding: 18px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inclui o seletor .metric-grid no grupo de elementos que receberá as mesmas regras. */
+    .metric-grid,
+    /* Inicia a regra que estiliza os elementos correspondentes a: .distribution-grid. */
+    .distribution-grid {
+        /* Define as colunas do layout em grade; aqui recebe 1fr. */
+        grid-template-columns: 1fr;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .metric-card. */
+    .metric-card {
+        /* Escolhe o modelo de apresentação do elemento; aqui recebe flex. */
+        display: flex;
+        /* Alinha os elementos no eixo transversal; aqui recebe center. */
+        align-items: center;
+        /* Distribui elementos ao longo do eixo principal; aqui recebe space-between. */
+        justify-content: space-between;
+        /* Define o espaçamento entre elementos; aqui recebe 12px. */
+        gap: 12px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .metric-card > strong. */
+    .metric-card > strong {
+        /* Controla o espaço externo; aqui recebe 0. */
+        margin: 0;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .informacoes. */
+    .informacoes {
+        /* Define as colunas do layout em grade; aqui recebe repeat(2, minmax(0, 1fr)). */
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .filter-row. */
+    .filter-row {
+        /* Determina a largura do elemento; aqui recebe 100%. */
+        width: 100%;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .filter-chip. */
+    .filter-chip {
+        /* Define como o item cresce/encolhe no Flexbox; aqui recebe 1 1 auto. */
+        flex: 1 1 auto;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .interaction-footer .button-row. */
+    .interaction-footer .button-row {
+        /* Determina a largura do elemento; aqui recebe 100%. */
+        width: 100%;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .auth-panel. */
+    .auth-panel {
+        /* Controla o espaço interno; aqui recebe 28px 24px. */
+        padding: 28px 24px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .auth-panel::before. */
+    .auth-panel::before {
+        /* Define o deslocamento a partir da esquerda; aqui recebe 24px. */
+        left: 24px;
+        /* Define o deslocamento a partir da direita; aqui recebe 24px. */
+        right: 24px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+    /* Inicia a regra que estiliza os elementos correspondentes a: .modal-box. */
+    .modal-box {
+        /* Controla o espaço interno; aqui recebe 24px. */
+        padding: 24px;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 31. ACESSIBILIDADE: MOVIMENTO REDUZIDO */
+/* Aplica os próximos estilos somente quando a condição de mídia (prefers-reduced-motion: reduce) for verdadeira. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        /* Suaviza mudanças de propriedades ao longo do tempo; aqui recebe none !important. */
+        transition: none !important;
+        /* Controla a suavidade da rolagem; aqui recebe auto !important. */
+        scroll-behavior: auto !important;
+    /* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+    }
+
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}

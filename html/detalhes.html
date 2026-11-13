@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<!-- Elemento raiz do documento e idioma usado. -->
+<html lang="pt-br">
+<!-- Agrupa as configurações e recursos carregados antes do corpo. -->
+<head>
+    <meta charset="UTF-8">
+    <!-- Configuração técnica da página. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Texto que aparece na aba do navegador. -->
+    <title>Detalhes da OS - Megabrain Services</title>
+    <!-- Importa um arquivo CSS para estilizar a página; carrega/aponta para "./css/base.css". -->
+    <link rel="stylesheet" href="./css/base.css">
+    <!-- Importa um arquivo CSS para estilizar a página; carrega/aponta para "./css/detalhes.css". -->
+    <link rel="stylesheet" href="./css/detalhes.css">
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/api.js". -->
+    <script src="./js/api.js"></script>
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/utils.js". -->
+    <script src="./js/utils.js"></script>
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/auth.js"; defer adia a execução até o HTML ser analisado. -->
+    <script src="./js/auth.js" defer></script>
+<!-- Encerra o elemento head iniciado anteriormente. -->
+</head>
+<!-- Contém todo o conteúdo visível da página. -->
+<body>
+
+        <!-- Cabeçalho do sistema com identidade e navegação. -->
+        <header>
+        <!-- Título de seção. -->
+        <h2>Megabrain Services</h2>
+        <!-- Agrupa os links de navegação entre páginas; class associa estilos CSS. -->
+        <nav class="menu">
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "dashboard.html". -->
+            <a href="dashboard.html">Painel</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "cadastros.html". -->
+            <a href="cadastros.html">Nova OS</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "lista.html". -->
+            <a href="lista.html">Ordens</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "tecnicos.html". -->
+            <a href="tecnicos.html">Tecnicos</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "clientes.html". -->
+            <a href="clientes.html">Clientes</a>
+        <!-- Encerra o elemento nav iniciado anteriormente. -->
+        </nav>
+    <!-- Encerra o elemento header iniciado anteriormente. -->
+    </header>
+
+    <!-- Marca a área principal da tela. -->
+    <main>
+
+        <!-- Agrupa elementos para organização e estilo; id="modal-confirmacao" identifica o elemento para o JavaScript e o CSS; hidden deixa o conteúdo inicialmente oculto; class associa estilos CSS. -->
+        <div id="modal-confirmacao" class="modal-confirmacao hidden">
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="modal-box">
+                <!-- Subtítulo dentro da seção; id="titulo-modal" identifica o elemento para o JavaScript e o CSS. -->
+                <h3 id="titulo-modal">Confirmar ação</h3>
+                <!-- Parágrafo de texto explicativo; id="texto-modal" identifica o elemento para o JavaScript e o CSS. -->
+                <p id="texto-modal">Deseja realmente continuar?</p>
+                <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+                <div class="modal-actions">
+                    <!-- Botão de ação ou envio de formulário; id="confirmar-acoes-modal" identifica o elemento para o JavaScript e o CSS; type="button" determina seu tipo; class associa estilos CSS. -->
+                    <button type="button" id="confirmar-acoes-modal" class="botao-primary">Confirmar</button>
+                    <!-- Botão de ação ou envio de formulário; id="cancelar-acoes-modal" identifica o elemento para o JavaScript e o CSS; type="button" determina seu tipo; class associa estilos CSS. -->
+                    <button type="button" id="cancelar-acoes-modal" class="botao-cancelar">Cancelar</button>
+                <!-- Encerra o elemento div iniciado anteriormente. -->
+                </div>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+        <!-- Encerra o elemento div iniciado anteriormente. -->
+        </div>
+
+        <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+        <div class="topo">
+            <!-- Agrupa elementos para organização e estilo. -->
+            <div>
+                <!-- Título principal desta tela; id="titulo-os" identifica o elemento para o JavaScript e o CSS. -->
+                <h1 id="titulo-os">OS #000</h1>
+                <!-- Parágrafo de texto explicativo. -->
+                <p>Detalhes da ordem de serviço</p>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+            <!-- Trecho de texto usado para aplicar estilo/identificação; id="status-os" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+            <span id="status-os" class="status aberta">Aberta</span>
+        <!-- Encerra o elemento div iniciado anteriormente. -->
+        </div>
+
+        <!-- Agrupa uma seção funcional do conteúdo; class associa estilos CSS. -->
+        <section class="box">
+            <!-- Título de seção. -->
+            <h2>Informações da OS</h2>
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="informacoes">
+                <!-- Agrupa elementos para organização e estilo. -->
+                <div>
+                    <!-- Texto enfatizado com maior importância. -->
+                    <strong>Cliente</strong>
+                    <!-- Parágrafo de texto explicativo; id="cliente-os" identifica o elemento para o JavaScript e o CSS. -->
+                    <p id="cliente-os">-</p>
+                <!-- Encerra o elemento div iniciado anteriormente. -->
+                </div>
+                <!-- Agrupa elementos para organização e estilo. -->
+                <div>
+                    <!-- Texto enfatizado com maior importância. -->
+                    <strong>Técnico</strong>
+                    <!-- Parágrafo de texto explicativo; id="tecnico-os" identifica o elemento para o JavaScript e o CSS. -->
+                    <p id="tecnico-os">-</p>
+                <!-- Encerra o elemento div iniciado anteriormente. -->
+                </div>
+                <!-- Agrupa elementos para organização e estilo. -->
+                <div>
+                    <!-- Texto enfatizado com maior importância. -->
+                    <strong>Equipamento</strong>
+                    <!-- Parágrafo de texto explicativo; id="equipamento-os" identifica o elemento para o JavaScript e o CSS. -->
+                    <p id="equipamento-os">-</p>
+                <!-- Encerra o elemento div iniciado anteriormente. -->
+                </div>
+                <!-- Agrupa elementos para organização e estilo. -->
+                <div>
+                    <!-- Texto enfatizado com maior importância. -->
+                    <strong>Prioridade</strong>
+                    <!-- Parágrafo de texto explicativo; id="prioridade-os" identifica o elemento para o JavaScript e o CSS. -->
+                    <p id="prioridade-os">-</p>
+                <!-- Encerra o elemento div iniciado anteriormente. -->
+                </div>
+                <!-- Agrupa elementos para organização e estilo. -->
+                <div>
+                    <!-- Texto enfatizado com maior importância. -->
+                    <strong>Data de abertura</strong>
+                    <!-- Parágrafo de texto explicativo; id="data-os" identifica o elemento para o JavaScript e o CSS. -->
+                    <p id="data-os">-</p>
+                <!-- Encerra o elemento div iniciado anteriormente. -->
+                </div>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="contact-actions" data-roles="admin funcionario">
+                <!-- Link que permite navegar para uma página ou destino; id="whatsapp-cliente" identifica o elemento para o JavaScript e o CSS; carrega/aponta para "#"; hidden deixa o conteúdo inicialmente oculto; class associa estilos CSS. -->
+                <a id="whatsapp-cliente" class="button button-whatsapp" href="#" target="_blank" rel="noopener noreferrer" hidden> WhatsApp do cliente</a>
+                <!-- Link que permite navegar para uma página ou destino; id="email-cliente" identifica o elemento para o JavaScript e o CSS; carrega/aponta para "#"; hidden deixa o conteúdo inicialmente oculto; class associa estilos CSS. -->
+                <a id="email-cliente" class="button button-outline" href="#" hidden> Enviar e-mail</a>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+
+        <!-- Agrupa uma seção funcional do conteúdo; class associa estilos CSS. -->
+        <section class="box">
+            <!-- Título de seção. -->
+            <h2>Descrição do problema</h2>
+            <!-- Parágrafo de texto explicativo; id="descricao-os" identifica o elemento para o JavaScript e o CSS. -->
+            <p id="descricao-os">-</p>
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+
+        <!-- Agrupa uma seção funcional do conteúdo; class associa estilos CSS. -->
+        <section class="data-section conversation-section">
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="section-heading"><div><h2>Central de relacionamento</h2><p>Histórico de notas, atualizações e mensagens do cliente.</p></div><span class="live-indicator">Histórico salvo</span></div>
+            <!-- Formulário que reúne campos e envia dados; id="form-interacao" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+            <form id="form-interacao" class="interaction-form">
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="canal-interacao">Tipo de interação</label>
+                <!-- Menu de opções para seleção; id="canal-interacao" identifica o elemento para o JavaScript e o CSS. -->
+                <select id="canal-interacao"><option value="Nota">Nota interna</option><option value="Atualização">Atualização do atendimento</option></select>
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="mensagem-interacao">Mensagem</label>
+                <!-- Campo para escrever várias linhas de texto; id="mensagem-interacao" identifica o elemento para o JavaScript e o CSS; required exige preenchimento do campo. -->
+                <textarea id="mensagem-interacao" maxlength="2000" placeholder="Registre o que foi combinado com o cliente..." required></textarea>
+                <!-- Agrupa elementos para organização e estilo; id="contador-mensagem" identifica o elemento para o JavaScript e o CSS; type="submit" determina seu tipo; class associa estilos CSS. -->
+                <div class="interaction-footer"><span id="contador-mensagem">0 / 2.000</span><div class="button-row"><button class="button button-primary" type="submit"> Registrar no histórico</button><button class="button button-whatsapp" type="button" id="preparar-whatsapp"> Preparar WhatsApp</button></div></div>
+                <!-- Agrupa elementos para organização e estilo; id="mensagem-interacao-feedback" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+                <div id="mensagem-interacao-feedback" class="mensagem" role="status"></div>
+            <!-- Encerra o elemento form iniciado anteriormente. -->
+            </form>
+            <!-- Elemento HTML ol; id="timeline-interacoes" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+            <ol id="timeline-interacoes" class="timeline"></ol>
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+
+        <!-- Agrupa uma seção funcional do conteúdo; class associa estilos CSS. -->
+        <section class="box" data-roles="admin funcionario">
+            <!-- Título de seção. -->
+            <h2>Responder atendimento</h2>
+
+            <!-- Formulário que reúne campos e envia dados; id="form-resposta" identifica o elemento para o JavaScript e o CSS. -->
+            <form id="form-resposta">
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="status">Status da OS</label>
+                <!-- Menu de opções para seleção; id="status" identifica o elemento para o JavaScript e o CSS. -->
+                <select id="status">
+                    <!-- Opção disponível dentro do campo de seleção. -->
+                    <option value="Aberta">Aberta</option>
+                    <!-- Opção disponível dentro do campo de seleção. -->
+                    <option value="Em execução">Em execução</option>
+                    <!-- Opção disponível dentro do campo de seleção. -->
+                    <option value="Concluída">Concluída</option>
+                    <!-- Opção disponível dentro do campo de seleção. -->
+                    <option value="Cancelada">Cancelada</option>
+                <!-- Encerra o elemento select iniciado anteriormente. -->
+                </select>
+
+                <!-- Rótulo que identifica o campo do formulário. -->
+                <label for="diagnostico">Diagnóstico / Resposta</label>
+                <!-- Campo para escrever várias linhas de texto; id="diagnostico" identifica o elemento para o JavaScript e o CSS; required exige preenchimento do campo. -->
+                <textarea id="diagnostico" placeholder="Descreva o diagnóstico, solução ou resposta do atendimento..." required></textarea>
+
+                <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+                <div class="button-row">
+                    <!-- Botão de ação ou envio de formulário; type="submit" determina seu tipo. -->
+                    <button type="submit">Salvar resposta</button>
+                    <!-- Botão de ação ou envio de formulário; id="concluir-atendimento" identifica o elemento para o JavaScript e o CSS; type="button" determina seu tipo; class associa estilos CSS. -->
+                    <button type="button" id="concluir-atendimento" class="botao-secundario">Concluir atendimento</button>
+                    <!-- Botão de ação ou envio de formulário; id="cancelar-servico" identifica o elemento para o JavaScript e o CSS; type="button" determina seu tipo; class associa estilos CSS. -->
+                    <button type="button" id="cancelar-servico" class="botao-cancelar">Cancelar serviço</button>
+                <!-- Encerra o elemento div iniciado anteriormente. -->
+                </div>
+
+                <!-- Agrupa elementos para organização e estilo; id="mensagem-resposta" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+                <div id="mensagem-resposta" class="mensagem"></div>
+            <!-- Encerra o elemento form iniciado anteriormente. -->
+            </form>
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+
+    <!-- Encerra o elemento main iniciado anteriormente. -->
+    </main>
+
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/detalhes.js". -->
+    <script src="./js/detalhes.js"></script>
+
+<!-- Encerra o elemento body iniciado anteriormente. -->
+</body>
+<!-- Encerra o elemento html iniciado anteriormente. -->
+</html>

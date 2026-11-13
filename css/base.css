@@ -1,88 +1,883 @@
+/* MEGABRAIN SERVICES — Estilos gerais compartilhados entre as telas. */
+
 /* 01. CORES E VARIÁVEIS */
+/* Inicia a regra que estiliza os elementos correspondentes a: :root. */
 :root {
+    /* Indica ao navegador o esquema de cores desejado; aqui recebe light. */
     color-scheme: light;
+    /* Cria a variável CSS --cor (cor principal da marca) com o valor #087f70; pode ser usada via var(--cor). */
     --cor: #087f70;
+    /* Cria a variável CSS --cor-hover (cor principal ao passar o mouse) com o valor #06695d; pode ser usada via var(--cor-hover). */
     --cor-hover: #06695d;
+    /* Cria a variável CSS --suave (fundo suave de destaque) com o valor #eaf6f2; pode ser usada via var(--suave). */
     --suave: #eaf6f2;
+    /* Cria a variável CSS --fundo (fundo geral das páginas) com o valor #f5f7fa; pode ser usada via var(--fundo). */
     --fundo: #f5f7fa;
+    /* Cria a variável CSS --card (fundo dos cartões) com o valor #ffffff; pode ser usada via var(--card). */
     --card: #ffffff;
+    /* Cria a variável CSS --texto (cor do texto principal) com o valor #1d2939; pode ser usada via var(--texto). */
     --texto: #1d2939;
+    /* Cria a variável CSS --muted (cor do texto secundário) com o valor #667085; pode ser usada via var(--muted). */
     --muted: #667085;
+    /* Cria a variável CSS --borda (cor das bordas) com o valor #e4e9ef; pode ser usada via var(--borda). */
     --borda: #e4e9ef;
+    /* Cria a variável CSS --sucesso (cor de mensagens positivas) com o valor #166a48; pode ser usada via var(--sucesso). */
     --sucesso: #166a48;
+    /* Cria a variável CSS --erro (cor de erros) com o valor #b42318; pode ser usada via var(--erro). */
     --erro: #b42318;
+    /* Cria a variável CSS --destaque (cor de destaque) com o valor #d99527; pode ser usada via var(--destaque). */
     --destaque: #d99527;
+    /* Cria a variável CSS --sombra (sombra padrão dos cartões) com o valor 0 4px 24px #182b4910; pode ser usada via var(--sombra). */
     --sombra: 0 4px 24px #182b4910;
+    /* Cria a variável CSS --raio (raio de arredondamento padrão) com o valor 16px; pode ser usada via var(--raio). */
     --raio: 16px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
 /* 02. RESET E FUNDO DA PÁGINA */
+/* O asterisco (*) seleciona todos os elementos da página, aplicando o ajuste global de caixas. */
 * {
+    /* Determina como borda e preenchimento participam do cálculo do tamanho; aqui recebe border-box. */
     box-sizing: border-box;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
+/* Inicia a regra que estiliza os elementos correspondentes a: html. */
 html {
+    /* Reserva espaço ao rolar para âncoras; aqui recebe 110px. */
     scroll-padding-top: 110px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
+/* Inicia a regra que estiliza os elementos correspondentes a: body. */
 body {
+    /* Controla o espaço externo; aqui recebe 0. */
     margin: 0;
+    /* Impõe uma altura mínima; aqui recebe 100vh. */
     min-height: 100vh;
+    /* Define a cor ou o preenchimento do fundo; aqui recebe var(--fundo). */
     background: var(--fundo);
+    /* Define a cor do texto; aqui recebe var(--texto). */
     color: var(--texto);
+    /* Configura família/tamanho/peso/espaçamento da fonte de uma vez; aqui recebe 16px/1.55 "Inter", "Segoe UI", system-ui, sans-serif. */
     font: 16px/1.55 "Inter", "Segoe UI", system-ui, sans-serif;
+    /* Ajusta a suavização das fontes em mecanismos WebKit; aqui recebe antialiased. */
     -webkit-font-smoothing: antialiased;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
+/* Inicia a regra que estiliza os elementos correspondentes a: ::selection. */
 ::selection {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #c9eadf. */
     background: #c9eadf;
+    /* Define a cor do texto; aqui recebe #104b40. */
     color: #104b40;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
 /* 03. LINKS E TIPOGRAFIA */
+/* Inicia a regra que estiliza os elementos correspondentes a: a. */
 a {
+    /* Define a cor do texto; aqui recebe var(--cor). */
     color: var(--cor);
+    /* Define o sublinhado ou outras decorações; aqui recebe none. */
     text-decoration: none;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
+/* Inicia a regra que estiliza os elementos correspondentes a: a:hover. */
 a:hover {
+    /* Define o sublinhado ou outras decorações; aqui recebe underline. */
     text-decoration: underline;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
+/* Inclui o seletor h1 no grupo de elementos que receberá as mesmas regras. */
 h1,
+/* Inclui o seletor h2 no grupo de elementos que receberá as mesmas regras. */
 h2,
+/* Inclui o seletor h3 no grupo de elementos que receberá as mesmas regras. */
 h3,
+/* Inicia a regra que estiliza os elementos correspondentes a: p. */
 p {
+    /* Controla o espaço externo; aqui recebe 0. */
     margin: 0;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
+/* Inicia a regra que estiliza os elementos correspondentes a: h1. */
 h1 {
+    /* Define o tamanho da letra; aqui recebe clamp(1.65rem, 3vw, 2.15rem). */
     font-size: clamp(1.65rem, 3vw, 2.15rem);
+    /* Define a altura das linhas de texto; aqui recebe 1.2. */
     line-height: 1.2;
+    /* Ajusta o espaço entre letras; aqui recebe -.045em. */
     letter-spacing: -.045em;
+    /* Define a espessura da letra; aqui recebe 750. */
     font-weight: 750;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
+/* Inicia a regra que estiliza os elementos correspondentes a: h2. */
 h2 {
+    /* Define o tamanho da letra; aqui recebe 1.05rem. */
     font-size: 1.05rem;
+    /* Ajusta o espaço entre letras; aqui recebe -.02em. */
     letter-spacing: -.02em;
+    /* Define a espessura da letra; aqui recebe 700. */
     font-weight: 700;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
+/* Inicia a regra que estiliza os elementos correspondentes a: h3. */
 h3 {
+    /* Define o tamanho da letra; aqui recebe .9rem. */
     font-size: .9rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
+/* Inicia a regra que estiliza os elementos correspondentes a: p. */
 p {
+    /* Define a cor do texto; aqui recebe var(--muted). */
     color: var(--muted);
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
 /* 04. CONTEÚDO PRINCIPAL */
+/* Inicia a regra que estiliza os elementos correspondentes a: main. */
 main {
+    /* Determina a largura do elemento; aqui recebe min(100% - 48px, 1240px). */
     width: min(100% - 48px, 1240px);
+    /* Controla o espaço externo; aqui recebe 36px auto 56px. */
     margin: 36px auto 56px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }
 
+/* Inicia a regra que estiliza os elementos correspondentes a: main > h1 + p. */
 main > h1 + p {
+    /* Controla o espaço externo; aqui recebe 8px 0 24px. */
     margin: 8px 0 24px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 05. CABEÇALHO E LOGOTIPO */
+/* Inicia a regra que estiliza os elementos correspondentes a: header. */
+header {
+    /* Determina o modo de posicionamento; aqui recebe sticky. */
+    position: sticky;
+    /* Define o deslocamento a partir do topo; aqui recebe 0. */
+    top: 0;
+    /* Controla a ordem de sobreposição; aqui recebe 20. */
+    z-index: 20;
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe flex. */
+    display: flex;
+    /* Alinha os elementos no eixo transversal; aqui recebe center. */
+    align-items: center;
+    /* Distribui elementos ao longo do eixo principal; aqui recebe space-between. */
+    justify-content: space-between;
+    /* Permite ou impede a quebra dos itens para outra linha; aqui recebe wrap. */
+    flex-wrap: wrap;
+    /* Define o espaçamento entre elementos; aqui recebe 16px. */
+    gap: 16px;
+    /* Controla o espaço interno; aqui recebe 16px max(24px, calc((100% - 1240px) / 2)). */
+    padding: 16px max(24px, calc((100% - 1240px) / 2));
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #ffffffed. */
+    background: #ffffffed;
+    /* Define a borda inferior; aqui recebe 1px solid var(--borda). */
+    border-bottom: 1px solid var(--borda);
+    /* Aplica um efeito ao fundo atrás do elemento; aqui recebe blur(16px). */
+    backdrop-filter: blur(16px);
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: header h2. */
+header h2 {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe flex. */
+    display: flex;
+    /* Alinha os elementos no eixo transversal; aqui recebe center. */
+    align-items: center;
+    /* Define o espaçamento entre elementos; aqui recebe 10px. */
+    gap: 10px;
+    /* Define o tamanho da letra; aqui recebe 1rem. */
+    font-size: 1rem;
+    /* Controla quebras e espaços do texto; aqui recebe nowrap. */
+    white-space: nowrap;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: header h2::before. */
+header h2::before {
+    /* Define o conteúdo gerado em pseudoelementos; aqui recebe "M". */
+    content: "M";
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe grid. */
+    display: grid;
+    /* Configura a propriedade CSS place-items; aqui recebe center. */
+    place-items: center;
+    /* Determina a largura do elemento; aqui recebe 34px. */
+    width: 34px;
+    /* Determina a altura do elemento; aqui recebe 34px. */
+    height: 34px;
+    /* Arredonda os cantos do elemento; aqui recebe 11px. */
+    border-radius: 11px;
+    /* Define a cor ou o preenchimento do fundo; aqui recebe var(--cor). */
+    background: var(--cor);
+    /* Define a cor do texto; aqui recebe #fff. */
+    color: #fff;
+    /* Define o tamanho da letra; aqui recebe 1.05rem. */
+    font-size: 1.05rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 06. MENU E PÁGINA ATIVA */
+/* Inicia a regra que estiliza os elementos correspondentes a: .menu. */
+.menu {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe flex. */
+    display: flex;
+    /* Permite ou impede a quebra dos itens para outra linha; aqui recebe wrap. */
+    flex-wrap: wrap;
+    /* Define o espaçamento entre elementos; aqui recebe 4px. */
+    gap: 4px;
+    /* Impõe uma largura mínima; aqui recebe 0. */
+    min-width: 0;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .menu a. */
+.menu a {
+    /* Controla o espaço interno; aqui recebe 9px 12px. */
+    padding: 9px 12px;
+    /* Arredonda os cantos do elemento; aqui recebe 9px. */
+    border-radius: 9px;
+    /* Define a cor do texto; aqui recebe #475467. */
+    color: #475467;
+    /* Define o tamanho da letra; aqui recebe .85rem. */
+    font-size: .85rem;
+    /* Define a espessura da letra; aqui recebe 600. */
+    font-weight: 600;
+    /* Controla quebras e espaços do texto; aqui recebe nowrap. */
+    white-space: nowrap;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .menu a:hover. */
+.menu a:hover {
+    /* Define a cor do texto; aqui recebe var(--cor). */
+    color: var(--cor);
+    /* Define a cor ou o preenchimento do fundo; aqui recebe var(--suave). */
+    background: var(--suave);
+    /* Define o sublinhado ou outras decorações; aqui recebe none. */
+    text-decoration: none;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Configura a propriedade CSS body; aqui recebe has(#total-os) .menu a[href="dashboard.html"],. */
+body:has(#total-os) .menu a[href="dashboard.html"],
+/* Configura a propriedade CSS body; aqui recebe has(#form-os) .menu a[href="cadastros.html"],. */
+body:has(#form-os) .menu a[href="cadastros.html"],
+/* Configura a propriedade CSS body; aqui recebe has(#lista-ordens) .menu a[href="lista.html"],. */
+body:has(#lista-ordens) .menu a[href="lista.html"],
+/* Configura a propriedade CSS body; aqui recebe has(#lista-tecnicos) .menu a[href="tecnicos.html"],. */
+body:has(#lista-tecnicos) .menu a[href="tecnicos.html"],
+/* Configura a propriedade CSS body; aqui recebe has(#lista-clientes) .menu a[href="clientes.html"],. */
+body:has(#lista-clientes) .menu a[href="clientes.html"],
+/* Inicia a regra que estiliza os elementos correspondentes a: body:has(#lista-usuarios) .menu a[href="usuarios.html"]. */
+body:has(#lista-usuarios) .menu a[href="usuarios.html"] {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe var(--suave). */
+    background: var(--suave);
+    /* Define a cor do texto; aqui recebe var(--cor). */
+    color: var(--cor);
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 07. IDENTIFICAÇÃO DA CONTA */
+/* Inicia a regra que estiliza os elementos correspondentes a: .account-tools. */
+.account-tools {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe flex. */
+    display: flex;
+    /* Alinha os elementos no eixo transversal; aqui recebe center. */
+    align-items: center;
+    /* Define o espaçamento entre elementos; aqui recebe 14px. */
+    gap: 14px;
+    /* Impõe uma largura mínima; aqui recebe 0. */
+    min-width: 0;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .account-identity. */
+.account-identity {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe flex. */
+    display: flex;
+    /* Escolhe a direção dos itens no Flexbox; aqui recebe column. */
+    flex-direction: column;
+    /* Alinha os elementos no eixo transversal; aqui recebe flex-end. */
+    align-items: flex-end;
+    /* Impõe uma largura mínima; aqui recebe 0. */
+    min-width: 0;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .account-identity strong. */
+.account-identity strong {
+    /* Impõe uma largura máxima; aqui recebe 180px. */
+    max-width: 180px;
+    /* Determina o que fazer com conteúdo que excede o elemento; aqui recebe hidden. */
+    overflow: hidden;
+    /* Determina como indicar texto cortado; aqui recebe ellipsis. */
+    text-overflow: ellipsis;
+    /* Controla quebras e espaços do texto; aqui recebe nowrap. */
+    white-space: nowrap;
+    /* Define o tamanho da letra; aqui recebe .8rem. */
+    font-size: .8rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .account-identity span. */
+.account-identity span {
+    /* Define a cor do texto; aqui recebe var(--muted). */
+    color: var(--muted);
+    /* Define o tamanho da letra; aqui recebe .7rem. */
+    font-size: .7rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 08. PAINÉIS E SUPERFÍCIES */
+/* Inclui o seletor section no grupo de elementos que receberá as mesmas regras. */
+section,
+/* Inclui o seletor .card no grupo de elementos que receberá as mesmas regras. */
+.card,
+/* Inclui o seletor .metric-card no grupo de elementos que receberá as mesmas regras. */
+.metric-card,
+/* Inicia a regra que estiliza os elementos correspondentes a: .auth-panel. */
+.auth-panel {
+    /* Impõe uma largura mínima; aqui recebe 0. */
+    min-width: 0;
+    /* Controla o espaço externo; aqui recebe 20px 0. */
+    margin: 20px 0;
+    /* Controla o espaço interno; aqui recebe 26px. */
+    padding: 26px;
+    /* Define a cor ou o preenchimento do fundo; aqui recebe var(--card). */
+    background: var(--card);
+    /* Define borda, espessura, estilo e cor; aqui recebe 1px solid var(--borda). */
+    border: 1px solid var(--borda);
+    /* Arredonda os cantos do elemento; aqui recebe var(--raio). */
+    border-radius: var(--raio);
+    /* Adiciona sombra à caixa; aqui recebe var(--sombra). */
+    box-shadow: var(--sombra);
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: section > h2. */
+section > h2 {
+    /* Define o espaço externo abaixo; aqui recebe 20px. */
+    margin-bottom: 20px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 09. TÍTULOS E ALINHAMENTOS COMPARTILHADOS */
+/* Inclui o seletor .page-heading no grupo de elementos que receberá as mesmas regras. */
+.page-heading,
+/* Inclui o seletor .topo no grupo de elementos que receberá as mesmas regras. */
+.topo,
+/* Inclui o seletor .section-heading no grupo de elementos que receberá as mesmas regras. */
+.section-heading,
+/* Inclui o seletor .button-row no grupo de elementos que receberá as mesmas regras. */
+.button-row,
+/* Inclui o seletor .contact-actions no grupo de elementos que receberá as mesmas regras. */
+.contact-actions,
+/* Inclui o seletor .dashboard-sync no grupo de elementos que receberá as mesmas regras. */
+.dashboard-sync,
+/* Inclui o seletor .actions no grupo de elementos que receberá as mesmas regras. */
+.actions,
+/* Inclui o seletor .interaction-footer no grupo de elementos que receberá as mesmas regras. */
+.interaction-footer,
+/* Inicia a regra que estiliza os elementos correspondentes a: .modal-actions. */
+.modal-actions {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe flex. */
+    display: flex;
+    /* Alinha os elementos no eixo transversal; aqui recebe center. */
+    align-items: center;
+    /* Permite ou impede a quebra dos itens para outra linha; aqui recebe wrap. */
+    flex-wrap: wrap;
+    /* Define o espaçamento entre elementos; aqui recebe 12px. */
+    gap: 12px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor .page-heading no grupo de elementos que receberá as mesmas regras. */
+.page-heading,
+/* Inclui o seletor .topo no grupo de elementos que receberá as mesmas regras. */
+.topo,
+/* Inclui o seletor .section-heading no grupo de elementos que receberá as mesmas regras. */
+.section-heading,
+/* Inclui o seletor .dashboard-sync no grupo de elementos que receberá as mesmas regras. */
+.dashboard-sync,
+/* Inicia a regra que estiliza os elementos correspondentes a: .interaction-footer. */
+.interaction-footer {
+    /* Distribui elementos ao longo do eixo principal; aqui recebe space-between. */
+    justify-content: space-between;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor .page-heading no grupo de elementos que receberá as mesmas regras. */
+.page-heading,
+/* Inicia a regra que estiliza os elementos correspondentes a: .topo. */
+.topo {
+    /* Define o espaço externo abaixo; aqui recebe 26px. */
+    margin-bottom: 26px;
+    /* Define o espaçamento entre elementos; aqui recebe 20px. */
+    gap: 20px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor .page-heading p no grupo de elementos que receberá as mesmas regras. */
+.page-heading p,
+/* Inicia a regra que estiliza os elementos correspondentes a: .topo p. */
+.topo p {
+    /* Define o espaço externo acima; aqui recebe 8px. */
+    margin-top: 8px;
+    /* Define o tamanho da letra; aqui recebe .925rem. */
+    font-size: .925rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .page-heading .eyebrow. */
+.page-heading .eyebrow {
+    /* Controla o espaço externo; aqui recebe 0 0 9px. */
+    margin: 0 0 9px;
+    /* Define a cor do texto; aqui recebe var(--cor). */
+    color: var(--cor);
+    /* Define o tamanho da letra; aqui recebe .68rem. */
+    font-size: .68rem;
+    /* Define a espessura da letra; aqui recebe 800. */
+    font-weight: 800;
+    /* Ajusta o espaço entre letras; aqui recebe .16em. */
+    letter-spacing: .16em;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .section-heading. */
+.section-heading {
+    /* Define o espaço externo abaixo; aqui recebe 22px. */
+    margin-bottom: 22px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .section-heading p. */
+.section-heading p {
+    /* Define o espaço externo acima; aqui recebe 5px. */
+    margin-top: 5px;
+    /* Define o tamanho da letra; aqui recebe .85rem. */
+    font-size: .85rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .section-heading > div. */
+.section-heading > div {
+    /* Impõe uma largura mínima; aqui recebe 0. */
+    min-width: 0;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .dashboard-sync. */
+.dashboard-sync {
+    /* Controla o espaço externo; aqui recebe 0 0 14px. */
+    margin: 0 0 14px;
+    /* Define a cor do texto; aqui recebe var(--muted). */
+    color: var(--muted);
+    /* Define o tamanho da letra; aqui recebe .78rem. */
+    font-size: .78rem;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 10. BOTÕES: ESTRUTURA E ESTADOS */
+/* Inclui o seletor button no grupo de elementos que receberá as mesmas regras. */
+button,
+/* Inclui o seletor .button no grupo de elementos que receberá as mesmas regras. */
+.button,
+/* Inclui o seletor .botao no grupo de elementos que receberá as mesmas regras. */
+.botao,
+/* Inclui o seletor .icon-action no grupo de elementos que receberá as mesmas regras. */
+.icon-action,
+/* Inicia a regra que estiliza os elementos correspondentes a: .row-actions > a. */
+.row-actions > a {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe inline-flex. */
+    display: inline-flex;
+    /* Alinha os elementos no eixo transversal; aqui recebe center. */
+    align-items: center;
+    /* Distribui elementos ao longo do eixo principal; aqui recebe center. */
+    justify-content: center;
+    /* Define o espaçamento entre elementos; aqui recebe 8px. */
+    gap: 8px;
+    /* Impõe uma altura mínima; aqui recebe 42px. */
+    min-height: 42px;
+    /* Controla o espaço interno; aqui recebe 10px 16px. */
+    padding: 10px 16px;
+    /* Define borda, espessura, estilo e cor; aqui recebe 1px solid transparent. */
+    border: 1px solid transparent;
+    /* Arredonda os cantos do elemento; aqui recebe 10px. */
+    border-radius: 10px;
+    /* Define a cor ou o preenchimento do fundo; aqui recebe var(--cor). */
+    background: var(--cor);
+    /* Define a cor do texto; aqui recebe #fff. */
+    color: #fff;
+    /* Configura família/tamanho/peso/espaçamento da fonte de uma vez; aqui recebe inherit. */
+    font: inherit;
+    /* Define o tamanho da letra; aqui recebe .85rem. */
+    font-size: .85rem;
+    /* Define a espessura da letra; aqui recebe 650. */
+    font-weight: 650;
+    /* Define a altura das linhas de texto; aqui recebe 1.35. */
+    line-height: 1.35;
+    /* Define o sublinhado ou outras decorações; aqui recebe none. */
+    text-decoration: none;
+    /* Define o formato do ponteiro do mouse; aqui recebe pointer. */
+    cursor: pointer;
+    /* Suaviza mudanças de propriedades ao longo do tempo; aqui recebe background .18s, border-color .18s, box-shadow .18s, transform .18s. */
+    transition: background .18s, border-color .18s, box-shadow .18s, transform .18s;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: :is(button, .button, .botao):not(:disabled):hover. */
+:is(button, .button, .botao):not(:disabled):hover {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe var(--cor-hover). */
+    background: var(--cor-hover);
+    /* Define a cor do texto; aqui recebe #fff. */
+    color: #fff;
+    /* Define o sublinhado ou outras decorações; aqui recebe none. */
+    text-decoration: none;
+    /* Move, gira ou escala o elemento sem mudar o fluxo da página; aqui recebe translateY(-1px). */
+    transform: translateY(-1px);
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: button:disabled. */
+button:disabled {
+    /* Define o nível de transparência; aqui recebe .5. */
+    opacity: .5;
+    /* Define o formato do ponteiro do mouse; aqui recebe not-allowed. */
+    cursor: not-allowed;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 11. BOTÕES: VARIANTES E LINKS */
+/* Inclui o seletor .button-outline no grupo de elementos que receberá as mesmas regras. */
+.button-outline,
+/* Inclui o seletor .icon-action no grupo de elementos que receberá as mesmas regras. */
+.icon-action,
+/* Inclui o seletor .password-toggle no grupo de elementos que receberá as mesmas regras. */
+.password-toggle,
+/* Inclui o seletor .account-logout no grupo de elementos que receberá as mesmas regras. */
+.account-logout,
+/* Inicia a regra que estiliza os elementos correspondentes a: .row-actions > a. */
+.row-actions > a {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #fff. */
+    background: #fff;
+    /* Define a cor da borda; aqui recebe var(--borda). */
+    border-color: var(--borda);
+    /* Define a cor do texto; aqui recebe #475467. */
+    color: #475467;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: :is(.button-outline, .icon-action, .password-toggle, .account-logout, .row-actions > a):not(:disabled):hover. */
+:is(.button-outline, .icon-action, .password-toggle, .account-logout, .row-actions > a):not(:disabled):hover {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe var(--suave). */
+    background: var(--suave);
+    /* Define a cor da borda; aqui recebe #badbd0. */
+    border-color: #badbd0;
+    /* Define a cor do texto; aqui recebe var(--cor). */
+    color: var(--cor);
+    /* Define o sublinhado ou outras decorações; aqui recebe none. */
+    text-decoration: none;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .button-whatsapp. */
+.button-whatsapp {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #177a52. */
+    background: #177a52;
+    /* Define a cor da borda; aqui recebe #177a52. */
+    border-color: #177a52;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .button-whatsapp:not(:disabled):hover. */
+.button-whatsapp:not(:disabled):hover {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #11633f. */
+    background: #11633f;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .botao-secundario. */
+.botao-secundario {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe var(--suave). */
+    background: var(--suave);
+    /* Define a cor da borda; aqui recebe #cce7de. */
+    border-color: #cce7de;
+    /* Define a cor do texto; aqui recebe var(--cor). */
+    color: var(--cor);
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .botao-secundario:not(:disabled):hover. */
+.botao-secundario:not(:disabled):hover {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #d9eee5. */
+    background: #d9eee5;
+    /* Define a cor do texto; aqui recebe var(--cor-hover). */
+    color: var(--cor-hover);
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .botao-cancelar. */
+.botao-cancelar {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #fff1ef. */
+    background: #fff1ef;
+    /* Define a cor da borda; aqui recebe #f3d1cc. */
+    border-color: #f3d1cc;
+    /* Define a cor do texto; aqui recebe var(--erro). */
+    color: var(--erro);
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .botao-cancelar:not(:disabled):hover. */
+.botao-cancelar:not(:disabled):hover {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #ffe3de. */
+    background: #ffe3de;
+    /* Define a cor do texto; aqui recebe #912018. */
+    color: #912018;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .text-link. */
+.text-link {
+    /* Impõe uma altura mínima; aqui recebe auto. */
+    min-height: auto;
+    /* Controla o espaço interno; aqui recebe 0. */
+    padding: 0;
+    /* Define borda, espessura, estilo e cor; aqui recebe 0. */
+    border: 0;
+    /* Define a cor ou o preenchimento do fundo; aqui recebe transparent. */
+    background: transparent;
+    /* Define a cor do texto; aqui recebe var(--cor). */
+    color: var(--cor);
+    /* Define a espessura da letra; aqui recebe 650. */
+    font-weight: 650;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .text-link:not(:disabled):hover. */
+.text-link:not(:disabled):hover {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe transparent. */
+    background: transparent;
+    /* Define a cor do texto; aqui recebe var(--cor-hover). */
+    color: var(--cor-hover);
+    /* Define o sublinhado ou outras decorações; aqui recebe underline. */
+    text-decoration: underline;
+    /* Move, gira ou escala o elemento sem mudar o fluxo da página; aqui recebe none. */
+    transform: none;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 12. FORMULÁRIOS: CAMPOS E FOCO */
+/* Inicia a regra que estiliza os elementos correspondentes a: form. */
+form {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe flex. */
+    display: flex;
+    /* Escolhe a direção dos itens no Flexbox; aqui recebe column. */
+    flex-direction: column;
+    /* Define o espaçamento entre elementos; aqui recebe 10px. */
+    gap: 10px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: label. */
+label {
+    /* Define a cor do texto; aqui recebe #344054. */
+    color: #344054;
+    /* Define o tamanho da letra; aqui recebe .825rem. */
+    font-size: .825rem;
+    /* Define a espessura da letra; aqui recebe 650. */
+    font-weight: 650;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor input no grupo de elementos que receberá as mesmas regras. */
+input,
+/* Inclui o seletor select no grupo de elementos que receberá as mesmas regras. */
+select,
+/* Inicia a regra que estiliza os elementos correspondentes a: textarea. */
+textarea {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe block. */
+    display: block;
+    /* Determina a largura do elemento; aqui recebe 100%. */
+    width: 100%;
+    /* Impõe uma largura mínima; aqui recebe 0. */
+    min-width: 0;
+    /* Impõe uma altura mínima; aqui recebe 46px. */
+    min-height: 46px;
+    /* Controla o espaço interno; aqui recebe 12px 14px. */
+    padding: 12px 14px;
+    /* Define borda, espessura, estilo e cor; aqui recebe 1px solid #d7dfe7. */
+    border: 1px solid #d7dfe7;
+    /* Arredonda os cantos do elemento; aqui recebe 10px. */
+    border-radius: 10px;
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #fff. */
+    background: #fff;
+    /* Define a cor do texto; aqui recebe var(--texto). */
+    color: var(--texto);
+    /* Configura família/tamanho/peso/espaçamento da fonte de uma vez; aqui recebe inherit. */
+    font: inherit;
+    /* Define o tamanho da letra; aqui recebe .925rem. */
+    font-size: .925rem;
+    /* Define a altura das linhas de texto; aqui recebe 1.4. */
+    line-height: 1.4;
+    /* Suaviza mudanças de propriedades ao longo do tempo; aqui recebe border-color .18s, box-shadow .18s. */
+    transition: border-color .18s, box-shadow .18s;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Configura a propriedade CSS input; aqui recebe :placeholder,. */
+input::placeholder,
+/* Inicia a regra que estiliza os elementos correspondentes a: textarea::placeholder. */
+textarea::placeholder {
+    /* Define a cor do texto; aqui recebe #7a8698. */
+    color: #7a8698;
+    /* Define o nível de transparência; aqui recebe 1. */
+    opacity: 1;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Configura a propriedade CSS input; aqui recebe hover,. */
+input:hover,
+/* Configura a propriedade CSS select; aqui recebe hover,. */
+select:hover,
+/* Inicia a regra que estiliza os elementos correspondentes a: textarea:hover. */
+textarea:hover {
+    /* Define a cor da borda; aqui recebe #aabbb7. */
+    border-color: #aabbb7;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Configura a propriedade CSS input; aqui recebe focus,. */
+input:focus,
+/* Configura a propriedade CSS select; aqui recebe focus,. */
+select:focus,
+/* Inicia a regra que estiliza os elementos correspondentes a: textarea:focus. */
+textarea:focus {
+    /* Define a cor da borda; aqui recebe var(--cor). */
+    border-color: var(--cor);
+    /* Define o contorno externo de foco; aqui recebe none. */
+    outline: none;
+    /* Adiciona sombra à caixa; aqui recebe 0 0 0 3px #087f7018. */
+    box-shadow: 0 0 0 3px #087f7018;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: :is(button, a, input, select, textarea):focus-visible. */
+:is(button, a, input, select, textarea):focus-visible {
+    /* Define o contorno externo de foco; aqui recebe 3px solid #95cfc0. */
+    outline: 3px solid #95cfc0;
+    /* Afasta o contorno do elemento; aqui recebe 3px. */
+    outline-offset: 3px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inclui o seletor input[readonly] no grupo de elementos que receberá as mesmas regras. */
+input[readonly],
+/* Configura a propriedade CSS input; aqui recebe disabled,. */
+input:disabled,
+/* Configura a propriedade CSS select; aqui recebe disabled,. */
+select:disabled,
+/* Inicia a regra que estiliza os elementos correspondentes a: textarea:disabled. */
+textarea:disabled {
+    /* Define a cor ou o preenchimento do fundo; aqui recebe #f5f7f9. */
+    background: #f5f7f9;
+    /* Define a cor do texto; aqui recebe #667085. */
+    color: #667085;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: textarea. */
+textarea {
+    /* Impõe uma altura mínima; aqui recebe 125px. */
+    min-height: 125px;
+    /* Permite ou impede redimensionar o campo; aqui recebe vertical. */
+    resize: vertical;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 13. FORMULÁRIOS: ORGANIZAÇÃO DOS CAMPOS */
+/* Inicia a regra que estiliza os elementos correspondentes a: .form-grid. */
+.form-grid {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe grid. */
+    display: grid;
+    /* Define as colunas do layout em grade; aqui recebe repeat(2, minmax(0, 1fr)). */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* Define o espaçamento entre elementos; aqui recebe 10px. */
+    gap: 10px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .form-grid > *. */
+.form-grid > * {
+    /* Define quais colunas o item ocupa; aqui recebe 1 / -1. */
+    grid-column: 1 / -1;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Continua a lista de seletores da regra com .form-grid > label:not(:first-child). */
+.form-grid > label:not(:first-child),
+/* Inicia a regra que estiliza os elementos correspondentes a: form > label:not(:first-child). */
+form > label:not(:first-child) {
+    /* Define o espaço externo acima; aqui recebe 6px. */
+    margin-top: 6px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .form-grid > div > label. */
+.form-grid > div > label {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe block. */
+    display: block;
+    /* Define o espaço externo abaixo; aqui recebe 8px. */
+    margin-bottom: 8px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: form > button[type="submit"]. */
+form > button[type="submit"] {
+    /* Define o espaço externo acima; aqui recebe 8px. */
+    margin-top: 8px;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* 14. CAMPO DE SENHA */
+/* Inicia a regra que estiliza os elementos correspondentes a: .password-field. */
+.password-field {
+    /* Escolhe o modelo de apresentação do elemento; aqui recebe flex. */
+    display: flex;
+    /* Permite ou impede a quebra dos itens para outra linha; aqui recebe nowrap. */
+    flex-wrap: nowrap;
+    /* Define o espaçamento entre elementos; aqui recebe 8px. */
+    gap: 8px;
+    /* Impõe uma largura mínima; aqui recebe 0. */
+    min-width: 0;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .password-field input. */
+.password-field input {
+    /* Define como o item cresce/encolhe no Flexbox; aqui recebe 1. */
+    flex: 1;
+    /* Determina a largura do elemento; aqui recebe 0. */
+    width: 0;
+    /* Impõe uma largura mínima; aqui recebe 0. */
+    min-width: 0;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
+}
+
+/* Inicia a regra que estiliza os elementos correspondentes a: .password-toggle. */
+.password-toggle {
+    /* Define como o item cresce/encolhe no Flexbox; aqui recebe 0 0 auto. */
+    flex: 0 0 auto;
+/* Encerra o conjunto de declarações ou a condição de estilos aberta acima. */
 }

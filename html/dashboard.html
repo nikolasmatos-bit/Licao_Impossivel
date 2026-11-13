@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!-- Elemento raiz do documento e idioma usado. -->
+<html lang="pt-br">
+<!-- Agrupa as configurações e recursos carregados antes do corpo. -->
+<head>
+    <meta charset="UTF-8">
+    <!-- Configuração técnica da página. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Texto que aparece na aba do navegador. -->
+    <title>Painel de atendimento - Megabrain Services</title>
+    <!-- Importa um arquivo CSS para estilizar a página; carrega/aponta para "./css/base.css". -->
+    <link rel="stylesheet" href="./css/base.css">
+    <!-- Importa um arquivo CSS para estilizar a página; carrega/aponta para "./css/dashboard.css". -->
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/api.js". -->
+    <script src="./js/api.js"></script>
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/utils.js". -->
+    <script src="./js/utils.js"></script>
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/auth.js"; defer adia a execução até o HTML ser analisado. -->
+    <script src="./js/auth.js" defer></script>
+<!-- Encerra o elemento head iniciado anteriormente. -->
+</head>
+<!-- Contém todo o conteúdo visível da página. -->
+<body>
+
+        <!-- Cabeçalho do sistema com identidade e navegação. -->
+        <header>
+        <!-- Título de seção. -->
+        <h2>Megabrain Services</h2>
+        <!-- Agrupa os links de navegação entre páginas; class associa estilos CSS. -->
+        <nav class="menu">
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "dashboard.html". -->
+            <a href="dashboard.html">Painel</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "cadastros.html". -->
+            <a href="cadastros.html">Nova OS</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "lista.html". -->
+            <a href="lista.html">Ordens</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "tecnicos.html". -->
+            <a href="tecnicos.html">Tecnicos</a>
+            <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "clientes.html". -->
+            <a href="clientes.html">Clientes</a>
+        <!-- Encerra o elemento nav iniciado anteriormente. -->
+        </nav>
+    <!-- Encerra o elemento header iniciado anteriormente. -->
+    </header>
+
+    <!-- Marca a área principal da tela. -->
+    <main>
+        <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+        <div class="page-heading">
+            <!-- Agrupa elementos para organização e estilo. -->
+            <div>
+                <!-- Parágrafo de texto explicativo; class associa estilos CSS. -->
+                <p class="eyebrow">OPERAÇÕES</p>
+                <!-- Título principal desta tela. -->
+                <h1>Painel de atendimento</h1>
+                <!-- Parágrafo de texto explicativo. -->
+                <p>Acompanhe a fila e mantenha o cliente informado.</p>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="button-row dashboard-actions">
+                <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "clientes.html"; class associa estilos CSS. -->
+                <a class="button button-outline" href="clientes.html"> Clientes</a>
+                <!-- Link que permite navegar para uma página ou destino; carrega/aponta para "cadastros.html"; class associa estilos CSS. -->
+                <a class="button button-primary" href="cadastros.html"> Nova ordem</a>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+        <!-- Encerra o elemento div iniciado anteriormente. -->
+        </div>
+
+        <!-- Agrupa elementos para organização e estilo; id="ultima-atualizacao" identifica o elemento para o JavaScript e o CSS; type="button" determina seu tipo; atributos aria-* ajudam tecnologias assistivas; class associa estilos CSS. -->
+        <div class="dashboard-sync"><span id="ultima-atualizacao" aria-live="polite">Sincronizando dados...</span><button type="button" id="atualizar-painel" class="icon-action" title="Atualizar painel" aria-label="Atualizar painel">Atualizar painel</button></div>
+
+        <!-- Agrupa uma seção funcional do conteúdo; atributos aria-* ajudam tecnologias assistivas; class associa estilos CSS. -->
+        <section class="cards dashboard-metrics" aria-label="Indicadores da operação">
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="card">
+
+                <!-- Subtítulo dentro da seção. -->
+                <h3>Total de OS</h3>
+                <!-- Texto enfatizado com maior importância; id="total-os" identifica o elemento para o JavaScript e o CSS. -->
+                <strong id="total-os">0</strong>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="card">
+
+                <!-- Subtítulo dentro da seção. -->
+                <h3>OS Abertas</h3>
+                <!-- Texto enfatizado com maior importância; id="os-abertas" identifica o elemento para o JavaScript e o CSS. -->
+                <strong id="os-abertas">0</strong>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="card">
+
+                <!-- Subtítulo dentro da seção. -->
+                <h3>Em execução</h3>
+                <!-- Texto enfatizado com maior importância; id="em-execucao" identifica o elemento para o JavaScript e o CSS. -->
+                <strong id="em-execucao">0</strong>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="card">
+
+                <!-- Subtítulo dentro da seção. -->
+                <h3>Concluídas</h3>
+                <!-- Texto enfatizado com maior importância; id="concluidas" identifica o elemento para o JavaScript e o CSS. -->
+                <strong id="concluidas">0</strong>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="card metric-attention">
+
+                <!-- Subtítulo dentro da seção. -->
+                <h3>Prioridade alta</h3>
+                <!-- Texto enfatizado com maior importância; id="alta-prioridade" identifica o elemento para o JavaScript e o CSS. -->
+                <strong id="alta-prioridade">0</strong>
+                <!-- Texto complementar em tamanho reduzido. -->
+                <small>Na fila ativa</small>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="card metric-delay">
+
+                <!-- Subtítulo dentro da seção. -->
+                <h3>Aguardando +48h</h3>
+                <!-- Texto enfatizado com maior importância; id="aguardando-48h" identifica o elemento para o JavaScript e o CSS. -->
+                <strong id="aguardando-48h">0</strong>
+                <!-- Texto complementar em tamanho reduzido. -->
+                <small>Precisam de acompanhamento</small>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="card metric-unassigned">
+
+                <!-- Subtítulo dentro da seção. -->
+                <h3>Sem responsável</h3>
+                <!-- Texto enfatizado com maior importância; id="sem-responsavel" identifica o elemento para o JavaScript e o CSS. -->
+                <strong id="sem-responsavel">0</strong>
+                <!-- Texto complementar em tamanho reduzido. -->
+                <small>Precisam de atribuição</small>
+            <!-- Encerra o elemento div iniciado anteriormente. -->
+            </div>
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+
+        <!-- Agrupa uma seção funcional do conteúdo; class associa estilos CSS. -->
+        <section class="data-section distribution-section">
+            <!-- Agrupa elementos para organização e estilo; id="resumo-fila" identifica o elemento para o JavaScript e o CSS; class associa estilos CSS. -->
+            <div class="section-heading"><div><h2>Distribuição da fila</h2><p id="resumo-fila">Ordens agrupadas pelo estágio atual</p></div></div>
+            <!-- Agrupa elementos para organização e estilo; id="distribuicao-status" identifica o elemento para o JavaScript e o CSS; atributos aria-* ajudam tecnologias assistivas; class associa estilos CSS. -->
+            <div id="distribuicao-status" class="distribution-grid" aria-live="polite"></div>
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+
+        <!-- Agrupa uma seção funcional do conteúdo; class associa estilos CSS. -->
+        <section class="data-section">
+            <!-- Agrupa elementos para organização e estilo; carrega/aponta para "lista.html"; class associa estilos CSS. -->
+            <div class="section-heading"><div><h2>Atendimentos recentes</h2><p>Últimas ordens registradas no sistema</p></div><a class="text-link" href="lista.html">Ver todas </a></div>
+            <!-- Agrupa elementos para organização e estilo; class associa estilos CSS. -->
+            <div class="table-wrap"><table>
+                <!-- Cabeçalho da tabela. -->
+                <thead>
+                    <!-- Linha da tabela. -->
+                    <tr>
+                        <!-- Célula de título de coluna. -->
+                        <th>OS</th>
+                        <!-- Célula de título de coluna. -->
+                        <th>Cliente</th>
+                        <!-- Célula de título de coluna. -->
+                        <th>Equipamento</th>
+                        <!-- Célula de título de coluna. -->
+                        <th>Status</th>
+                        <!-- Célula de título de coluna. -->
+                        <th>Abrir</th>
+                    <!-- Encerra o elemento tr iniciado anteriormente. -->
+                    </tr>
+                <!-- Encerra o elemento thead iniciado anteriormente. -->
+                </thead>
+                <!-- Corpo com as linhas de dados da tabela; id="ordens-recentes" identifica o elemento para o JavaScript e o CSS. -->
+                <tbody id="ordens-recentes"></tbody>
+            <!-- Encerra o elemento table iniciado anteriormente. -->
+            </table></div>
+        <!-- Encerra o elemento section iniciado anteriormente. -->
+        </section>
+
+    <!-- Encerra o elemento main iniciado anteriormente. -->
+    </main>
+
+    <!-- Carrega JavaScript responsável pelo comportamento da tela; carrega/aponta para "./js/dashboard.js". -->
+    <script src="./js/dashboard.js"></script>
+
+<!-- Encerra o elemento body iniciado anteriormente. -->
+</body>
+<!-- Encerra o elemento html iniciado anteriormente. -->
+</html>
